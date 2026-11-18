@@ -10,8 +10,15 @@ part it from whatever it touches there), and its depth is compressed into the em
 silhouette stands `h_edge` proud of the panel floor, the nearest point is flush with the tile face, and a
 high-pass of the depth (`detail_sigma`, `detail_gain`) is added back so small forms survive the compression.
 
+Two modes (`mode` in the recipe):
+  inlay (default)  the feature fits inside the tile's flush border, in the recessed panel.
+  onlay            the feature stands proud of the face (0..RELIEF_D in front of it) and may spill past the tile
+                   and the window onto the chin face, where it rests: it breaks the frame. `fit_height` is its
+                   height on the chin and `centre_v` its centre above the tile's (mm). CAD/build_emblem.py gates
+                   that it rests on flat chin face all round; the print needs supports under the overhang.
+
 Writes, next to the source model (third-party art stays in its gitignored folder, never in STLs/):
-  <stem>_relief.stl   a closed heightfield in the tile frame (u right, v up, w from the face), for --relief
+  <stem>_relief.stl   a closed solid in the tile frame (CAD/build_emblem.py), for --relief
   <stem>_relief.png   the height map as an image, for a quick look
 """
 
@@ -104,6 +111,25 @@ def heightfield(us, vs, top, bottom):
     return man
 
 
+def onlay_solid(us, vs, ht):
+    """The proud relief: the height field (w = -ht, back on the face plane w = 0) cut to the feature's
+    silhouette, plus an anchor 0.3 mm into the tile's cap wherever the two overlap, so the union with the tile
+    never meets a coplanar face."""
+    from skimage import measure
+
+    polys = [
+        [(us[0] + c * GRID, vs[0] + rr * GRID) for rr, c in cont]
+        for cont in measure.find_contours(ht, (H_BG + 0.15) / 2)
+        if len(cont) > 8
+    ]
+    sil = m3.CrossSection(polys, m3.FillRule.EvenOdd)
+    slab = heightfield(us, vs, -ht, 0.0)
+    prism = m3.Manifold.extrude(sil, RELIEF_D + 0.2).translate((0.0, 0.0, -(RELIEF_D + 0.2)))
+    cap = m3.CrossSection.square((2 * CAP - 0.1, 2 * CAP - 0.1)).translate((-(CAP - 0.05), -(CAP - 0.05)))
+    anchor = m3.Manifold.extrude(sil ^ cap, 0.32).translate((0.0, 0.0, -0.02))
+    return (slab ^ prism) + anchor
+
+
 def relief_grid(mesh, r):
     """The tile-side height map: (us, vs, ht) with ht[j, i] the relief height at u = us[i], v = vs[j], plus the
     scale and the feature's size on the tile. The viewer of the face sees u to their LEFT (CAD/chin_spec.py), so
@@ -116,12 +142,19 @@ def relief_grid(mesh, r):
     s = r["fit_height"] / (z_hi - z_lo)
     hc, zc = (h_lo + h_hi) / 2, (z_lo + z_hi) / 2
     h = heights(dep, mask, r, step)
-    p = CAP - RIM
-    us = np.arange(-p, p + 1e-9, GRID)
-    vs = np.arange(-p, p + 1e-9, GRID)
+    if r.get("mode", "inlay") == "onlay":  # a grid around the feature, wherever it reaches
+        pu = (h_hi - h_lo) * s / 2 + 1.0
+        v0 = r.get("centre_v", 0.0)
+        us = np.arange(-pu, pu + 1e-9, GRID)
+        vs = np.arange(v0 - r["fit_height"] / 2 - 1.0, v0 + r["fit_height"] / 2 + 1.0 + 1e-9, GRID)
+    else:
+        p = CAP - RIM
+        v0 = 0.0
+        us = np.arange(-p, p + 1e-9, GRID)
+        vs = np.arange(-p, p + 1e-9, GRID)
     uu, vv = np.meshgrid(us, vs)
     ci = (hc - uu / s - hs[0]) / step  # tile (u, v) -> source picture (column, row); picture right = -u
-    ri = (zc + vv / s - zs[0]) / step
+    ri = (zc + (vv - v0) / s - zs[0]) / step
     ht = ndi.map_coordinates(h, [ri, ci], order=1, cval=H_BG)
     ht = ndi.gaussian_filter(ht, EDGE_SOFT / GRID)  # the mask's pixel stairs would print as a jagged outline
     return us, vs, ht, s, ((h_hi - h_lo) * s, (z_hi - z_lo) * s)
@@ -169,19 +202,29 @@ def main(argv):
     if not self_test():
         sys.exit("relief handedness self-test failed")
     us, vs, ht, s, (size_u, size_v) = relief_grid(mesh, r)
+    onlay = r.get("mode", "inlay") == "onlay"
     p = CAP - RIM
+    fits = onlay or (size_u <= 2 * p - 0.6 and size_v <= 2 * p - 0.6)
+    edge = max(ht[0].max(), ht[-1].max(), ht[:, 0].max(), ht[:, -1].max())
     fails = []
     for ok, msg in (
-        (size_u <= 2 * p - 0.6 and size_v <= 2 * p - 0.6, f"feature {size_u:.1f} x {size_v:.1f} mm fits the panel"),
-        (ht.max() >= RELIEF_D - 0.01, f"nearest point flush with the face (h max {ht.max():.2f} of {RELIEF_D})"),
-        (ht[0].max() <= H_BG + 1e-6 and ht[-1].max() <= H_BG + 1e-6, "panel border clear (relief stays inside)"),
+        (
+            fits,
+            f"feature {size_u:.1f} x {size_v:.1f} mm "
+            + ("(onlay: seated fit gated by build_emblem)" if onlay else "fits the panel"),
+        ),
+        (
+            ht.max() >= RELIEF_D - 0.01,
+            f"nearest point at the relief's full height (h max {ht.max():.2f} of {RELIEF_D})",
+        ),
+        (edge <= H_BG + 1e-6, "grid border clear (the whole feature is inside the sampled area)"),
     ):
         print(f"{'OK  ' if ok else 'FAIL'} {msg}")
         if not ok:
             fails.append(msg)
     if fails:
         sys.exit(f"relief gate failed: {fails}")
-    solid = heightfield(us, vs, RELIEF_D - ht, RELIEF_D + 0.5)
+    solid = onlay_solid(us, vs, ht) if onlay else heightfield(us, vs, RELIEF_D - ht, RELIEF_D + 0.5)
     stem = os.path.join(os.path.dirname(src), os.path.splitext(os.path.basename(recipe_path))[0] + "_relief")
     mesh_out = solid.to_mesh()
     trimesh.Trimesh(np.asarray(mesh_out.vert_properties)[:, :3], np.asarray(mesh_out.tri_verts)).export(stem + ".stl")

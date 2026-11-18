@@ -94,9 +94,61 @@ def arm(sign):
     return prism_uw([(s * u, w) for u, w in pts], -ARM_W / 2, ARM_W / 2)
 
 
+def is_onlay(relief):
+    """An onlay relief stands in front of the face (w < 0); an inlay one lies in the recessed panel (w >= 0)."""
+    return relief.bounding_box()[2] < -0.01
+
+
+PRINTED = np.array([[1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, TILE_DEPTH]], float)  # face up, bridge on the bed
+
+
+def seated(t):
+    """The tile as it sits in the chin, in the Lower's print frame: printed, then chin_spec.EMBLEM_PLACE."""
+    from chin_spec import EMBLEM_PLACE
+
+    place = np.vstack([np.array(EMBLEM_PLACE, float), [0, 0, 0, 1]])
+    assert np.linalg.det(place[:3, :3]) > 0.999, "a printed part is moved, never mirrored"
+    return t.transform((place @ np.vstack([PRINTED, [0, 0, 0, 1]]))[:3])
+
+
+def seat_gates(t, relief, gate):
+    """Against the real bezel (STLs/Part_B_Lower.stl): it touches nothing seated, a push back meets a stop, and
+    an onlay rests on flat chin face all round (0.5 mm of face around its footprint, clear of the window)."""
+    lower_stl = os.path.join(ROOT, "STLs", "Part_B_Lower.stl")
+    if not os.path.exists(lower_stl):
+        gate(False, "seated gates need STLs/Part_B_Lower.stl (build the bezel first)")
+        return
+    import trimesh
+
+    lm = trimesh.load(lower_stl)
+    lower = m3.Manifold(
+        m3.Mesh(vert_properties=np.asarray(lm.vertices, np.float32), tri_verts=np.asarray(lm.faces, np.uint32))
+    )
+    s = seated(t)
+    v = (s ^ lower).volume()
+    gate(v <= 0.01, f"seated in the Lower: overlap {v:.3f} mm3 (none)")
+    v = (s.translate((0, 0, 0.1)) ^ lower).volume()
+    gate(v > 0.01, f"pushed back 0.1 mm it meets a stop (overlap {v:.3f} mm3)")
+    if relief is None or not is_onlay(relief):
+        return
+    win = EMBLEM_WIN / 2 + 0.3  # pocket + front chamfer
+    foot = relief.project().offset(0.5, m3.JoinType.Round) - m3.CrossSection.square((2 * win, 2 * win)).translate(
+        (-win, -win)
+    )
+    probe = m3.Manifold.extrude(foot, 0.05)  # tile frame, w 0..0.05: the chin face skin under the onlay
+    want = foot.area() * 0.05
+    got = (seated(probe) ^ lower).volume()
+    gate(
+        got >= 0.98 * want,
+        f"onlay rests on flat chin face all round: {got / want * 100:.1f} % of its footprint + 0.5 mm",
+    )
+
+
 def tile(relief=None):
     bridge = m3.Manifold.cube((2 * PASS, 2 * PASS, BRIDGE_T)).translate((-PASS, -PASS, BRIDGE_W))
     t = body() + bridge + arm(1) + arm(-1)
+    if relief is not None and is_onlay(relief):  # proud of the face, possibly past the tile: add it as it is
+        return t + relief
     if relief is not None:
         p = CAP - RIM
         panel = m3.Manifold.cube((2 * p, 2 * p, RELIEF_D + 0.1)).translate((-p, -p, -0.1))
@@ -106,7 +158,7 @@ def tile(relief=None):
 
 
 # ---------------------------------------------------------------- gates (analytic, then on the solid)
-def gates(t):
+def gates(t, relief=None):
     fails = []
 
     def gate(ok, msg):
@@ -129,12 +181,17 @@ def gates(t):
     # on the solid: one piece, sized to the window, arm separate from the body except at the root
     gate(len(t.decompose()) == 1 and t.status() == m3.Error.NoError, "tile is one manifold solid")
     b = t.bounding_box()
-    gate(abs(b[2]) < 1e-6 and abs(b[5] - TILE_DEPTH) < 1e-6, f"tile depth w 0..{b[5]:.2f} = TILE_DEPTH")
+    front = -RELIEF_D - 0.01 if relief is not None and is_onlay(relief) else -1e-6
+    gate(
+        front <= b[2] < 1e-6 and abs(b[5] - TILE_DEPTH) < 1e-6,
+        f"tile depth w {b[2]:.2f}..{b[5]:.2f} (back = TILE_DEPTH)",
+    )
     arms = arm(1) + arm(-1)
     free = arms - m3.Manifold.cube((20, 20, 1.0)).translate((-10, -10, BRIDGE_W - 1.0))
     core = body()
     g = free.min_gap(core, 2.0)
     gate(g >= 0.3, f"arms free of the body above the root: min gap {g:.2f} mm (>= 0.3)")
+    seat_gates(t, relief, gate)
     return fails
 
 
@@ -163,11 +220,11 @@ def main(argv):
             m3.Mesh(vert_properties=np.asarray(rm.vertices, np.float32), tri_verts=np.asarray(rm.faces, np.uint32))
         )
     t = tile(relief)
-    fails = gates(t)
+    fails = gates(t, relief)
     if fails:
         sys.exit(f"emblem gate failed: {fails}")
     # face-up print orientation: w = TILE_DEPTH on the bed
-    printed = t.transform(np.array([[1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, TILE_DEPTH]], float))
+    printed = t.transform(PRINTED)
     out = os.path.join(ROOT, "STLs", "Part_B_Emblem.stl")
     if "--relief" in argv:
         src = argv[argv.index("--relief") + 1]

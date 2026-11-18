@@ -94,11 +94,17 @@ only the tool and a numbers-only recipe. With the model downloaded there:
 ```bash
 CAD/build_emblem_art.sh CAD/emblems/cthulhu.json
 ```
-`CAD/make_relief.py` depth-casts the statue from the front, cuts the head and its tentacle beard out of the shoulders,
-hands and wings behind it, and compresses it into the tile's 1.2 mm recessed panel (8.0 x 15.6 mm, the nearest point
-flush with the face). `CAD/build_emblem.py --relief` makes the gated tile, and `CAD/build_3mf_v21.py --emblem` a
-one-plate project at 0.08 mm layers (0.36 h, 3 g), all written next to the model. Print it, then swap it for the blank
-tile from the front.
+`CAD/make_relief.py` depth-casts the statue from the front and cuts the head and its tentacle beard out of the
+shoulders, hands and wings behind it. The recipe makes it an **onlay**: 13.8 x 27.0 mm, standing up to 1.2 mm proud of
+the face, so the dome and the beard break out of the 18 mm frame above and below and rest on the chin face (the head
+is twice as tall as it is wide, so its sides stay inside the frame on a 36 mm chin). The tile then stops on the chin
+face instead of its seat, and still pops out from behind. `CAD/build_emblem.py --relief` gates it seated in the real
+bezel: no overlap, a stop when pushed back, and flat chin face under the whole onlay plus 0.5 mm (red when the head is
+moved 6 mm up over the screen edge: 71.7 %). `CAD/build_3mf_v21.py --emblem` writes a one-plate project at 0.08 mm
+layers with tree supports from the plate under the overhang (0.44 h, 4 g; the slice must show supports). All of it is
+written next to the model. Print it, break the supports off the onlay's back (it sits against the chin, unseen), and
+swap it for the blank tile from the front. An `"mode": "inlay"` recipe keeps the art inside the tile's recessed panel
+instead, with no supports.
 
 ## Known limits
 - The Polbecky collar has no inner lip: its top aperture, about 19.6 mm (+/-0.4, scaled from photos against the 1-inch mat

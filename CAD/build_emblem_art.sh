@@ -6,7 +6,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 recipe=${1:?usage: CAD/build_emblem_art.sh CAD/emblems/<name>.json}
 PY=(uv run --quiet --no-project --python 3.14 --with manifold3d --with trimesh --with numpy --with scipy --with rtree
-    --with embreex --with pillow --with lxml --with networkx python -I)
+    --with embreex --with pillow --with lxml --with networkx --with scikit-image python -I)
 src=$("${PY[@]}" -c 'import json, sys; print(json.load(open(sys.argv[1]))["source"])' "$recipe")
 [[ -f $src ]] || { echo "x $src is missing: download the model there first (see README, Emblem art)"; exit 1; }
 name=$(basename "$recipe" .json)
