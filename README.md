@@ -146,3 +146,8 @@ recessed panel with no supports). Art under a personal-use licence goes in the g
   the bend pulls across the layer lines, PLA's weakest direction. Eight leaves, a 0.3 mm snap per leaf and slots cut
   2.3 mm deeper bring the modelled peak strain from 3.1 % to 1.0 % (gate: <= 1.5 %). Push the ball in straight and
   firmly; the collar, not the snap, is what locks it. PETG would add a large margin if it is ever on hand.
+
+## Licence
+[Creative Commons Attribution 4.0 International (CC BY 4.0)](LICENSE): print, remix and share it, commercially too, as
+long as you credit this project. The Cthulhu emblem is a derivative of "Chtulhu Statue" by ChurchOfShrike (CC BY);
+keep that credit too (`CAD/assets/cthulhu/ATTRIBUTION.md`).
