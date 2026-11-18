@@ -186,10 +186,11 @@ def emblem():
     import sys
 
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-    from chin_spec import EMBLEM_CX, EMBLEM_CY, TILE_DEPTH
+    from chin_spec import EMBLEM_CX, EMBLEM_CY, EMBLEM_PLACE, TILE_DEPTH
 
     lo, em = stl("Part_B_Lower"), stl("Part_B_Emblem")
-    xf = np.array([[-1, 0, 0, -EMBLEM_CX], [0, -1, 0, EMBLEM_CY], [0, 0, -1, TILE_DEPTH], [0, 0, 0, 1]], float)
+    xf = np.vstack([np.array(EMBLEM_PLACE, float), [0, 0, 0, 1]])
+    assert np.linalg.det(xf[:3, :3]) > 0.999, "a printed part is moved, never mirrored"
     em.apply_transform(xf)  # printed face-up -> seated (as CAD/check_part_b_fit.py places it)
     fig, ax = plt.subplots(figsize=(4.6, 3.4), dpi=150)
     for m, col, lab in ((lo, LO, "Part_B_Lower (chin plate)"), (em, UP, "Part_B_Emblem")):

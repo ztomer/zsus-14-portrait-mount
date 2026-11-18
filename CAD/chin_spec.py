@@ -30,3 +30,13 @@ LED_SLIT = (LED_CX - 0.8, LED_CX + 0.8, CHIN_CY - 3.5, CHIN_CY + 3.5)  # X0, X1,
 LED_BORE = (LED_CX - 3.0, LED_CX + 3.0, CHIN_CY - 5.5, CHIN_CY + 5.5)
 
 assert abs(EMBLEM_CX - (OPENING_X0 + EMBLEM_WIN / 2 + 0.225)) < 1e-9
+
+# Seating the PRINTED tile (STLs/Part_B_Emblem.stl, face up) in the Lower's print frame. A printed part can only be
+# moved, never mirrored, so this must be a rotation plus a shift (determinant +1; every user asserts it). The tile
+# frame (u, v, w) is right-handed with w running from the face into the part, so a viewer of the face sees v up and
+# u to their LEFT, the same mirror as the bezel's print frame (front-view X = -x): front-view X = EMBLEM_CX - u.
+EMBLEM_PLACE = [  # printed (p, q, r) = (u, -v, TILE_DEPTH - w)  ->  (x, y, z) = (u - EMBLEM_CX, EMBLEM_CY + v, w)
+    [1.0, 0.0, 0.0, -EMBLEM_CX],
+    [0.0, -1.0, 0.0, EMBLEM_CY],
+    [0.0, 0.0, -1.0, TILE_DEPTH],
+]

@@ -202,13 +202,12 @@ for side, x in (("front-view left", bx1 - 8.0), ("front-view right", bx0 + 8.0))
 # snap-in emblem (CAD/build_emblem.py, window from CAD/chin_spec.py): seated it touches nothing, its face is
 # flush, pushed back 0.15 mm it lands on the seat, pushed forward 0.25 mm its barbs catch the plate.
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from chin_spec import EMBLEM_CX, EMBLEM_CY, LED_SLIT, TILE_DEPTH  # noqa: E402
+from chin_spec import EMBLEM_CX, EMBLEM_PLACE, LED_SLIT  # noqa: E402
 
-# printed (p, q, r) = (u, -v, D - w)  ->  Lower print frame (x, y, z) = (-(CX + u), CY + v, w)
-em = load("Part_B_Emblem").transform(
-    np.array([[-1, 0, 0, -EMBLEM_CX], [0, -1, 0, EMBLEM_CY], [0, 0, -1, TILE_DEPTH]], float)
-)
-assert em.volume() > 0, "emblem transform turned it inside-out"
+# seated as printed: chin_spec.EMBLEM_PLACE, a rigid motion (a mirror would model a part nobody can print)
+place = np.array(EMBLEM_PLACE, float)
+assert np.linalg.det(place[:, :3]) > 0.999, "EMBLEM_PLACE must move the printed tile, not mirror it"
+em = load("Part_B_Emblem").transform(place)
 eb = em.bounding_box()
 report("Emblem vs Lower (seated)", (em ^ lo).volume())
 report("Emblem vs monitor (14.0 mm hump)", (em ^ monitor(14.0)).volume())

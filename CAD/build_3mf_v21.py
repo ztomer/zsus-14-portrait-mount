@@ -18,6 +18,7 @@ import json
 import os
 import re
 import subprocess
+import sys
 import tempfile
 import zipfile
 
@@ -116,7 +117,7 @@ def object_bbox(xml):
     return v.min(0), v.max(0)
 
 
-def main():
+def main(layout=LAYOUT, plate_names=PLATE_NAMES, out_3mf=OUT_3MF, stl_dir=None, report=None):
     tmp = tempfile.mkdtemp(prefix="zsus3mf_")
     mach = flatten("machine", MACHINE, os.path.join(tmp, "machine.json"))
     flatten("process", PROCESS, os.path.join(tmp, "process.json"))
@@ -125,7 +126,7 @@ def main():
     assert mach["nozzle_diameter"] == ["0.4"], mach["nozzle_diameter"]
 
     # 1. let Bambu Studio import the STLs (writes a valid project_settings + object meshes)
-    stls = [os.path.join(ROOT, "STLs", n + ".stl") for n, *_ in LAYOUT]
+    stls = [os.path.join(stl_dir or os.path.join(ROOT, "STLs"), n + ".stl") for n, *_ in layout]
     base = os.path.join(tmp, "base.3mf")
     rc = run(
         [
@@ -149,15 +150,15 @@ def main():
     }
     model = files["3D/3dmodel.model"].decode()
 
-    # 2. map imported objects to LAYOUT (Bambu keeps input order), place them on their plates
+    # 2. map imported objects to layout (Bambu keeps input order), place them on their plates
     comps = re.findall(
         r'<object id="(\d+)"[^>]*>\s*<components>\s*<component p:path="([^"]+)" objectid="\d+"[^>]*transform="([^"]+)"',
         model,
     )
-    assert len(comps) == len(LAYOUT), (len(comps), len(LAYOUT))
-    cols = int(np.ceil(np.sqrt(len(PLATE_NAMES))))
+    assert len(comps) == len(layout), (len(comps), len(layout))
+    cols = int(np.ceil(np.sqrt(len(plate_names))))
     placed = {}
-    for (oid, path, ctf), (name, plate, (cx, cy), _) in zip(comps, LAYOUT, strict=True):
+    for (oid, path, ctf), (name, plate, (cx, cy), _) in zip(comps, layout, strict=True):
         lo, hi = object_bbox(files[path.lstrip("/")].decode())
         off = np.array(list(map(float, ctf.split()))[9:12])
         lo, hi = lo + off, hi + off
@@ -182,7 +183,7 @@ def main():
     # 3. model_settings: names, per-object settings, plates
     ms = files["Metadata/model_settings.config"].decode()
     for oid, (name, _plate, _t, _size) in placed.items():
-        settings = dict(next(s for n, _, _, s in LAYOUT if n == name))
+        settings = dict(next(s for n, _, _, s in layout if n == name))
         settings["enable_support"] = "0"
 
         def obj_block(m, name=name, settings=settings):
@@ -203,7 +204,7 @@ def main():
 
         ms = re.sub(rf'<object id="{oid}">.*?</object>', obj_block, ms, flags=re.DOTALL)
     plates = []
-    for p, pname in PLATE_NAMES.items():
+    for p, pname in plate_names.items():
         inst = "".join(
             f'''
     <model_instance>
@@ -231,7 +232,7 @@ def main():
                 "optimal_assignment": [],
                 "sequence": [],
             }
-            for p in PLATE_NAMES
+            for p in plate_names
         }
     ).encode()
 
@@ -248,11 +249,11 @@ def main():
     rels = re.sub(r'\s*<Relationship Target="/Metadata/plate_1[^"]*\.png"[^>]*/>', "", rels)
     files["_rels/.rels"] = rels.encode()
 
-    with zipfile.ZipFile(OUT_3MF, "w", zipfile.ZIP_DEFLATED) as out:
+    with zipfile.ZipFile(out_3mf, "w", zipfile.ZIP_DEFLATED) as out:
         first = ("[Content_Types].xml", "_rels/.rels")
         for n in [*first, *sorted(k for k in files if k not in first)]:
             out.writestr(n, files[n])
-    print("wrote", OUT_3MF)
+    print("wrote", out_3mf)
     for name, plate, _t, size in sorted(placed.values(), key=lambda v: v[1]):
         print(f"  plate {plate}  {name:16s} {size[0]:6.1f} x {size[1]:6.1f} x {size[2]:5.1f} mm")
 
@@ -270,14 +271,14 @@ def main():
             sliced,
             "--export-3mf",
             "sliced.3mf",
-            OUT_3MF,
+            out_3mf,
         ],
         os.path.join(tmp, "slice.log"),
     )
     print(f"slice exit code {rc}  (log {tmp}/slice.log)")
     zs = zipfile.ZipFile(os.path.join(sliced, "sliced.3mf"))
     info = zs.read("Metadata/slice_info.config").decode()
-    report = {
+    slice_report = {
         "bambu_studio": re.search(r'X-BBL-Client-Version" value="([^"]+)"', info).group(1),
         "exit_code": rc,
         "plates": [],
@@ -290,10 +291,10 @@ def main():
         objs = re.findall(r'<object identify_id="\d+" name="([^"]+)"', p)
         hours = int(pred.group(1)) / 3600 if pred else 0.0
         grams = float(wt.group(1)) if wt else 0.0
-        report["plates"].append(
+        slice_report["plates"].append(
             {
                 "plate": idx,
-                "name": PLATE_NAMES[idx],
+                "name": plate_names[idx],
                 "hours": round(hours, 2),
                 "grams": grams,
                 "objects": objs,
@@ -302,8 +303,8 @@ def main():
         )
         print(f"  plate {idx}: {hours:5.2f} h  {grams:6.1f} g  {objs}  warnings={warns or 'none'}")
     gcodes = sorted(n for n in zs.namelist() if n.endswith(".gcode"))
-    assert rc == 0 and len(gcodes) == len(PLATE_NAMES), f"slice failed: rc={rc}, gcode files {gcodes}"
-    assert not any(p["warnings"] for p in report["plates"]), "slicer warnings, see above"
+    assert rc == 0 and len(gcodes) == len(plate_names), f"slice failed: rc={rc}, gcode files {gcodes}"
+    assert not any(p["warnings"] for p in slice_report["plates"]), "slicer warnings, see above"
     g1 = zs.read(gcodes[0]).decode(errors="ignore")
     for key in (
         "printer_settings_id",
@@ -314,14 +315,33 @@ def main():
         "filament_colour",
     ):
         m = re.search(rf"^; {key} = (.*)$", g1, re.MULTILINE)
-        report[key] = m.group(1) if m else None
-        print(f"    {key} = {report[key]}")
-    assert report["nozzle_diameter"] == "0.4" and report["curr_bed_type"] == "Textured PEI Plate", report
-    os.makedirs(os.path.join(HERE, "renders"), exist_ok=True)
-    with open(os.path.join(HERE, "renders", "slice_report.json"), "w") as fh:
-        json.dump(report, fh, indent=1)
-    print("all", len(gcodes), "plates sliced; report in CAD/renders/slice_report.json")
+        slice_report[key] = m.group(1) if m else None
+        print(f"    {key} = {slice_report[key]}")
+    assert slice_report["nozzle_diameter"] == "0.4" and slice_report["curr_bed_type"] == "Textured PEI Plate", (
+        slice_report
+    )
+    report_path = report or os.path.join(HERE, "renders", "slice_report.json")
+    os.makedirs(os.path.dirname(report_path), exist_ok=True)
+    with open(report_path, "w") as fh:
+        json.dump(slice_report, fh, indent=1)
+    print("all", len(gcodes), "plates sliced; report in", os.path.relpath(report_path, ROOT))
+
+
+# A chin emblem on its own plate (CAD/build_emblem.py --relief output): fine layers for the relief. Written next to
+# the STL, so a third-party emblem's project stays in its gitignored folder with it.
+EMBLEM_FINE = {"layer_height": "0.08", "wall_loops": "3", "sparse_infill_density": "100%", "brim_type": "no_brim"}
 
 
 if __name__ == "__main__":
-    main()
+    if sys.argv[1:2] == ["--emblem"]:
+        stl = os.path.abspath(sys.argv[2])
+        name = os.path.splitext(os.path.basename(stl))[0]
+        main(
+            layout=[(name, 1, (128.0, 128.0), dict(EMBLEM_FINE))],
+            plate_names={1: f"1 {name} (0.08 mm)"},
+            out_3mf=os.path.join(os.path.dirname(stl), name + "_P1S_PLA.3mf"),
+            stl_dir=os.path.dirname(stl),
+            report=os.path.join(os.path.dirname(stl), name + "_slice_report.json"),
+        )
+    else:
+        main()

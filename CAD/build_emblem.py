@@ -7,8 +7,9 @@ reach forward from a rear bridge so their barbs catch behind the 3 mm chin plate
 with a push; it comes out by pressing the bridge forward from behind through the open control bay (the catch
 faces lean 35 deg, so the plate cams the arms in). Swap emblems without taking the bezel off.
 
-Tile frame: u right, v up (front view), w from the face (w = 0) toward the back. The STL is written face-up
-(the bridge on the bed, w = TILE_DEPTH at z = 0) so a relief on the face prints as top surfaces.
+Tile frame (u, v, w), right-handed: w runs from the face (w = 0) into the part, v is up, and so a viewer of the
+face sees u to their LEFT (front-view X = EMBLEM_CX - u, the bezel's own x = -X mirror; CAD/chin_spec.py). The STL
+is written face-up (the bridge on the bed, w = TILE_DEPTH at z = 0) so a relief on the face prints as top surfaces.
 
   python3 CAD/build_emblem.py                 blank face (the shipped default) -> STLs/Part_B_Emblem.stl
   python3 CAD/build_emblem.py --relief R.stl  emblem face: a panel inside a RIM-wide border is recessed RELIEF_D,
@@ -99,7 +100,8 @@ def tile(relief=None):
     if relief is not None:
         p = CAP - RIM
         panel = m3.Manifold.cube((2 * p, 2 * p, RELIEF_D + 0.1)).translate((-p, -p, -0.1))
-        t = (t - panel) + (relief ^ panel.trim_by_plane((0, 0, 1), 0.0))
+        clip = m3.Manifold.cube((2 * p, 2 * p, RELIEF_D + 1.0)).translate((-p, -p, 0.0))  # deep: overlaps the body
+        t = (t - panel) + (relief ^ clip)
     return t
 
 

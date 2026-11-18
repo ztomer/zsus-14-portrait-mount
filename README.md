@@ -47,9 +47,10 @@ Each step refuses to continue on failure:
 | Step | Script | Gate |
 | :--- | :--- | :--- |
 | Part A | `CAD/build_part_a_v21.py` (manifold3d) | watertight single shell; a rigid 17 mm ball must fit at the design centre AND be captured above its equator (fails on both v20 parts); the collar keeps >= 1.5 mm travel after it meets the crown for 19.2..19.95 mm apertures (fails on v21 before the relief: 0.40 mm) |
+| Relief | `CAD/make_relief.py --self-test` | handedness end to end: a feature on the source's right seats on the viewer's right (red with the mirrored mapping the first cut had) |
 | Emblem | `CAD/build_emblem.py` (manifold3d) | arm strain <= 2 % at the deflection that passes the hole; barb grip >= 0.3 mm; arm tips >= 0.3 mm clear of the shoulder as printed and clear of body and spine when deflected (each fails when its margin is broken) |
 | Part B | `CAD/build_part_b_blender_v21.py` (Blender, headless) | every boolean result manifold; each part one shell (gauge two), outward-facing; nothing written unless all pass |
-| Fit | `CAD/check_part_b_fit.py` | Upper / Lower / monitor overlap 0 for a 13.6 mm (measured) and 14.0 mm (spec) hump; lips over the monitor back (fails at v20's 0.3 mm play); gauge thin slots measured as the Lower's slot + 0 / 0.4 / 0.8 mm; styling: equal visible left / right / top borders, equal groove depth both sides, only the parting-line groove reaches the front edge, the front parting line sits in a groove (all four fail on the pre-2026-11-18 bezel; borders are measured on the screen opening's own run, since the rim round's flanks also lie behind the glass plane); emblem: no overlap seated, face flush, pushed back 0.15 mm it lands on the seat, pulled forward 0.25 mm the barbs catch |
+| Fit | `CAD/check_part_b_fit.py` | Upper / Lower / monitor overlap 0 for a 13.6 mm (measured) and 14.0 mm (spec) hump; lips over the monitor back (fails at v20's 0.3 mm play); gauge thin slots measured as the Lower's slot + 0 / 0.4 / 0.8 mm; styling: equal visible left / right / top borders, equal groove depth both sides, only the parting-line groove reaches the front edge, the front parting line sits in a groove (all four fail on the pre-2026-11-18 bezel; borders are measured on the screen opening's own run, since the rim round's flanks also lie behind the glass plane); emblem (seated by `chin_spec.EMBLEM_PLACE`, asserted a rotation, never a mirror): no overlap seated, face flush, pushed back 0.15 mm it lands on the seat, pulled forward 0.25 mm the barbs catch |
 | Project | `CAD/build_3mf_v21.py` | P1S 0.4 nozzle profile, every part inside its plate and clear of the exclusion corner; all 4 plates slice with exit 0 and no warnings |
 | Guide | `CAD/render_sections.py`, `CAD/build_pdf_v21.py` | figures cut from the shipped STLs; sizes and times read from the STLs and the slice report |
 
@@ -85,6 +86,19 @@ with the face, its shoulder lands on the seat, and two 0.8 mm cantilever arms fr
 0.35 mm behind the plate. **Fit:** push it in from the front until it clicks. **Remove:** reach into the control bay
 from behind and press the bridge forward; the catch faces lean 35 degrees, so the plate cams the arms in and the tile
 comes out the front. It prints face-up (the bridge on the bed), so a relief on the face prints as top surfaces.
+
+### Emblem art: the Cthulhu head
+The first emblem is the head of "Chtulhu Statue" by ChurchOfShrike (MakerWorld model 2439007; the file's own metadata
+says CC BY). The model and everything made from it stay in the gitignored `CAD/third_party/cthulhu/`; the repo holds
+only the tool and a numbers-only recipe. With the model downloaded there:
+```bash
+CAD/build_emblem_art.sh CAD/emblems/cthulhu.json
+```
+`CAD/make_relief.py` depth-casts the statue from the front, cuts the head and its tentacle beard out of the shoulders,
+hands and wings behind it, and compresses it into the tile's 1.2 mm recessed panel (8.0 x 15.6 mm, the nearest point
+flush with the face). `CAD/build_emblem.py --relief` makes the gated tile, and `CAD/build_3mf_v21.py --emblem` a
+one-plate project at 0.08 mm layers (0.36 h, 3 g), all written next to the model. Print it, then swap it for the blank
+tile from the front.
 
 ## Known limits
 - The Polbecky collar has no inner lip: its top aperture, about 19.6 mm (+/-0.4, scaled from photos against the 1-inch mat

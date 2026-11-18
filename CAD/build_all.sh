@@ -6,7 +6,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 PY=(uv run --quiet --no-project --python 3.14 --with manifold3d --with trimesh --with numpy --with scipy
-    --with rtree --with shapely --with networkx --with matplotlib --with pymupdf python -I)
+    --with rtree --with shapely --with networkx --with matplotlib --with pymupdf --with embreex --with pillow python -I)
 BLENDER=${BLENDER:-blender}
 
 echo "-> Part A (ball socket): CAD/build_part_a_v21.py"
@@ -17,6 +17,9 @@ log=$(mktemp)
 "$BLENDER" -b --factory-startup --python-exit-code 1 -P CAD/build_part_b_blender_v21.py >"$log" 2>&1 || { cat "$log"; exit 1; }
 grep '^GATE' "$log"
 grep -q '^GATE all Part B meshes' "$log" || { echo "x Part B gate did not pass"; exit 1; }
+
+echo "-> Emblem relief handedness: CAD/make_relief.py --self-test"
+"${PY[@]}" CAD/make_relief.py --self-test
 
 echo "-> Chin emblem (snap-in tile): CAD/build_emblem.py"
 "${PY[@]}" CAD/build_emblem.py
