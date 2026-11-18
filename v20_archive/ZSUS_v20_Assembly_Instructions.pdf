@@ -1,0 +1,133 @@
+%PDF-1.4
+1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj
+2 0 obj << /Type /Pages /Kids [ 5 0 R 7 0 R ] /Count 2 >> endobj
+3 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> endobj
+4 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >> endobj
+5 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 6 0 R >> endobj
+6 0 obj << /Length 6133 >> stream
+BT 0.11 0.11 0.12 rg /F2 17 Tf 46.0 745.0 Td (ZSUS 14" Portrait Mount & Apple "Snow White" Bezel) Tj ET
+BT 0.35 0.35 0.38 rg /F1 10 Tf 46.0 728.0 Td (v20 DFM-Tuned Screwless Assembly Guide  |  Bambu Lab P1S \(0.4 mm Nozzle, Generic PLA\)) Tj ET
+0.15 0.15 0.17 RG 1.50 w 46.0 718.0 m 566.0 718.0 l S
+BT 0.11 0.11 0.12 rg /F2 12 Tf 46.0 696.0 Td (1. Printed Parts & Supplies \(100% Tool-Free, Dual-Sided Locking\)) Tj ET
+0.94 0.94 0.96 rg 0.80 0.80 0.82 RG 0.60 w 46.0 674.0 520.0 18.0 re B
+BT 0.11 0.11 0.12 rg /F2 9 Tf 52.0 679.0 Td (Part) Tj ET
+BT 0.11 0.11 0.12 rg /F2 9 Tf 135.0 679.0 Td (Dimensions) Tj ET
+BT 0.11 0.11 0.12 rg /F2 9 Tf 260.0 679.0 Td (Print Notes \(P1S 0.4 mm PLA\)) Tj ET
+BT 0.11 0.11 0.12 rg /F2 9 Tf 390.0 679.0 Td (Role) Tj ET
+0.85 0.85 0.87 RG 0.50 w 46.0 657.0 520.0 17.0 re S
+BT 0.11 0.11 0.12 rg /F2 8.5 Tf 52.0 662.0 Td (Part_A_Test) Tj ET
+BT 0.11 0.11 0.12 rg /F1 8.5 Tf 135.0 662.0 Td (26.0 x 26.0 x 12.8 mm) Tj ET
+BT 0.11 0.11 0.12 rg /F1 8.5 Tf 260.0 662.0 Td (5 walls, 40% gyroid, brim) Tj ET
+BT 0.11 0.11 0.12 rg /F1 8.5 Tf 390.0 662.0 Td (Verify Polbecky M22x2.0 collar & 17 mm ball) Tj ET
+0.85 0.85 0.87 RG 0.50 w 46.0 640.0 520.0 17.0 re S
+BT 0.11 0.11 0.12 rg /F2 8.5 Tf 52.0 645.0 Td (Part_A_Mount) Tj ET
+BT 0.11 0.11 0.12 rg /F1 8.5 Tf 135.0 645.0 Td (85.0 x 100.0 x 20.3 mm) Tj ET
+BT 0.11 0.11 0.12 rg /F1 8.5 Tf 260.0 645.0 Td (5 walls, 40% gyroid) Tj ET
+BT 0.11 0.11 0.12 rg /F1 8.5 Tf 390.0 645.0 Td (Step-indexed VHB glue-on ball socket) Tj ET
+0.85 0.85 0.87 RG 0.50 w 46.0 623.0 520.0 17.0 re S
+BT 0.11 0.11 0.12 rg /F2 8.5 Tf 52.0 628.0 Td (Part_B_Upper) Tj ET
+BT 0.11 0.11 0.12 rg /F1 8.5 Tf 135.0 628.0 Td (245.8 x 154.20 x 18.0 mm) Tj ET
+BT 0.11 0.11 0.12 rg /F1 8.5 Tf 260.0 628.0 Td (3 walls, 15% gyroid, no sup) Tj ET
+BT 0.11 0.11 0.12 rg /F1 8.5 Tf 390.0 628.0 Td (Top bezel, USB-C bay, 1.8 mm snap arm) Tj ET
+0.85 0.85 0.87 RG 0.50 w 46.0 606.0 520.0 17.0 re S
+BT 0.11 0.11 0.12 rg /F2 8.5 Tf 52.0 611.0 Td (Part_B_Lower) Tj ET
+BT 0.11 0.11 0.12 rg /F1 8.5 Tf 135.0 611.0 Td (245.8 x 208.55 x 18.0 mm) Tj ET
+BT 0.11 0.11 0.12 rg /F1 8.5 Tf 260.0 611.0 Td (3 walls, 15% gyroid, no sup) Tj ET
+BT 0.11 0.11 0.12 rg /F1 8.5 Tf 390.0 611.0 Td (Bottom bezel, chin, badge & LED windows) Tj ET
+0.85 0.85 0.87 RG 0.50 w 46.0 589.0 520.0 17.0 re S
+BT 0.11 0.11 0.12 rg /F2 8.5 Tf 52.0 594.0 Td (Part_B_Badge) Tj ET
+BT 0.11 0.11 0.12 rg /F1 8.5 Tf 135.0 594.0 Td (15.4 x 15.4 x 3.8 mm) Tj ET
+BT 0.11 0.11 0.12 rg /F1 8.5 Tf 260.0 594.0 Td (3 walls, 100% infill) Tj ET
+BT 0.11 0.11 0.12 rg /F1 8.5 Tf 390.0 594.0 Td (Press-fit lower-left rainbow badge insert) Tj ET
+0.85 0.85 0.87 RG 0.50 w 46.0 572.0 520.0 17.0 re S
+BT 0.11 0.11 0.12 rg /F2 8.5 Tf 52.0 577.0 Td (Part_B_LED) Tj ET
+BT 0.11 0.11 0.12 rg /F1 8.5 Tf 135.0 577.0 Td (7.4 x 3.4 x 3.8 mm) Tj ET
+BT 0.11 0.11 0.12 rg /F1 8.5 Tf 260.0 577.0 Td (3 walls, 100% infill) Tj ET
+BT 0.11 0.11 0.12 rg /F1 8.5 Tf 390.0 577.0 Td (Press-fit lower-right green LED plug) Tj ET
+0.98 0.98 0.99 rg 0.85 0.85 0.87 RG 0.70 w 46.0 498.0 520.0 60.0 re B
+BT 0.11 0.11 0.12 rg /F2 9.5 Tf 56.0 544.0 Td (Required Supplies \(No Screws or Tools Needed!\):) Tj ET
+BT 0.11 0.11 0.12 rg /F1 8.8 Tf 56.0 530.0 Td (- 3M VHB 5952 foam tape \(1.1 mm thick, trimmed to 82 x 97 mm with R6.5 mm corners\)) Tj ET
+BT 0.11 0.11 0.12 rg /F1 8.8 Tf 56.0 517.0 Td (- 70%+ Isopropyl Alcohol \(IPA\) + lint-free cloth for rear panel cleaning) Tj ET
+BT 0.11 0.11 0.12 rg /F1 8.8 Tf 56.0 504.0 Td (- Polbecky PO-CA-001 arm \(17.0 mm ball + factory M22x2.0 winged locking collar\)) Tj ET
+BT 0.11 0.11 0.12 rg /F2 12 Tf 46.0 472.0 Td (2. Pre-Assembly Verification \(Before Gluing\)) Tj ET
+BT 0.11 0.11 0.12 rg /F2 9.5 Tf 46.0 454.0 Td (Step 1: Test-fit Part_A_Test on the Polbecky Arm) Tj ET
+BT 0.11 0.11 0.12 rg /F1 9 Tf 56.0 441.0 Td (Thread the factory Polbecky winged locking collar onto Part_A_Test \(M22x2.0\). Snap the 17.0 mm ball) Tj ET
+BT 0.11 0.11 0.12 rg /F1 9 Tf 56.0 429.0 Td (stud into the collet cup and tighten the collar to verify smooth threads and firm clamping.) Tj ET
+BT 0.11 0.11 0.12 rg /F2 9.5 Tf 46.0 412.0 Td (Step 2: Dry-Fit Both Waist Latches \(0.20 mm Sliding Clearance\)) Tj ET
+BT 0.11 0.11 0.12 rg /F1 9 Tf 56.0 399.0 Td (Deburr any elephant's foot along the Y = 177.35 mm seam, left 45-deg lap joint & 0.35 mm detent,) Tj ET
+BT 0.11 0.11 0.12 rg /F1 9 Tf 56.0 387.0 Td (and right 1.80 mm snap arm. Test-click Part_B_Upper into Part_B_Lower off the monitor once.) Tj ET
+BT 0.11 0.11 0.12 rg /F2 12 Tf 46.0 364.0 Td (3. Part A -- Mounting the Ball Socket to the Monitor Rear) Tj ET
+0.85 0.85 0.87 RG 0.80 w 46.0 224.0 520.0 130.0 re S
+0.20 0.20 0.22 rg 0.10 0.10 0.10 RG 1.00 w 65.0 239.0 170.0 100.0 re B
+0.28 0.28 0.31 rg 0.40 0.40 0.45 RG 0.80 w 178.0 239.0 57.0 100.0 re B
+BT 0.90 0.90 0.90 rg /F1 7.5 Tf 206.0 289.0 Td (Thick) Tj ET
+BT 0.80 0.80 0.80 rg /F1 7.5 Tf 206.0 279.0 Td (13.6mm) Tj ET
+0.85 0.85 0.88 rg 0.20 0.20 0.20 RG 1.00 w 112.0 254.0 65.0 70.0 re B
+0.68 0.68 0.72 rg 0.20 0.20 0.20 RG 0.80 w 165.0 289.0 m 165.0 295.1 160.1 300.0 154.0 300.0 c 147.9 300.0 143.0 295.1 143.0 289.0 c 143.0 282.9 147.9 278.0 154.0 278.0 c 160.1 278.0 165.0 282.9 165.0 289.0 c B
+0.40 0.40 0.42 rg 160.0 289.0 m 160.0 292.3 157.3 295.0 154.0 295.0 c 150.7 295.0 148.0 292.3 148.0 289.0 c 148.0 285.7 150.7 283.0 154.0 283.0 c 157.3 283.0 160.0 285.7 160.0 289.0 c f
+BT 0.85 0.85 0.85 rg /F1 7.5 Tf 122.0 244.0 Td (5.7mm Flat Zone) Tj ET
+BT 0.11 0.11 0.12 rg /F2 9.5 Tf 255.0 329.0 Td (Rear-View Alignment \(Portrait, Viewed from Back\):) Tj ET
+BT 0.11 0.11 0.12 rg /F1 8.8 Tf 255.0 312.0 Td (- Clean 5.7 mm rear panel & Part_A_Mount base with 70%+ IPA.) Tj ET
+BT 0.11 0.11 0.12 rg /F1 8.8 Tf 255.0 297.0 Td (- Apply 3M VHB 5952 inside the 0.40 mm alignment scribe ring.) Tj ET
+BT 0.11 0.11 0.12 rg /F1 8.8 Tf 255.0 282.0 Td (- Butt Part_A_Mount flush against the 3 mm step bevel \(X=76 mm\).) Tj ET
+BT 0.11 0.11 0.12 rg /F1 8.8 Tf 255.0 267.0 Td (- Center vertically \(Y=155 mm\); socket sits at CoG \(X=104 mm\).) Tj ET
+BT 0.11 0.11 0.12 rg /F2 8.8 Tf 255.0 252.0 Td (- Press firmly 30-60s and cure 24 HOURS unweighted before hanging.) Tj ET
+endstream endobj
+7 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 8 0 R >> endobj
+8 0 obj << /Length 4123 >> stream
+BT 0.11 0.11 0.12 rg /F2 14 Tf 46.0 745.0 Td (4. Part B -- Tool-Free Dual-Latch Assembly \("Snow White" Bezel\)) Tj ET
+0.80 0.80 0.82 RG 0.80 w 46.0 735.0 m 566.0 735.0 l S
+0.85 0.85 0.87 RG 0.80 w 46.0 515.0 520.0 205.0 re S
+0.91 0.90 0.87 rg 0.25 0.25 0.27 RG 1.00 w 68.0 530.0 125.0 24.0 re B
+0.91 0.90 0.87 rg 0.25 0.25 0.27 RG 1.00 w 68.0 554.0 16.0 52.0 re B
+0.91 0.90 0.87 rg 0.25 0.25 0.27 RG 1.00 w 177.0 554.0 16.0 52.0 re B
+0.85 0.28 0.22 rg 0.20 0.20 0.20 RG 0.60 w 82.0 536.0 9.0 9.0 re B
+0.18 0.72 0.30 rg 0.20 0.20 0.20 RG 0.50 w 168.0 539.0 6.0 2.5 re B
+0.91 0.90 0.87 rg 0.25 0.25 0.27 RG 1.00 w 68.0 683.0 125.0 20.0 re B
+0.91 0.90 0.87 rg 0.25 0.25 0.27 RG 1.00 w 68.0 631.0 16.0 52.0 re B
+0.91 0.90 0.87 rg 0.25 0.25 0.27 RG 1.00 w 177.0 631.0 16.0 52.0 re B
+0.80 0.79 0.76 rg 0.40 0.40 0.40 RG 0.70 w 88.0 683.0 20.0 12.0 re B
+0.00 0.40 0.80 RG 1.80 w 76.0 627.0 m 76.0 610.0 l S
+0.00 0.40 0.80 RG 1.80 w 185.0 627.0 m 185.0 610.0 l S
+BT 0.11 0.11 0.12 rg /F2 10 Tf 215.0 695.0 Td (Front-View Dual-Latch Assembly:) Tj ET
+BT 0.11 0.11 0.12 rg /F1 8.8 Tf 215.0 675.0 Td (1. Press Part_B_Badge \(lower-left\) & Part_B_LED \(lower-right\)) Tj ET
+BT 0.11 0.11 0.12 rg /F1 8.8 Tf 226.0 662.0 Td (into Part_B_Lower from the BACK until flanges sit flush.) Tj ET
+BT 0.11 0.11 0.12 rg /F1 8.8 Tf 215.0 641.0 Td (2. Seat the ZSUS monitor \(portrait, bezel left\) into Part_B_Lower.) Tj ET
+BT 0.11 0.11 0.12 rg /F1 8.8 Tf 215.0 620.0 Td (3. Slide Part_B_Upper straight DOWN \(-Y\) over the plugged-in) Tj ET
+BT 0.11 0.11 0.12 rg /F1 8.8 Tf 226.0 607.0 Td (90-deg USB-C adapter until all 3 catches click:) Tj ET
+BT 0.11 0.11 0.12 rg /F1 8.8 Tf 226.0 593.0 Td (- Left 45-deg lap joint + 0.35 mm micro-detent CLICK flush) Tj ET
+BT 0.11 0.11 0.12 rg /F1 8.8 Tf 226.0 580.0 Td (- Right 1.80 mm snap arm CLICKS into Part_B_Lower's catch) Tj ET
+BT 0.11 0.11 0.12 rg /F1 8.8 Tf 226.0 567.0 Td (- Top-right detent snap tab CLICKS over the monitor corner) Tj ET
+BT 0.11 0.11 0.12 rg /F1 8.8 Tf 215.0 543.0 Td (4. After 24h VHB cure, snap 17 mm Polbecky ball into Part_A_Mount.) Tj ET
+BT 0.11 0.11 0.12 rg /F2 9.5 Tf 46.0 487.0 Td (Step 3: Install Press-Fit Chin Accents \(From the Back\)) Tj ET
+BT 0.11 0.11 0.12 rg /F1 9 Tf 56.0 474.0 Td (Lay Part_B_Lower face-down. Press Part_B_Badge into the 14 x 14 mm lower-left window and Part_B_LED) Tj ET
+BT 0.11 0.11 0.12 rg /F1 9 Tf 56.0 462.0 Td (into the 6 x 2 mm lower-right window until the 0.8 mm rear stop flanges sit flush \(no glue needed\).) Tj ET
+BT 0.11 0.11 0.12 rg /F2 9.5 Tf 46.0 442.0 Td (Step 4: Seat the Monitor into Part_B_Lower) Tj ET
+BT 0.11 0.11 0.12 rg /F1 9 Tf 56.0 429.0 Td (Place the monitor into Part_B_Lower with the front glass resting against the internal Z = 3.0 mm step) Tj ET
+BT 0.11 0.11 0.12 rg /F1 9 Tf 56.0 417.0 Td (and the thin bottom-right edge tucked under the 2.0 mm rear retaining lip.) Tj ET
+BT 0.11 0.11 0.12 rg /F2 9.5 Tf 46.0 397.0 Td (Step 5: Slide Part_B_Upper Straight Down \(-Y\) Until Both Sides Lock) Tj ET
+BT 0.11 0.11 0.12 rg /F1 9 Tf 56.0 384.0 Td (Keep your orange 90-deg USB-C adapter plugged into the top-left USB-C port. Align Part_B_Upper above) Tj ET
+BT 0.11 0.11 0.12 rg /F1 9 Tf 56.0 372.0 Td (the monitor so the plug nose enters the relief channel, then press straight down until the left lap-joint) Tj ET
+BT 0.11 0.11 0.12 rg /F1 9 Tf 56.0 360.0 Td (detent clicks, the right waist snap latch clicks, and the top-right detent tab clicks.) Tj ET
+BT 0.11 0.11 0.12 rg /F2 9.5 Tf 46.0 340.0 Td (Step 6: Mount to the Polbecky Arm) Tj ET
+BT 0.11 0.11 0.12 rg /F1 9 Tf 56.0 327.0 Td (Once the 3M VHB 5952 tape has cured for 24 hours, slip the Polbecky winged collar over the arm shaft,) Tj ET
+BT 0.11 0.11 0.12 rg /F1 9 Tf 56.0 315.0 Td (snap the 17.0 mm ball into Part_A_Mount, and hand-tighten the collar.) Tj ET
+1.00 0.97 0.90 rg 0.90 0.63 0.00 RG 1.00 w 46.0 285.0 520.0 34.0 re B
+BT 0.11 0.11 0.12 rg /F2 9 Tf 56.0 304.0 Td (Tool-Free Disassembly Tip:) Tj ET
+BT 0.11 0.11 0.12 rg /F1 8.8 Tf 56.0 292.0 Td (Push the right rear finger tab inward ~1 mm, flex the top-right detent tab, and pull straight up \(+Y\).) Tj ET
+endstream endobj
+xref
+0 9
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000123 00000 n 
+0000000193 00000 n 
+0000000268 00000 n 
+0000000404 00000 n 
+0000006589 00000 n 
+0000006725 00000 n 
+trailer << /Size 9 /Root 1 0 R >>
+startxref
+10900
+%%EOF

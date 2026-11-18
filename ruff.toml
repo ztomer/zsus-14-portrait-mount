@@ -1,0 +1,6 @@
+# Generators are written to 120 columns; the lint set is the house set (gates_of_heck gates/ruff_house.py).
+line-length = 120
+target-version = "py311"   # Blender 5.x bundles Python 3.11
+
+[lint]
+extend-select = ["B", "BLE", "C4", "E", "F", "I", "PIE", "PLE", "PLW", "RUF", "SIM", "UP", "W"]
