@@ -12,7 +12,7 @@ Open work only. What shipped is in git history.
   Done when: `MON_THIN` in `CAD/build_part_b_blender_v21.py` matches the gauge result and `CAD/build_all.sh` is green.
 - **FIT.EMBLEM** Print the blank Part_B_Emblem and snap it into the Lower's chin window: it clicks in from the front,
   sits flush without rattling, and pops out when the bridge is pressed forward from behind. Then print the Cthulhu tile
-  (`CAD/third_party/cthulhu/Part_B_Emblem_cthulhu_relief_P1S_PLA.3mf`): the tentacles print separate, the supports
+  (plate 5 of `ZSUS_v21_Complete_P1S_PLA.3mf`): the tentacles print separate, the supports
   break cleanly off the onlay's back, and the onlay sits flat on the chin face.
   Done when: it does, or `CAD/build_emblem.py`'s barb (`BARB`, `CATCH_DEG`) or clearances are adjusted and rebuilt.
 - **FIT.THICK** Slide the thick-side gauge piece onto the 13.6 mm hump.

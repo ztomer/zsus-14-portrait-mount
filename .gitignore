@@ -4,3 +4,5 @@ __pycache__/
 .DS_Store
 # third-party models under personal-use licences: never committed (ROADMAP STYLE.EMBLEM)
 CAD/third_party/
+# intermediates (reliefs, previews) rebuilt by CAD/build_all.sh
+CAD/build/

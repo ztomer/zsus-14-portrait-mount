@@ -12,6 +12,9 @@ Everything below is the README's print table, applied mechanically:
   plate 2  Part A mount + accents     Part_A_Mount, Part_B_Emblem (blank snap-in tile), Part_B_LED
   plate 3  Part B lower bezel
   plate 4  Part B upper bezel
+  plate 5  Cthulhu emblem (optional)  Part_B_Emblem_Cthulhu: snap-in tile with the CC BY Cthulhu head as an onlay
+
+  python3 CAD/build_3mf_v21.py --emblem X.stl   one-plate project for an emblem tile, written next to X.stl
 """
 
 import json
@@ -52,6 +55,11 @@ PART_B = {
 }
 ACCENT = {"layer_height": "0.16", "wall_loops": "3", "sparse_infill_density": "100%"}
 
+# Chin emblems: fine layers for the relief. An onlay relief overhangs the tile's cap flat (it rests on the chin face),
+# so tree supports rise from the plate to carry it; the snap features are all 45 deg or steeper and take none.
+EMBLEM_FINE = {"layer_height": "0.08", "wall_loops": "3", "sparse_infill_density": "100%", "brim_type": "no_brim"}
+EMBLEM_ONLAY = dict(EMBLEM_FINE, enable_support="1", support_type="tree(auto)", support_on_build_plate_only="1")
+
 # name, plate (1-based), centre on that plate (x, y), per-object settings
 LAYOUT = [
     ("Part_A_Test", 1, (128.0, 90.0), dict(PART_A, brim_type="outer_only")),
@@ -61,12 +69,14 @@ LAYOUT = [
     ("Part_B_LED", 2, (200.0, 120.0), dict(ACCENT)),
     ("Part_B_Lower", 3, (128.0, 142.0), dict(PART_B, brim_type="no_brim")),
     ("Part_B_Upper", 4, (128.0, 135.0), dict(PART_B, brim_type="no_brim")),
+    ("Part_B_Emblem_Cthulhu", 5, (128.0, 128.0), dict(EMBLEM_ONLAY)),
 ]
 PLATE_NAMES = {
     1: "1 Fit tests (print first)",
     2: "2 Part A mount + accents",
     3: "3 Part B lower bezel",
     4: "4 Part B upper bezel",
+    5: "5 Cthulhu emblem (optional, 0.08 mm, supports)",
 }
 # filament_colour: a warm light grey close to Apple "Platinum" (Snow White was never bright white); it only
 # tints the preview, so load a matte warm-grey PLA to match.
@@ -117,7 +127,7 @@ def object_bbox(xml):
     return v.min(0), v.max(0)
 
 
-def main(layout=LAYOUT, plate_names=PLATE_NAMES, out_3mf=OUT_3MF, stl_dir=None, report=None, need_support=False):
+def main(layout=LAYOUT, plate_names=PLATE_NAMES, out_3mf=OUT_3MF, stl_dir=None, report=None):
     tmp = tempfile.mkdtemp(prefix="zsus3mf_")
     mach = flatten("machine", MACHINE, os.path.join(tmp, "machine.json"))
     flatten("process", PROCESS, os.path.join(tmp, "process.json"))
@@ -305,11 +315,13 @@ def main(layout=LAYOUT, plate_names=PLATE_NAMES, out_3mf=OUT_3MF, stl_dir=None, 
     gcodes = sorted(n for n in zs.namelist() if n.endswith(".gcode"))
     assert rc == 0 and len(gcodes) == len(plate_names), f"slice failed: rc={rc}, gcode files {gcodes}"
     assert not any(p["warnings"] for p in slice_report["plates"]), "slicer warnings, see above"
+    # a part that asks for supports (an onlay emblem's flat overhang) must get them, or it prints as a droop
+    for p in sorted({plate for _n, plate, _c, st in layout if st.get("enable_support") == "1"}):
+        gp = zs.read(f"Metadata/plate_{p}.gcode").decode(errors="ignore")
+        n_support = len(re.findall(r"^; FEATURE: Support", gp, re.MULTILINE))
+        assert n_support > 0, f"plate {p} asks for supports but its slice has none"
+        print(f"    plate {p} supports: {n_support} support features")
     g1 = zs.read(gcodes[0]).decode(errors="ignore")
-    n_support = len(re.findall(r"^; FEATURE: Support", g1, re.MULTILINE))
-    if need_support:  # an onlay emblem's overhang must be carried, or it prints as a droop
-        assert n_support > 0, "the part overhangs flat but the slice has no supports"
-        print(f"    supports: {n_support} support features under the overhang")
     for key in (
         "printer_settings_id",
         "nozzle_diameter",
@@ -331,36 +343,20 @@ def main(layout=LAYOUT, plate_names=PLATE_NAMES, out_3mf=OUT_3MF, stl_dir=None, 
     print("all", len(gcodes), "plates sliced; report in", os.path.relpath(report_path, ROOT))
 
 
-# A chin emblem on its own plate (CAD/build_emblem.py --relief output): fine layers for the relief. Written next to
-# the STL, so a third-party emblem's project stays in its gitignored folder with it. An onlay relief overhangs the
-# tile's cap flat (it rests on the chin face), so tree supports rise from the plate to carry it; the snap features
-# are all 45 deg or steeper and take none.
-EMBLEM_FINE = {
-    "layer_height": "0.08",
-    "wall_loops": "3",
-    "sparse_infill_density": "100%",
-    "brim_type": "no_brim",
-    "enable_support": "1",
-    "support_type": "tree(auto)",
-    "support_on_build_plate_only": "1",
-}
-
-
 if __name__ == "__main__":
     if sys.argv[1:2] == ["--emblem"]:
         stl = os.path.abspath(sys.argv[2])
         name = os.path.splitext(os.path.basename(stl))[0]
-        with open(stl, "rb") as fh:  # binary STL: overhangs the 18 mm cap -> an onlay, which needs supports
+        with open(stl, "rb") as fh:  # binary STL: wider than the 18 mm cap -> an onlay, which needs supports
             fh.seek(84)
             tri = np.frombuffer(fh.read(), dtype=[("n", "<f4", 3), ("v", "<f4", (3, 3)), ("a", "<u2")])["v"]
         span = tri.reshape(-1, 3).max(0) - tri.reshape(-1, 3).min(0)
         main(
-            layout=[(name, 1, (128.0, 128.0), dict(EMBLEM_FINE))],
+            layout=[(name, 1, (128.0, 128.0), dict(EMBLEM_ONLAY if max(span[:2]) > 18.05 else EMBLEM_FINE))],
             plate_names={1: f"1 {name} (0.08 mm)"},
             out_3mf=os.path.join(os.path.dirname(stl), name + "_P1S_PLA.3mf"),
             stl_dir=os.path.dirname(stl),
             report=os.path.join(os.path.dirname(stl), name + "_slice_report.json"),
-            need_support=bool(span[0] > 18.05 or span[1] > 18.05),
         )
     else:
         main()

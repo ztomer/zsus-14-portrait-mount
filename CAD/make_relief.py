@@ -18,7 +18,8 @@ Two modes (`mode` in the recipe):
                    `top_inside_tile` gates that its top stays 0.3 mm inside the tile. CAD/build_emblem.py gates
                    that it rests on flat chin face all round; the print needs supports under the overhang.
 
-Writes, next to the source model (third-party art stays in its gitignored folder, never in STLs/):
+Writes into the recipe's `out_dir` (default: next to the source model, so art under a personal-use licence stays in
+its gitignored CAD/third_party/ folder):
   <stem>_relief.stl   a closed solid in the tile frame (CAD/build_emblem.py), for --relief
   <stem>_relief.png   the height map as an image, for a quick look
 """
@@ -235,7 +236,9 @@ def main(argv):
     if fails:
         sys.exit(f"relief gate failed: {fails}")
     solid = onlay_solid(us, vs, ht) if onlay else heightfield(us, vs, RELIEF_D - ht, RELIEF_D + 0.5)
-    stem = os.path.join(os.path.dirname(src), os.path.splitext(os.path.basename(recipe_path))[0] + "_relief")
+    out_dir = os.path.join(ROOT, r["out_dir"]) if "out_dir" in r else os.path.dirname(src)
+    os.makedirs(out_dir, exist_ok=True)
+    stem = os.path.join(out_dir, os.path.splitext(os.path.basename(recipe_path))[0] + "_relief")
     mesh_out = solid.to_mesh()
     trimesh.Trimesh(np.asarray(mesh_out.vert_properties)[:, :3], np.asarray(mesh_out.tri_verts)).export(stem + ".stl")
     # the preview is drawn as the viewer sees the face: picture right = -u, so flip the u axis

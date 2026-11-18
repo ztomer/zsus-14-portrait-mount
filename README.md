@@ -1,12 +1,32 @@
 # ZSUS 14" Portrait Mount & Apple "Snow White" Open-Back Bezel (v21)
 
+A 3D-printed, tool-free bezel that turns the ZSUS 14" 2K portable monitor into a portrait display in the spirit of
+Apple's 1980s "Snow White" design language and the Apple IIc monitor, plus a glue-on ball socket that hangs it on an
+articulated arm. Every part is generated from source and gated (fits, strains, styling), then sliced to verify.
+
+<p align="center">
+<picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/three_quarter_dark.png"><img src="docs/images/three_quarter_light.png" alt="The bezel on the monitor, three-quarter view" width="360"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/front_dark.png"><img src="docs/images/front_light.png" alt="The bezel from the front" width="360"></picture>
+</p>
+
+<p align="center">
+<picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/chin_dark.png"><img src="docs/images/chin_light.png" alt="The chin: soft 4 mm rim, Snow White side lines, the snap-in Cthulhu emblem" width="360"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/emblem_dark.png"><img src="docs/images/emblem_light.png" alt="The snap-in emblem tile with the Cthulhu head breaking out of its frame" width="360"></picture>
+</p>
+
+<p align="center">
+<picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/socket_dark.png"><img src="docs/images/socket_light.png" alt="Part A: the glue-on ball socket with eight leaves and the M22 collar thread" width="300"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/tile_dark.png"><img src="docs/images/tile_light.png" alt="The Cthulhu emblem tile as printed, face up, with its two snap arms" width="240"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/back_dark.png"><img src="docs/images/back_light.png" alt="The open back: channels, rear lips and the latch" width="220"></picture>
+</p>
+
 Target printer: Bambu Lab P1S (256 x 256 x 256 mm), **0.4 mm nozzle**, Textured PEI plate.
 Material: Generic PLA / PLA+ / Matte PLA. Monitor: ZSUS 14" 2K (PM14A-2K), see `Monitor_Dimensions_and_Ports.md`.
 
 ## Files
 | File | What it is |
 | :--- | :--- |
-| `ZSUS_v21_Complete_P1S_PLA.3mf` | Bambu Studio project: 4 plates, per-object settings, slices with no warnings |
+| `ZSUS_v21_Complete_P1S_PLA.3mf` | Bambu Studio project: 5 plates, per-object settings, slices with no warnings |
 | `ZSUS_v21_Assembly_Instructions.pdf` | Print order, fit tests, assembly, disassembly, v20 to v21 changes |
 | `STLs/Part_A_Test.stl` | 26.0 x 26.0 x 18.4 mm socket coupon: the mount's exact socket and collar relief, for the collar + ball test |
 | `STLs/Part_A_Mount.stl` | 85.0 x 100.0 x 21.3 mm VHB glue-on ball socket |
@@ -14,19 +34,23 @@ Material: Generic PLA / PLA+ / Matte PLA. Monitor: ZSUS 14" 2K (PM14A-2K), see `
 | `STLs/Part_B_Lower.stl` | 245.8 x 211.9 x 18.6 mm lower bezel: chin, emblem window + slit light, side channels, lap tongue, snap catch |
 | `STLs/Part_B_Upper.stl` | 245.8 x 157.7 x 18.6 mm upper bezel: USB-C bay, snap arm, top-right detent tab |
 | `STLs/Part_B_Emblem.stl` | 18.0 x 18.0 x 11.1 mm snap-in chin emblem tile (blank face), removable from behind |
+| `STLs/Part_B_Emblem_Cthulhu.stl` | 18.0 x 22.4 x 12.3 mm emblem tile with the Cthulhu head as an onlay (CC BY, see below) |
 | `STLs/Part_B_LED.stl` | 4.0 x 9.4 x 3.8 mm press-fit plug for the vertical slit power light |
 | `CAD/` | Generators and checks (below); `CAD/renders/` holds the guide figures and the last slice report |
+| `CAD/assets/cthulhu/` | The Cthulhu statue mesh by ChurchOfShrike (CC BY) and its `ATTRIBUTION.md` |
+| `docs/images/` | The pictures above, rendered from `STLs/` by `CAD/render_views.py` |
 | `v20_archive/` | The v20 release as received, untouched |
 
 ## Plates (from the last slice, `CAD/renders/slice_report.json`)
 | Plate | Contents | Settings | Time | PLA |
 | :--- | :--- | :--- | :--- | :--- |
 | 1 Fit tests (print first) | Part_A_Test, Part_B_FitGauge | A: 0.16 mm, 5 walls, 40% gyroid, brim; gauge: 0.20 mm, 3 walls, 15% | 0.8 h | 17 g |
-| 2 Part A mount + accents | Part_A_Mount, Part_B_Emblem, Part_B_LED | 0.16 mm; mount 5 walls 40% gyroid; accents 3 walls 100% | 1.2 h | 30 g |
+| 2 Part A mount + accents | Part_A_Mount, Part_B_Emblem, Part_B_LED | 0.16 mm; mount 5 walls 40% gyroid; accents 3 walls 100% | 1.2 h | 33 g |
 | 3 Part B lower bezel | Part_B_Lower | 0.20 mm, 3 walls, 15% gyroid, no brim | 3.1 h | 100 g |
 | 4 Part B upper bezel | Part_B_Upper | 0.20 mm, 3 walls, 15% gyroid, no brim | 2.4 h | 75 g |
+| 5 Cthulhu emblem (optional) | Part_B_Emblem_Cthulhu | 0.08 mm, 3 walls, 100%, tree supports from the plate | 0.4 h | 4 g |
 
-Global: supports off, aux fan 10%, Generic PLA. Part B prints face-down (front on the plate). The project tints the
+Global: supports off (plate 5's tile turns them on for itself), aux fan 10%, Generic PLA. Part B prints face-down (front on the plate). The project tints the
 filament warm light grey (`#D3CFC6`, near Apple "Platinum"; Snow White products were never bright white): load a matte
 warm-grey PLA for the bezel to match.
 
@@ -51,8 +75,10 @@ Each step refuses to continue on failure:
 | Emblem | `CAD/build_emblem.py` (manifold3d) | arm strain <= 2 % at the deflection that passes the hole; barb grip >= 0.3 mm; arm tips >= 0.3 mm clear of the shoulder as printed and clear of body and spine when deflected (each fails when its margin is broken) |
 | Part B | `CAD/build_part_b_blender_v21.py` (Blender, headless) | every boolean result manifold; each part one shell (gauge two), outward-facing; nothing written unless all pass |
 | Fit | `CAD/check_part_b_fit.py` | Upper / Lower / monitor overlap 0 for a 13.6 mm (measured) and 14.0 mm (spec) hump; lips over the monitor back (fails at v20's 0.3 mm play); gauge thin slots measured as the Lower's slot + 0 / 0.4 / 0.8 mm; styling: equal visible left / right / top borders, equal groove depth both sides, only the parting-line groove reaches the front edge, the front parting line sits in a groove (all four fail on the pre-2026-11-18 bezel; borders are measured on the screen opening's own run, since the rim round's flanks also lie behind the glass plane); emblem (seated by `chin_spec.EMBLEM_PLACE`, asserted a rotation, never a mirror): no overlap seated, face flush, pushed back 0.15 mm it lands on the seat, pulled forward 0.25 mm the barbs catch |
-| Project | `CAD/build_3mf_v21.py` | P1S 0.4 nozzle profile, every part inside its plate and clear of the exclusion corner; all 4 plates slice with exit 0 and no warnings |
+| Emblem art | `CAD/make_relief.py`, `CAD/build_emblem.py --relief` | the Cthulhu head's top inside the tile, the onlay seated in the real Lower with no overlap and on flat chin face all round |
+| Project | `CAD/build_3mf_v21.py` | P1S 0.4 nozzle profile, every part inside its plate and clear of the exclusion corner; all 5 plates slice with exit 0 and no warnings; a plate whose part asks for supports has them in its G-code |
 | Guide | `CAD/render_sections.py`, `CAD/build_pdf_v21.py` | figures cut from the shipped STLs; sizes and times read from the STLs and the slice report |
+| Pictures | `CAD/render_views.py` (Blender), `CAD/pack_images.py` | the README pictures, light and dark, placed by the same rigid matrices as the fit checks |
 
 ## Fit allowances (v21)
 Sliding channels 0.5 mm per side in X and 0.5 mm glass-to-lip in Z (v20: 0.3 mm), 0.3 mm at the Y ends. The thick channel
@@ -88,23 +114,22 @@ from behind and press the bridge forward; the catch faces lean 35 degrees, so th
 comes out the front. It prints face-up (the bridge on the bed), so a relief on the face prints as top surfaces.
 
 ### Emblem art: the Cthulhu head
-The first emblem is the head of "Chtulhu Statue" by ChurchOfShrike (MakerWorld model 2439007; the file's own metadata
-says CC BY). The model and everything made from it stay in the gitignored `CAD/third_party/cthulhu/`; the repo holds
-only the tool and a numbers-only recipe. With the model downloaded there:
-```bash
-CAD/build_emblem_art.sh CAD/emblems/cthulhu.json
-```
-`CAD/make_relief.py` depth-casts the statue from the front and cuts the head and its tentacle beard out of the
-shoulders, hands and wings behind it. The recipe makes it an **onlay**: 13.8 x 27.0 mm, standing up to 1.2 mm proud of
-the face, so the dome and the beard break out of the 18 mm frame above and below and rest on the chin face (the head
-is twice as tall as it is wide, so its sides stay inside the frame on a 36 mm chin). The tile then stops on the chin
-face instead of its seat, and still pops out from behind. `CAD/build_emblem.py --relief` gates it seated in the real
-bezel: no overlap, a stop when pushed back, and flat chin face under the whole onlay plus 0.5 mm (red when the head is
-moved 6 mm up over the screen edge: 71.7 %). `CAD/build_3mf_v21.py --emblem` writes a one-plate project at 0.08 mm
-layers with tree supports from the plate under the overhang (0.44 h, 4 g; the slice must show supports). All of it is
-written next to the model. Print it, break the supports off the onlay's back (it sits against the chin, unseen), and
-swap it for the blank tile from the front. An `"mode": "inlay"` recipe keeps the art inside the tile's recessed panel
-instead, with no supports.
+The first emblem is the head of **"Chtulhu Statue" by ChurchOfShrike** (MakerWorld model 1705652,
+https://makerworld.com/en/models/1705652-chtulhu-statue), used under **Creative Commons Attribution (CC BY)**. The
+statue mesh is in `CAD/assets/cthulhu/` with its `ATTRIBUTION.md`; the changes are ours: `CAD/make_relief.py`
+(recipe `CAD/emblems/cthulhu.json`) depth-casts the statue from the front, cuts the head and its tentacle beard out of
+the shoulders, hands and wings behind it, and compresses it into a 1.2 mm relief on the tile.
+
+It is an **onlay**, 11.1 x 21.7 mm: its dome stays inside the tile's frame and its tentacle beard spills out of the
+frame onto the chin face, where it rests, ending on flat face above the bezel's rounded rim. The tile then stops on
+the chin face rather than its seat, and still pops out from behind. `CAD/build_emblem.py` gates it seated in the real
+Lower: no overlap, a stop when pushed back, and flat chin face under the whole onlay plus 0.5 mm (red at 71.7 % when
+the head is moved 6 mm up over the screen edge). It prints on plate 5 at 0.08 mm with tree supports under the
+overhang; break them off the onlay's back, which sits against the chin unseen, and swap the tile in from the front.
+
+Other emblems: put a model in `CAD/emblems/<name>.json` (`"mode": "onlay"` or `"inlay"`, the art inside the tile's
+recessed panel with no supports). Art under a personal-use licence goes in the gitignored `CAD/third_party/`, and
+`CAD/build_emblem_art.sh CAD/emblems/<name>.json` builds its relief, tile and one-plate project next to it, out of git.
 
 ## Known limits
 - The Polbecky collar has no inner lip: its top aperture, about 19.6 mm (+/-0.4, scaled from photos against the 1-inch mat

@@ -12,3 +12,25 @@ GOH_EXCLUDE='^v20_archive/'       # the v20 release as received: kept byte-ident
 # GOH_SWIFT_COV_MIN=95
 # GOH_MAX_SCRATCH_GB=25 etc. live OUTSIDE the gates since v0.8.0 — set them
 # in the environment for the scripts repo's bin/disk_hygiene.sh, not here.
+
+# Scanner floors (GOH.FLOORREQ): nine tenths of what the full scan read on 2026-11-18, so a scanner whose
+# selection breaks and reads less than the repo holds is red, not clean. Lower with the tree, same commit.
+GOH_EMOJI_MIN_FILES=31
+GOH_CONFLICT_MARKERS_MIN_FILES=71
+GOH_FILE_LENGTH_MIN_FILES=14
+GOH_SECRETS_MIN_FILES=36
+GOH_SHELL_LINT_MIN_FILES=2
+GOH_EARLY_EXIT_PIPE_MIN_FILES=7
+GOH_DEAD_AFTER_EXEC_MIN_FILES=7
+GOH_BARE_HOOK_INDEX_MIN_FILES=7
+GOH_MKTEMP_PORTABLE_MIN_FILES=7
+GOH_BARE_OPEN_MIN_FILES=18
+GOH_GIT_DEADLINE_MIN_FILES=18
+GOH_DEAD_PORT_MIN_FILES=1
+GOH_PLURAL_HEDGE_MIN_FILES=18
+GOH_BARE_PYTHON_MIN_FILES=5
+GOH_TAP_WRITES_MIN_FILES=20
+GOH_UNREAPED_SPAWN_MIN_FILES=1
+GOH_SUBPROCESS_STDIN_MIN_CALLS=1
+GOH_BUSY_LOOP_MIN_FILES=7
+GOH_INSTALLED_VERSION_MIN_FILES=5

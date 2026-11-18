@@ -44,6 +44,16 @@
     "Part_B_Upper"
    ],
    "warnings": []
+  },
+  {
+   "plate": 5,
+   "name": "5 Cthulhu emblem (optional, 0.08 mm, supports)",
+   "hours": 0.42,
+   "grams": 3.56,
+   "objects": [
+    "Part_B_Emblem_Cthulhu"
+   ],
+   "warnings": []
   }
  ],
  "printer_settings_id": "Bambu Lab P1S 0.4 nozzle",

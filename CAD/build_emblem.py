@@ -15,7 +15,9 @@ is written face-up (the bridge on the bed, w = TILE_DEPTH at z = 0) so a relief 
   python3 CAD/build_emblem.py --relief R.stl  emblem face: a panel inside a RIM-wide border is recessed RELIEF_D,
                                               and R (a relief already in the tile frame, high points at w = 0) is
                                               clipped to that panel and added back -> Part_B_Emblem_<R>.stl next
-                                              to R, never into STLs/ (third-party art stays out of the repo)
+                                              to R (art under a personal-use licence stays out of the repo); an
+                                              onlay relief (in front of the face, w < 0) is added as it is
+  ... --out STLs/Part_B_Emblem_X.stl          write there instead (art the repo may carry, e.g. CC BY)
 """
 
 import math
@@ -226,7 +228,9 @@ def main(argv):
     # face-up print orientation: w = TILE_DEPTH on the bed
     printed = t.transform(PRINTED)
     out = os.path.join(ROOT, "STLs", "Part_B_Emblem.stl")
-    if "--relief" in argv:
+    if "--out" in argv:
+        out = os.path.join(ROOT, argv[argv.index("--out") + 1])
+    elif "--relief" in argv:
         src = argv[argv.index("--relief") + 1]
         out = os.path.join(
             os.path.dirname(os.path.abspath(src)), f"Part_B_Emblem_{os.path.splitext(os.path.basename(src))[0]}.stl"

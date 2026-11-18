@@ -10,7 +10,7 @@ PY=(uv run --quiet --no-project --python 3.14 --with manifold3d --with trimesh -
 src=$("${PY[@]}" -c 'import json, sys; print(json.load(open(sys.argv[1]))["source"])' "$recipe")
 [[ -f $src ]] || { echo "x $src is missing: download the model there first (see README, Emblem art)"; exit 1; }
 name=$(basename "$recipe" .json)
-dir=$(dirname "$src")
+dir=$("${PY[@]}" -c 'import json, os, sys; r = json.load(open(sys.argv[1])); print(r.get("out_dir") or os.path.dirname(r["source"]))' "$recipe")
 "${PY[@]}" CAD/make_relief.py "$recipe"
 "${PY[@]}" CAD/build_emblem.py --relief "$dir/${name}_relief.stl"
 "${PY[@]}" CAD/build_3mf_v21.py --emblem "$dir/Part_B_Emblem_${name}_relief.stl"
