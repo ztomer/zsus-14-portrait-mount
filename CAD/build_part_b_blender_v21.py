@@ -28,6 +28,7 @@ import bmesh
 import bpy
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from chin_spec import CHIN_PLATE, EMBLEM_CX, EMBLEM_CY, EMBLEM_HOLE, EMBLEM_POCKET, EMBLEM_WIN, LED_BORE, LED_SLIT
 from partb_accessories import build_chin_inserts, build_fit_gauge
 from partb_mesh import (
     apply_bool,
@@ -66,18 +67,20 @@ SEAM_Y = 177.35
 # Outer frame, centred on the screen opening so the visible borders (face + bevel to the glass) are equal:
 # 22.3 mm left / right / top (v21 before 2026-11-18: 22.1 / 22.5 / 18.8), 36.0 mm chin.
 FX0, FX1, FY0, FY1 = -5.0, 240.8, -29.5, 328.7
-FRONT_CHAMFER = 1.5  # 45-deg front perimeter edge (Snow White: 2 mm front round; a chamfer prints clean face-down)
+# Front rim: a 4 mm round in the spirit of the Apple IIc monitor's soft rim. Face-down, the part of a round
+# flatter than 45 deg would droop off the plate, so below its 45-deg point it continues as a 45-deg chamfer
+# (a teardrop round): it reads as a round and prints clean. Snow White's rule is 2 mm front / 3 mm rear.
+FRONT_ROUND = 4.0
 BACK_ROUND = 3.0  # rear perimeter round (Snow White: 3 mm)
 # Snow White lines: 2 mm wide, 10 mm on centre, set back from the front and the back. Equal depth on both sides
 # (v21 before 2026-11-18: 1.0 left / 1.8 right). The left wall is 4.5 mm with the lap pocket at -2.5, so 1.5 is
 # the deepest that keeps 1.0 mm of wall there. Only the parting-line groove at SEAM_Y runs through.
 GROOVE_W, GROOVE_D, GROOVE_PITCH = 2.0, 1.5, 10.0
-GROOVE_Z = (4.0, H - BACK_ROUND)
+GROOVE_Z = (FRONT_ROUND + 1.0, H - BACK_ROUND)
 SEAM_FRONT_D = 0.6  # front-face groove that the Upper/Lower parting line sits in
 EXPECTED_SHELLS = {
     "Part_B_Upper": 1,
     "Part_B_Lower": 1,
-    "Part_B_Badge": 1,
     "Part_B_LED": 1,
     "Part_B_FitGauge": 4,
 }
@@ -90,8 +93,13 @@ scene.unit_settings.length_unit = "MILLIMETERS"
 
 
 # ---------------------------------------------------------------- master frame
-# Outer frame: 245.8 x 358.2 x H mm (FX/FY, plan R=3.0), 45-deg front chamfer, rounded back edge
-rings = [(0.0, FRONT_CHAMFER), (FRONT_CHAMFER, 0.0)]
+# Outer frame: 245.8 x 358.2 x H mm (FX/FY, plan R=3.0), teardrop-rounded front rim, rounded back edge
+t45 = FRONT_ROUND * (1 - math.sqrt(0.5))  # the round's 45-deg point: z = inset = 0.293 R
+rings = [(0.0, 2 * t45)]
+rings += [
+    (FRONT_ROUND * (1 - math.cos(math.radians(a))), FRONT_ROUND * (1 - math.sin(math.radians(a))))
+    for a in range(45, 91, 9)
+]
 rings += [
     (
         H - BACK_ROUND + BACK_ROUND * math.sin(math.radians(a)),
@@ -229,31 +237,39 @@ apply_bool(
     "Front_Seam_Groove",
 )
 
-# Chin windows: 14x14 badge (lower-left, inside the control bay: 3 mm plate) & 6x2 LED (lower-right)
+# Chin windows (CAD/chin_spec.py): the 18 mm snap-in emblem window (lower-left, in the 3 mm plate over the
+# open control bay) and the vertical slit power light (lower-right), both after the Apple IIc monitor.
+h, hh = EMBLEM_WIN / 2, EMBLEM_HOLE / 2
+seat = EMBLEM_POCKET + (h - hh)  # 45-deg seat from the pocket down to the hole
+assert CHIN_PLATE == LEDGE, "the emblem's barbs are sized for the chin plate the ledge makes"
 apply_bool(
     part_b,
-    bm_rounded_prism(18.0, 32.0, -21.5, -7.5, -0.2, H + 0.5, r=0.0),
+    bm_rounded_prism(EMBLEM_CX - h, EMBLEM_CX + h, EMBLEM_CY - h, EMBLEM_CY + h, -0.2, EMBLEM_POCKET, r=0.0),
     "DIFFERENCE",
-    "Badge_Window",
+    "Emblem_Pocket",
 )
 apply_bool(
     part_b,
-    bm_frustum_rect(17.7, 32.3, -21.8, -7.2, -0.1, 18.0, 32.0, -21.5, -7.5, 0.30),
+    bm_frustum_rect(EMBLEM_CX - h, EMBLEM_CX + h, EMBLEM_CY - h, EMBLEM_CY + h, EMBLEM_POCKET - 0.01,
+                    EMBLEM_CX - hh, EMBLEM_CX + hh, EMBLEM_CY - hh, EMBLEM_CY + hh, seat + 0.01),
     "DIFFERENCE",
-    "Badge_Chamfer",
+    "Emblem_Seat",
+)  # fmt: skip
+apply_bool(
+    part_b,
+    bm_rounded_prism(EMBLEM_CX - hh, EMBLEM_CX + hh, EMBLEM_CY - hh, EMBLEM_CY + hh, seat - 0.2, H + 0.5, r=0.0),
+    "DIFFERENCE",
+    "Emblem_Hole",
 )
 apply_bool(
     part_b,
-    bm_rounded_prism(204.0, 210.0, -15.5, -13.5, -0.2, H + 0.5, r=0.0),
+    bm_frustum_rect(EMBLEM_CX - h - 0.3, EMBLEM_CX + h + 0.3, EMBLEM_CY - h - 0.3, EMBLEM_CY + h + 0.3, -0.1,
+                    EMBLEM_CX - h, EMBLEM_CX + h, EMBLEM_CY - h, EMBLEM_CY + h, 0.30),
     "DIFFERENCE",
-    "LED_Window",
-)
-apply_bool(
-    part_b,
-    bm_rounded_prism(202.0, 212.0, -17.5, -11.5, LEDGE, H + 0.5, r=0.0),
-    "DIFFERENCE",
-    "LED_Rear_Counterbore",
-)
+    "Emblem_Chamfer",
+)  # fmt: skip
+apply_bool(part_b, bm_rounded_prism(*LED_SLIT, -0.2, H + 0.5, r=0.0), "DIFFERENCE", "LED_Slit")
+apply_bool(part_b, bm_rounded_prism(*LED_BORE, LEDGE, H + 0.5, r=0.0), "DIFFERENCE", "LED_Rear_Counterbore")
 
 # ---------------------------------------------------------------- split at the seam (half-space booleans)
 part_b_upper = duplicate(part_b, "Part_B_Upper")

@@ -181,9 +181,40 @@ def latch():
     plt.close(fig)
 
 
+def emblem():
+    """Snap-in emblem seated in the chin window: section through the arms at the window centre."""
+    import sys
+
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from chin_spec import EMBLEM_CX, EMBLEM_CY, TILE_DEPTH
+
+    lo, em = stl("Part_B_Lower"), stl("Part_B_Emblem")
+    xf = np.array([[-1, 0, 0, -EMBLEM_CX], [0, -1, 0, EMBLEM_CY], [0, 0, -1, TILE_DEPTH], [0, 0, 0, 1]], float)
+    em.apply_transform(xf)  # printed face-up -> seated (as CAD/check_part_b_fit.py places it)
+    fig, ax = plt.subplots(figsize=(4.6, 3.4), dpi=150)
+    for m, col, lab in ((lo, LO, "Part_B_Lower (chin plate)"), (em, UP, "Part_B_Emblem")):
+        draw_section(ax, m, [0, EMBLEM_CY, 0], [0, 1, 0], 0, 2, color=col, label=lab, xf=lambda a: -a)
+    ax.set_xlim(EMBLEM_CX - 13, EMBLEM_CX + 13)
+    ax.set_ylim(13, -2)  # the face at the top
+    ax.set_aspect("equal")
+    ax.grid(True, lw=0.3)
+    ax.annotate("face, flush", xy=(EMBLEM_CX, 0), xytext=(EMBLEM_CX - 4, -1.2), fontsize=7)
+    ax.annotate("barb catches\nbehind the plate", xy=(EMBLEM_CX + 8.4, 3.3), xytext=(EMBLEM_CX + 9.5, 7.5),
+                fontsize=7, arrowprops={"arrowstyle": "->", "lw": 0.7})  # fmt: skip
+    ax.annotate("press the bridge\nforward to remove", xy=(EMBLEM_CX - 3, TILE_DEPTH), xytext=(EMBLEM_CX - 12.5, 12.4),
+                fontsize=7, arrowprops={"arrowstyle": "->", "lw": 0.7})  # fmt: skip
+    ax.set_title(f"chin emblem, section at Y = {EMBLEM_CY} (seated)", fontsize=8)
+    ax.set_xlabel("X, front view (mm)")
+    ax.set_ylabel("Z from the face (mm)")
+    ax.legend(loc="lower right", fontsize=6)
+    fig.savefig(os.path.join(OUT, "emblem_v21.png"), bbox_inches="tight")
+    plt.close(fig)
+
+
 if __name__ == "__main__":
     os.makedirs(OUT, exist_ok=True)
     socket()
     channels()
     latch()
+    emblem()
     print("wrote", sorted(os.listdir(OUT)))

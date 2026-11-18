@@ -70,45 +70,18 @@ def build_fit_gauge(part_b_lower, H, LEDGE, Z_THIN_LIP, XW1, LIP_T):
 
 
 def build_chin_inserts():
-    """Part_B_Badge (14 mm window) and Part_B_LED (6 x 2 mm window): 0.8 mm flange, stem, two crush ribs."""
-    part_b_badge = make_obj_from_bm("Part_B_Badge", bm_rounded_prism(0.0, 15.4, 0.0, 15.4, 0.0, 0.8, r=0.4, segs=4))
-    apply_bool(
-        part_b_badge,
-        bm_rounded_prism(0.82, 14.58, 0.82, 14.58, 0.75, 3.8, r=0.2, segs=4),
-        "UNION",
-        "Badge_Stem",
-    )
-    apply_bool(
-        part_b_badge,
-        bm_rounded_prism(0.62, 0.90, 4.0, 11.4, 0.8, 3.8, r=0.0),
-        "UNION",
-        "Badge_Rib_L",
-    )
-    apply_bool(
-        part_b_badge,
-        bm_rounded_prism(14.50, 14.78, 4.0, 11.4, 0.8, 3.8, r=0.0),
-        "UNION",
-        "Badge_Rib_R",
-    )
+    """Part_B_LED: the vertical slit power-light plug (Apple IIc monitor) for chin_spec.LED_SLIT, pressed in
+    from the back. A 0.8 mm flange seats in the counterbore, the stem fills the 3 mm plate flush with the face,
+    and two crush ribs hold it. (The emblem tile is CAD/build_emblem.py's, snap-in and removable.)"""
+    from chin_spec import LED_SLIT
 
-    part_b_led = make_obj_from_bm("Part_B_LED", bm_rounded_prism(0.0, 7.4, 0.0, 3.4, 0.0, 0.8, r=0.3, segs=4))
-    apply_bool(
-        part_b_led,
-        bm_rounded_prism(0.82, 6.58, 0.82, 2.58, 0.75, 3.8, r=0.1, segs=4),
-        "UNION",
-        "LED_Stem",
-    )
-    apply_bool(
-        part_b_led,
-        bm_rounded_prism(0.62, 0.90, 1.2, 2.2, 0.8, 3.8, r=0.0),
-        "UNION",
-        "LED_Rib_L",
-    )
-    apply_bool(
-        part_b_led,
-        bm_rounded_prism(6.50, 6.78, 1.2, 2.2, 0.8, 3.8, r=0.0),
-        "UNION",
-        "LED_Rib_R",
-    )
-
-    return part_b_badge, part_b_led
+    sw, sh = LED_SLIT[1] - LED_SLIT[0] - 0.2, LED_SLIT[3] - LED_SLIT[2] - 0.2  # 0.1 mm per side
+    fw, fh = sw + 2.6, sh + 2.6
+    part_b_led = make_obj_from_bm("Part_B_LED", bm_rounded_prism(0.0, fw, 0.0, fh, 0.0, 0.8, r=0.3, segs=4))
+    x0, y0 = (fw - sw) / 2, (fh - sh) / 2
+    apply_bool(part_b_led, bm_rounded_prism(x0, x0 + sw, y0, y0 + sh, 0.75, 3.8, r=0.1, segs=4), "UNION", "LED_Stem")
+    for side, xr in (("L", (x0 - 0.12, x0 + 0.05)), ("R", (x0 + sw - 0.05, x0 + sw + 0.12))):
+        apply_bool(
+            part_b_led, bm_rounded_prism(*xr, y0 + 1.5, y0 + sh - 1.5, 0.8, 3.8, r=0.0), "UNION", f"LED_Rib_{side}"
+        )
+    return part_b_led

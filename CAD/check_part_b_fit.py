@@ -114,21 +114,35 @@ def first_z(tm, pts):
     return out
 
 
-ys_mid = (by0 + by1) / 2
+def open_run(vals, hit, centre):
+    """The contiguous run around `centre` where the first hit is behind the glass plane (the screen opening).
+    Only that run: the rim round's flanks also first-hit behind z = LEDGE, and must not count as open."""
+    is_open = hit > LEDGE
+    i = int(np.argmin(np.abs(vals - centre)))
+    assert is_open[i], f"no screen opening at {centre}"
+    j0 = i
+    while j0 > 0 and is_open[j0 - 1]:
+        j0 -= 1
+    j1 = i
+    while j1 + 1 < len(vals) and is_open[j1 + 1]:
+        j1 += 1
+    return vals[j0 : j1 + 1]
+
+
 xs = np.arange(bx0 + 0.05, bx1, 0.05)
-open_x = xs[first_z(both, [(x, 150.0) for x in xs]) > LEDGE]  # behind the glass plane = hidden by the monitor
+open_x = open_run(xs, first_z(both, [(x, 150.0) for x in xs]), -118.0)
 ys = np.arange(150.0, by1, 0.05)
-open_y = ys[first_z(both, [(-118.0, y) for y in ys]) > LEDGE]
+open_y = open_run(ys, first_z(both, [(-118.0, y) for y in ys]), 160.0)
 borders = {
     "front-view left": bx1 - open_x.max(),
     "front-view right": open_x.min() - bx0,
     "top": by1 - open_y.max(),
 }
-ok = max(borders.values()) - min(borders.values()) <= 0.25
+ok = max(borders.values()) - min(borders.values()) <= 0.25 and min(borders.values()) >= 15.0
 print(
     f"{'OK  ' if ok else 'FAIL'} borders "
     + ", ".join(f"{k} {v:.2f}" for k, v in borders.items())
-    + " mm (equal within 0.25)"
+    + " mm (equal within 0.25, each >= 15)"
 )
 if not ok:
     fails.append("borders")
@@ -164,7 +178,7 @@ print(
 )
 if not ok:
     fails.append("groove depth")
-front = {s: side_grooves(2.5, o, d) for s, o, d in (("left", bx1, -1.0), ("right", bx0, 1.0))}
+front = {s: side_grooves(4.5, o, d) for s, o, d in (("left", bx1, -1.0), ("right", bx0, 1.0))}
 ok = all(len(v) <= 1 for v in front.values())
 print(
     f"{'OK  ' if ok else 'FAIL'} grooves reaching the front edge: left {len(front['left'])}, "
@@ -184,6 +198,56 @@ for side, x in (("front-view left", bx1 - 8.0), ("front-view right", bx0 + 8.0))
     )
     if not ok:
         fails.append(f"front seam {side}")
+
+# snap-in emblem (CAD/build_emblem.py, window from CAD/chin_spec.py): seated it touches nothing, its face is
+# flush, pushed back 0.15 mm it lands on the seat, pushed forward 0.25 mm its barbs catch the plate.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from chin_spec import EMBLEM_CX, EMBLEM_CY, LED_SLIT, TILE_DEPTH  # noqa: E402
+
+# printed (p, q, r) = (u, -v, D - w)  ->  Lower print frame (x, y, z) = (-(CX + u), CY + v, w)
+em = load("Part_B_Emblem").transform(
+    np.array([[-1, 0, 0, -EMBLEM_CX], [0, -1, 0, EMBLEM_CY], [0, 0, -1, TILE_DEPTH]], float)
+)
+assert em.volume() > 0, "emblem transform turned it inside-out"
+eb = em.bounding_box()
+report("Emblem vs Lower (seated)", (em ^ lo).volume())
+report("Emblem vs monitor (14.0 mm hump)", (em ^ monitor(14.0)).volume())
+for dz, what in ((0.15, "pushed back 0.15 mm lands on the seat"), (-0.25, "pulled forward 0.25 mm: barbs catch")):
+    hit = (em.translate((0, 0, dz)) ^ lo).volume()
+    ok = hit > 0.05
+    print(f"{'OK  ' if ok else 'FAIL'} emblem {what} (overlap {hit:.3f} mm3)")
+    if not ok:
+        fails.append(f"emblem {what}")
+ok = abs(eb[2]) <= 0.1
+print(f"{'OK  ' if ok else 'FAIL'} emblem face flush with the chin: front at z = {eb[2]:+.2f} mm")
+if not ok:
+    fails.append("emblem face flush")
+# placement, measured on the bezel: the emblem window and the slit light sit on the visible chin's centre line,
+# and the window's visible edge (pocket + front chamfer) lines up with the screen opening's left edge
+ys_lo = np.arange(by0 + 0.05, 150.0, 0.05)
+FRONT_RIM = 5.0  # clear of the rim round, whose flanks also lie below the face
+chin_top = open_run(ys_lo, first_z(both, [(-118.0, y) for y in ys_lo]), 140.0).min()
+chin_cy = (by0 + chin_top) / 2
+xs_e = np.arange(-(EMBLEM_CX + 12), -(EMBLEM_CX - 12), 0.02)
+win = xs_e[first_z(lo_tm, [(x, chin_cy) for x in xs_e]) > 0.05]  # face lower than flush: chamfer + pocket
+win_left = -win.max() if len(win) else np.inf  # front-view X of the window's visible left edge (none: FAIL)
+win_x = (win.min() + win.max()) / 2 if len(win) else -EMBLEM_CX
+win_y = ys_lo[(first_z(lo_tm, [(win_x, y) for y in ys_lo]) > 0.05) & (ys_lo > by0 + FRONT_RIM) & (ys_lo < 0)]
+slit_y = ys_lo[
+    (first_z(lo_tm, [(-(LED_SLIT[0] + LED_SLIT[1]) / 2, y) for y in ys_lo]) > 0.05)
+    & (ys_lo > by0 + FRONT_RIM)
+    & (ys_lo < 0)
+]
+checks = (
+    ("emblem window on the chin centre line", (win_y.min() + win_y.max()) / 2 - chin_cy if len(win_y) else np.inf),
+    ("slit light on the chin centre line", (slit_y.min() + slit_y.max()) / 2 - chin_cy if len(slit_y) else np.inf),
+    ("emblem edge on the opening edge", win_left - -open_x.max()),  # front-view X = -x
+)
+for what, err in checks:
+    ok = abs(err) <= 0.1
+    print(f"{'OK  ' if ok else 'FAIL'} {what}: off by {err:+.2f} mm (chin {by0:.1f}..{chin_top:.1f})")
+    if not ok:
+        fails.append(what)
 if fails:
     sys.exit(f"fit check failed: {fails}")
 print("fit check passed")

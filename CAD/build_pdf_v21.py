@@ -47,12 +47,12 @@ ROWS = [
         "Thick-side channel + 3 stepped thin-side channels",
     ),
     (2, "Part_A_Mount", "0.16 mm, 5 walls, 40% gyroid", "VHB glue-on ball socket"),
-    (2, "Part_B_Badge", "0.16 mm, 3 walls, 100%", "Lower-left chin badge (press-fit)"),
+    (2, "Part_B_Emblem", "0.16 mm, 3 walls, 100%", "Lower-left snap-in chin emblem (removable)"),
     (
         2,
         "Part_B_LED",
         "0.16 mm, 3 walls, 100%",
-        "Lower-right chin LED plug (press-fit)",
+        "Lower-right slit power-light plug (press-fit)",
     ),
     (
         3,
@@ -115,10 +115,11 @@ VHB inside the 0.40 mm scribe ring. Butt the mount against the 3 mm step bevel (
 <b>Cure 24 hours unloaded before hanging.</b></p>
 
 <h2>4. Part B: tool-free bezel</h2>
-<p><b>Step 3, chin accents.</b> Lay Part_B_Lower face-down. Press Part_B_Badge into the 14 x 14 mm lower-left window
-and Part_B_LED into the 6 x 2 mm lower-right window from the back until the 0.8 mm flanges sit flat. Both now seat in
-a
-3 mm plate and finish flush with the chin face.</p>
+<p><b>Step 3, chin accents.</b> Lay Part_B_Lower face-down. Press Part_B_LED into the slit window lower-right from
+the back until its 0.8 mm flange sits flat; it finishes flush with the chin face. Push Part_B_Emblem into the 18 mm
+window lower-left from the front, face out, until both barbs click behind the plate. To change the emblem later,
+reach into the control bay from behind and press the tile's back bridge forward: it pops out the front.</p>
+<img src="emblem_v21.png" width="300"/>
 <p><b>Step 4, monitor into the Lower.</b> Hold the monitor in portrait (bezel on the left, glass toward the bezel
 face) and
 slide it down (-Y) into the open top of Part_B_Lower: the thick hump runs in the left channel and the thin panel in
@@ -154,7 +155,8 @@ steps the thin-side slot (6.2 / 6.6 / 7.0 mm) because a photo suggests the thin 
 10 mm
 centres, 1.5 mm deep on both sides (were 6 mm, 1.0 / 1.8 mm deep), set back from the front edge and added to the top
 and
-bottom; the parting line now sits in a groove across the front; 1.5 mm front chamfer and 3 mm rear round. Print the
+bottom; the parting line now sits in a groove across the front; a 4 mm front round (Apple IIc monitor) and a 3 mm
+rear round. The chin takes the IIc's vertical slit light and a snap-in 18 mm emblem you can swap. Print the
 bezel
 in a matte warm light-grey PLA (Apple's Platinum), not bright white.</li>
 <li><b>Bezel geometry repaired.</b> v20's Blender booleans failed silently: the thick-side lip and the lap tongue

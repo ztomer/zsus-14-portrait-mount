@@ -9,7 +9,7 @@ no plate and off the bed, plate names swapped, no per-object layer heights, aux 
 Everything below is the README's print table, applied mechanically:
 
   plate 1  Fit tests (print first)   Part_A_Test (collar + ball), Part_B_FitGauge (monitor side channels)
-  plate 2  Part A mount + accents     Part_A_Mount, Part_B_Badge, Part_B_LED
+  plate 2  Part A mount + accents     Part_A_Mount, Part_B_Emblem (blank snap-in tile), Part_B_LED
   plate 3  Part B lower bezel
   plate 4  Part B upper bezel
 """
@@ -56,7 +56,7 @@ LAYOUT = [
     ("Part_A_Test", 1, (128.0, 90.0), dict(PART_A, brim_type="outer_only")),
     ("Part_B_FitGauge", 1, (128.0, 190.0), dict(PART_B, brim_type="no_brim")),
     ("Part_A_Mount", 2, (110.0, 140.0), dict(PART_A)),
-    ("Part_B_Badge", 2, (200.0, 160.0), dict(ACCENT)),
+    ("Part_B_Emblem", 2, (200.0, 160.0), dict(ACCENT)),
     ("Part_B_LED", 2, (200.0, 120.0), dict(ACCENT)),
     ("Part_B_Lower", 3, (128.0, 142.0), dict(PART_B, brim_type="no_brim")),
     ("Part_B_Upper", 4, (128.0, 135.0), dict(PART_B, brim_type="no_brim")),

@@ -18,6 +18,9 @@ log=$(mktemp)
 grep '^GATE' "$log"
 grep -q '^GATE all Part B meshes' "$log" || { echo "x Part B gate did not pass"; exit 1; }
 
+echo "-> Chin emblem (snap-in tile): CAD/build_emblem.py"
+"${PY[@]}" CAD/build_emblem.py
+
 echo "-> Part B assembly fit: CAD/check_part_b_fit.py"
 "${PY[@]}" CAD/check_part_b_fit.py
 

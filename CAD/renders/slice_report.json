@@ -6,7 +6,7 @@
    "plate": 1,
    "name": "1 Fit tests (print first)",
    "hours": 0.75,
-   "grams": 16.94,
+   "grams": 16.85,
    "objects": [
     "Part_A_Test",
     "Part_B_FitGauge"
@@ -16,11 +16,11 @@
   {
    "plate": 2,
    "name": "2 Part A mount + accents",
-   "hours": 1.15,
-   "grams": 30.41,
+   "hours": 1.22,
+   "grams": 32.77,
    "objects": [
     "Part_A_Mount",
-    "Part_B_Badge",
+    "Part_B_Emblem",
     "Part_B_LED"
    ],
    "warnings": []
@@ -28,8 +28,8 @@
   {
    "plate": 3,
    "name": "3 Part B lower bezel",
-   "hours": 3.11,
-   "grams": 100.69,
+   "hours": 3.08,
+   "grams": 99.78,
    "objects": [
     "Part_B_Lower"
    ],
@@ -38,8 +38,8 @@
   {
    "plate": 4,
    "name": "4 Part B upper bezel",
-   "hours": 2.39,
-   "grams": 75.12,
+   "hours": 2.37,
+   "grams": 74.45,
    "objects": [
     "Part_B_Upper"
    ],

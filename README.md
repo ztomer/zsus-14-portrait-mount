@@ -11,9 +11,10 @@ Material: Generic PLA / PLA+ / Matte PLA. Monitor: ZSUS 14" 2K (PM14A-2K), see `
 | `STLs/Part_A_Test.stl` | 26.0 x 26.0 x 18.4 mm socket coupon: the mount's exact socket and collar relief, for the collar + ball test |
 | `STLs/Part_A_Mount.stl` | 85.0 x 100.0 x 21.3 mm VHB glue-on ball socket |
 | `STLs/Part_B_FitGauge.stl` | 55.8 x 55.0 x 18.6 mm: 15 mm of the thick-side channel plus three thin-side channels with 6.2 / 6.6 / 7.0 mm slots (1 / 2 / 3 notches) |
-| `STLs/Part_B_Lower.stl` | 245.8 x 211.9 x 18.6 mm lower bezel: chin, badge + LED windows, side channels, lap tongue, snap catch |
+| `STLs/Part_B_Lower.stl` | 245.8 x 211.9 x 18.6 mm lower bezel: chin, emblem window + slit light, side channels, lap tongue, snap catch |
 | `STLs/Part_B_Upper.stl` | 245.8 x 157.7 x 18.6 mm upper bezel: USB-C bay, snap arm, top-right detent tab |
-| `STLs/Part_B_Badge.stl`, `STLs/Part_B_LED.stl` | 15.4 x 15.4 x 3.8 / 7.4 x 3.4 x 3.8 mm press-fit chin accents |
+| `STLs/Part_B_Emblem.stl` | 18.0 x 18.0 x 11.1 mm snap-in chin emblem tile (blank face), removable from behind |
+| `STLs/Part_B_LED.stl` | 4.0 x 9.4 x 3.8 mm press-fit plug for the vertical slit power light |
 | `CAD/` | Generators and checks (below); `CAD/renders/` holds the guide figures and the last slice report |
 | `v20_archive/` | The v20 release as received, untouched |
 
@@ -21,8 +22,8 @@ Material: Generic PLA / PLA+ / Matte PLA. Monitor: ZSUS 14" 2K (PM14A-2K), see `
 | Plate | Contents | Settings | Time | PLA |
 | :--- | :--- | :--- | :--- | :--- |
 | 1 Fit tests (print first) | Part_A_Test, Part_B_FitGauge | A: 0.16 mm, 5 walls, 40% gyroid, brim; gauge: 0.20 mm, 3 walls, 15% | 0.8 h | 17 g |
-| 2 Part A mount + accents | Part_A_Mount, Part_B_Badge, Part_B_LED | 0.16 mm; mount 5 walls 40% gyroid; accents 3 walls 100% | 1.2 h | 30 g |
-| 3 Part B lower bezel | Part_B_Lower | 0.20 mm, 3 walls, 15% gyroid, no brim | 3.1 h | 101 g |
+| 2 Part A mount + accents | Part_A_Mount, Part_B_Emblem, Part_B_LED | 0.16 mm; mount 5 walls 40% gyroid; accents 3 walls 100% | 1.2 h | 30 g |
+| 3 Part B lower bezel | Part_B_Lower | 0.20 mm, 3 walls, 15% gyroid, no brim | 3.1 h | 100 g |
 | 4 Part B upper bezel | Part_B_Upper | 0.20 mm, 3 walls, 15% gyroid, no brim | 2.4 h | 75 g |
 
 Global: supports off, aux fan 10%, Generic PLA. Part B prints face-down (front on the plate). The project tints the
@@ -46,8 +47,9 @@ Each step refuses to continue on failure:
 | Step | Script | Gate |
 | :--- | :--- | :--- |
 | Part A | `CAD/build_part_a_v21.py` (manifold3d) | watertight single shell; a rigid 17 mm ball must fit at the design centre AND be captured above its equator (fails on both v20 parts); the collar keeps >= 1.5 mm travel after it meets the crown for 19.2..19.95 mm apertures (fails on v21 before the relief: 0.40 mm) |
+| Emblem | `CAD/build_emblem.py` (manifold3d) | arm strain <= 2 % at the deflection that passes the hole; barb grip >= 0.3 mm; arm tips >= 0.3 mm clear of the shoulder as printed and clear of body and spine when deflected (each fails when its margin is broken) |
 | Part B | `CAD/build_part_b_blender_v21.py` (Blender, headless) | every boolean result manifold; each part one shell (gauge two), outward-facing; nothing written unless all pass |
-| Fit | `CAD/check_part_b_fit.py` | Upper / Lower / monitor overlap 0 for a 13.6 mm (measured) and 14.0 mm (spec) hump; lips over the monitor back (fails at v20's 0.3 mm play); gauge thin slots measured as the Lower's slot + 0 / 0.4 / 0.8 mm; styling: equal visible left / right / top borders, equal groove depth both sides, only the parting-line groove reaches the front edge, the front parting line sits in a groove (all four fail on the pre-2026-11-18 bezel) |
+| Fit | `CAD/check_part_b_fit.py` | Upper / Lower / monitor overlap 0 for a 13.6 mm (measured) and 14.0 mm (spec) hump; lips over the monitor back (fails at v20's 0.3 mm play); gauge thin slots measured as the Lower's slot + 0 / 0.4 / 0.8 mm; styling: equal visible left / right / top borders, equal groove depth both sides, only the parting-line groove reaches the front edge, the front parting line sits in a groove (all four fail on the pre-2026-11-18 bezel; borders are measured on the screen opening's own run, since the rim round's flanks also lie behind the glass plane); emblem: no overlap seated, face flush, pushed back 0.15 mm it lands on the seat, pulled forward 0.25 mm the barbs catch |
 | Project | `CAD/build_3mf_v21.py` | P1S 0.4 nozzle profile, every part inside its plate and clear of the exclusion corner; all 4 plates slice with exit 0 and no warnings |
 | Guide | `CAD/render_sections.py`, `CAD/build_pdf_v21.py` | figures cut from the shipped STLs; sizes and times read from the STLs and the slice report |
 
@@ -61,13 +63,28 @@ Measured against the Snow White rules (2 mm lines on 10 mm centres set back from
 2 mm front / 3 mm rear edges, inlaid badge, Fog or Platinum colour) and the 1989 Macintosh Portrait Display:
 - Visible frame 22.3 mm on the left, right and top (24.3 mm from the image edge, 2.0 mm black reveal), 36.0 mm chin.
 - Lines 2.0 mm wide, 1.5 mm deep, 10 mm pitch on both long sides (35 each, from the parting line), the top (clear of the
-  USB-C bay) and the bottom (clear of the control bay), from 4.0 mm behind the face to the start of the rear round.
+  USB-C bay) and the bottom (clear of the control bay), from 5.0 mm behind the face (past the front round) to the start of the rear round.
 - The Upper / Lower parting line runs through one full-depth side line and a 0.6 mm front-face groove, so it reads as a
   deliberate line.
-- 1.5 mm 45-degree front chamfer (prints clean face-down where a round would droop) and a 3 mm rear round.
+- 4 mm front round, after the Apple IIc monitor's soft rim (Snow White's own rule is 2 mm). Face-down, the part of a
+  round flatter than 45 degrees would droop, so below its 45-degree point it continues as a 45-degree chamfer (a
+  teardrop round). 3 mm rear round.
 - Not changed (taste calls): the 36 mm chin (the Portrait Display's borders are nearly even; this chin is closer to a
   compact Mac, and it houses the control bay) and the shallow 1.65 mm bevel to the glass (the Portrait Display has a
-  deep dark surround). The badge is a blank square insert, ready for an emblem.
+  deep dark surround).
+
+## Chin (Apple IIc monitor details, 2026-11-18)
+The 36 mm chin stays (it houses the control bay) and takes the IIc monitor's details: the soft front rim above, a
+vertical slit power light lower-right (1.6 x 7 mm, `Part_B_LED` pressed in from the back; it is a styling plug, the
+monitor's own status LED is in the control bay), and an 18 mm emblem lower-left. The window numbers live in
+`CAD/chin_spec.py`, which both the bezel and the emblem generator read.
+
+The emblem is a snap-in tile, so it can be changed without taking the bezel off. The window is stepped: an 18.4 mm
+pocket 0.8 mm deep, a 45-degree seat, then a 16.4 mm hole through the 3 mm plate. The tile's cap fills the pocket flush
+with the face, its shoulder lands on the seat, and two 0.8 mm cantilever arms from a rear bridge carry barbs that catch
+0.35 mm behind the plate. **Fit:** push it in from the front until it clicks. **Remove:** reach into the control bay
+from behind and press the bridge forward; the catch faces lean 35 degrees, so the plate cams the arms in and the tile
+comes out the front. It prints face-up (the bridge on the bed), so a relief on the face prints as top surfaces.
 
 ## Known limits
 - The Polbecky collar has no inner lip: its top aperture, about 19.6 mm (+/-0.4, scaled from photos against the 1-inch mat
