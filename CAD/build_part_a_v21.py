@@ -10,10 +10,13 @@ Why v21 exists (v20 defect, measured on the v20 STL):
     at base + 9.0, i.e. its equator level with the cup rim (base + 8.95). Nothing wrapped over
     the ball, the 8 micro-ribs pressed BELOW the equator, so tightening the collar squeezed the
     ball up and out ("pops off").
-  * v21: an unclipped spherical seat (the ball really sits at the design centre) and six leaves
-    that rise 5.6 mm above the ball centre and close to a 15.6 mm mouth, so every leaf contacts
+  * v21: an unclipped spherical seat (the ball really sits at the design centre) and eight leaves
+    that rise 5.6 mm above the ball centre and close to a 16.4 mm mouth, so every leaf contacts
     the ball ABOVE its equator. Collar pressure on the leaf crown now drives the ball INTO the
     seat. The leaf crown has an external cone for the collar's top aperture to ride on.
+  * Leaf strain (2026-11-18): the first print had six leaves and a 15.6 mm mouth, and in PLA they snapped as
+    the ball went in (~3.1 % bending strain across the layer lines). Eight leaves, a 16.4 mm mouth and deeper
+    slots bring it to ~1.0 %; check_leaf_strain() gates <= 1.5 %.
   * Collar relief (2026-11-18): the collar's top aperture (~19.6 mm, from the owner's photos) meets
     the crown 9.7 mm above the boss base, and the collar is 9.8 mm tall, so on a flat pedestal it
     bottomed out before it squeezed anything. The area under the collar is cut 3 mm lower and the
@@ -43,7 +46,7 @@ BALL_D = 17.0  # Polbecky ball stud
 NECK_D = 9.5  # Polbecky ball neck
 CUP_R = 8.60  # spherical seat radius (0.10 mm radial clearance on the ball)
 BALL_C = 6.2  # ball centre above boss base (unchanged from v20)
-MOUTH_R = 7.80  # leaf mouth radius: 15.6 mm mouth on a 17.0 ball = 0.7 mm snap per leaf
+MOUTH_R = 8.20  # leaf mouth radius: 16.4 mm mouth on a 17.0 ball = 0.3 mm snap per leaf (v21 first print: 0.7)
 LEAD_IN = 0.5  # 45-deg lead-in chamfer on the mouth
 # M22 x 2.0 external thread (identical to v20, which the collar is known to accept)
 PITCH = 2.0
@@ -63,9 +66,14 @@ Z_THREAD_TOP = 9.3
 Z_TIP = 11.8
 R_TIP = 8.95
 # leaves
-N_SLOTS = 6
-SLOT_W = 1.6
-Z_SLOT = 1.3  # slot root height (keyhole centre)
+# The first PLA print snapped its leaves pushing the ball in (owner, 2026-11-18): 6 leaves, 0.7 mm snap, slots to
+# z 1.3 bent them to ~3.1 % strain at the thin band under the equator, across the layer lines (the leaves stand
+# vertical in the print), where PLA tears near 1.5 %. 8 leaves, a 0.3 mm snap and slots 2.3 mm deeper: ~1.0 %.
+# check_leaf_strain() gates it.
+N_SLOTS = 8
+SLOT_W = 1.4
+Z_SLOT = -1.0  # slot root height (keyhole centre); the cup bottom is at z -2.4, the relief floor at -3.0
+LEAF_STRAIN_MAX = 1.5  # % bending strain across PLA layer lines, the leaves' worst direction
 KEYHOLE_R = 1.1
 PLUG_R = 15.5  # v20 boss region stripped by --extract-base
 # Polbecky collar (Monitor_Dimensions_and_Ports.md section 4; aperture from the owner's photos, +/-0.4 mm)
@@ -78,6 +86,8 @@ COLLAR_APERTURES = (
     19.95,
 )  # top-aperture diameters the socket must work with
 MIN_TRAVEL = 1.5  # collar travel left after it first touches the crown
+SLOT_ANG0 = 90.0 / N_SLOTS  # first slot angle (deg); leaf centres sit half a pitch further
+LEAF_ANGS = [SLOT_ANG0 + 180.0 / N_SLOTS + k * 360.0 / N_SLOTS for k in range(N_SLOTS)]
 
 
 def _mesh_to_manifold(tm):
@@ -167,7 +177,7 @@ def collet_cuts():
     cuts = seat + mouth + lead
     slot_len = R_MAJOR + 2.0
     for k in range(N_SLOTS):
-        ang = 90.0 / N_SLOTS + k * 360.0 / N_SLOTS  # slots between, not on, the X/Y axes
+        ang = SLOT_ANG0 + k * 360.0 / N_SLOTS  # slots between, not on, the X/Y axes
         slot = m3.Manifold.cube((slot_len, SLOT_W, Z_TIP + 1.0 - Z_SLOT)).translate((0, -SLOT_W / 2, Z_SLOT))
         key = m3.Manifold.cylinder(slot_len, KEYHOLE_R, KEYHOLE_R, 32).rotate((0, 90, 0)).translate((0, 0, Z_SLOT))
         cuts += (slot + key).rotate((0, 0, ang))
@@ -230,9 +240,11 @@ def check_seat(name, tm, cx, cy, bz):
     c = np.array([[cx, cy, bz + BALL_C]])
     clearance = -pq.signed_distance(c)[0] if pq.signed_distance(c)[0] < 0 else pq.signed_distance(c)[0]
     assert BALL_D / 2 <= clearance <= CUP_R + 0.05, f"{name}: ball centre clearance {clearance:.3f}"
-    # capture (parameter-free): a vertical ray rising from the equator 0.3 mm inside the ball's silhouette,
-    # in a leaf direction (theta = 0; slots sit at 15 + 60k deg), must hit leaf material within 6 mm.
-    o = np.array([[cx + BALL_D / 2 - 0.3, cy, bz + BALL_C]])
+    # capture (parameter-free): a vertical ray rising from the equator 0.2 mm inside the ball's silhouette,
+    # along a leaf centre, must hit leaf material within 6 mm (the 0.3 mm snap leaves 0.1 mm of margin).
+    a = math.radians(LEAF_ANGS[0])
+    rr = BALL_D / 2 - 0.2
+    o = np.array([[cx + rr * math.cos(a), cy + rr * math.sin(a), bz + BALL_C]])
     locs, _, _ = tm.ray.intersects_location(o, np.array([[0.0, 0.0, 1.0]]))
     above = [hit[2] - o[0][2] for hit in locs if 0 < hit[2] - o[0][2] < 6.0]
     assert above, f"{name}: no leaf material over the ball above the equator"
@@ -246,7 +258,7 @@ def check_collar_travel(name, tm, cx, cy, bz):
     plausible top aperture. Parameter-free on the mesh: the crown radius profile comes from horizontal rays
     along leaf centres, the stop is the highest material under the collar's footprint (thread bore to wings)."""
     zs = np.arange(Z_TIP + 0.2, 0.0, -0.01)
-    angs = np.radians([45.0 + 60.0 * k for k in range(N_SLOTS)])  # leaf centres (slots at 15 + 60k)
+    angs = np.radians(LEAF_ANGS)  # leaf centres
     origins = np.array([[cx + 30 * math.cos(a), cy + 30 * math.sin(a), bz + z] for z in zs for a in angs])
     dirs = np.array([[-math.cos(a), -math.sin(a), 0.0] for z in zs for a in angs])
     locs, idx, _ = tm.ray.intersects_location(origins, dirs, multiple_hits=False)
@@ -275,6 +287,50 @@ def check_collar_travel(name, tm, cx, cy, bz):
     )
 
 
+def check_leaf_strain():
+    """Peak bending strain in a leaf as the ball's equator passes the mouth (each leaf pushed out by the snap,
+    ball radius - MOUTH_R). The leaf is a cantilever from the keyhole up to the load near the mouth; each
+    section is the annular sector between the seat and the thread core (teeth ignored), bent radially. For an
+    imposed tip deflection d: strain(z) = d * arm(z) c(z) / I(z) / integral(arm^2 / I dz). A model, not a test:
+    it explains the first print's break (3.1 % with 6 leaves and a 0.7 mm snap) and gates the class."""
+
+    def r_in(z):
+        s = CUP_R**2 - (z - BALL_C) ** 2
+        r = math.sqrt(s) if s > 0 else 0.0
+        return max(r, MOUTH_R) if z > BALL_C else r
+
+    def r_out(z):
+        return (
+            R_MINOR if z <= Z_THREAD_TOP else R_MINOR + (R_TIP - R_MINOR) * (z - Z_THREAD_TOP) / (Z_TIP - Z_THREAD_TOP)
+        )
+
+    z_load = Z_TIP - LEAD_IN - 0.7  # where the ball's widest band meets the mouth
+    zs = np.linspace(Z_SLOT, z_load, 200)
+    inertia, reach = [], []
+    for z in zs:
+        ri, ro = r_in(z), r_out(z)
+        half = math.pi / N_SLOTS - (SLOT_W / 2) / ((ri + ro) / 2)
+        rg, tg = np.meshgrid(np.linspace(ri, ro, 50), np.linspace(-half, half, 100))
+        y, da = rg * np.cos(tg), rg * ((ro - ri) / 49) * (2 * half / 99)
+        yb = (y * da).sum() / da.sum()
+        inertia.append(((y - yb) ** 2 * da).sum())
+        reach.append(abs(y - yb).max())
+    inertia, reach = np.array(inertia), np.array(reach)
+    arm = z_load - zs
+    d = BALL_D / 2 - MOUTH_R
+    eps = d * arm * reach / inertia / np.trapezoid(arm**2 / inertia, zs) * 100
+    k = int(np.argmax(eps))
+    assert eps[k] <= LEAF_STRAIN_MAX, (
+        f"leaf strain {eps[k]:.2f} % at z {zs[k]:.1f} snapping the ball in, "
+        f"over {LEAF_STRAIN_MAX} % (PLA across layers)"
+    )
+    print(
+        f"{'':14s} leaves OK: {N_SLOTS} leaves, {d:.2f} mm snap per leaf, "
+        f"peak strain {eps[k]:.2f} % at z {zs[k]:.1f} "
+        f"(<= {LEAF_STRAIN_MAX} %)"
+    )
+
+
 def check(name, man):
     tm = _manifold_to_trimesh(man)
     assert man.status() == m3.Error.NoError, (name, man.status())
@@ -297,6 +353,7 @@ if __name__ == "__main__":
         tm = check(name, fn())
         check_seat(name, tm, *axis)
         check_collar_travel(name, tm, *axis)
+        check_leaf_strain()
         tm.export(os.path.join(out, name + ".stl"))
     z_mouth = BALL_C + math.sqrt(CUP_R**2 - MOUTH_R**2)
     wrap = math.degrees(math.asin((z_mouth - BALL_C) / CUP_R))

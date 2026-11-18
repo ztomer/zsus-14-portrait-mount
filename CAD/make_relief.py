@@ -13,8 +13,9 @@ high-pass of the depth (`detail_sigma`, `detail_gain`) is added back so small fo
 Two modes (`mode` in the recipe):
   inlay (default)  the feature fits inside the tile's flush border, in the recessed panel.
   onlay            the feature stands proud of the face (0..RELIEF_D in front of it) and may spill past the tile
-                   and the window onto the chin face, where it rests: it breaks the frame. `fit_height` is its
-                   height on the chin and `centre_v` its centre above the tile's (mm). CAD/build_emblem.py gates
+                   and the window onto the chin face, where it rests: it breaks the frame. `top_v` and
+                   `bottom_v` are its top and bottom edges on the chin, measured up from the tile's centre (mm);
+                   `top_inside_tile` gates that its top stays 0.3 mm inside the tile. CAD/build_emblem.py gates
                    that it rests on flat chin face all round; the print needs supports under the overhang.
 
 Writes, next to the source model (third-party art stays in its gitignored folder, never in STLs/):
@@ -139,6 +140,8 @@ def relief_grid(mesh, r):
     mask = feature_mask(hs, zs, dep, r)
     rows, cols = np.where(mask)
     h_lo, h_hi, z_lo, z_hi = hs[cols.min()], hs[cols.max()], zs[rows.min()], zs[rows.max()]
+    if "top_v" in r:  # an onlay placed by its edges on the chin
+        r = dict(r, fit_height=r["top_v"] - r["bottom_v"], centre_v=(r["top_v"] + r["bottom_v"]) / 2)
     s = r["fit_height"] / (z_hi - z_lo)
     hc, zc = (h_lo + h_hi) / 2, (z_lo + z_hi) / 2
     h = heights(dep, mask, r, step)
@@ -206,7 +209,14 @@ def main(argv):
     p = CAP - RIM
     fits = onlay or (size_u <= 2 * p - 0.6 and size_v <= 2 * p - 0.6)
     edge = max(ht[0].max(), ht[-1].max(), ht[:, 0].max(), ht[:, -1].max())
+    vv = np.meshgrid(us, vs)[1]
+    top = float(vv[ht > H_BG + 0.02].max())
     fails = []
+    if r.get("top_inside_tile"):
+        ok = top <= CAP - 0.3
+        msg = f"top of the feature inside the tile: v {top:.2f} <= {CAP - 0.3:.2f}"
+        print(f"{'OK  ' if ok else 'FAIL'} {msg}")
+        fails += [] if ok else [msg]
     for ok, msg in (
         (
             fits,

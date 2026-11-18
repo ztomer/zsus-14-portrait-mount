@@ -33,6 +33,12 @@ def draw_section(ax, m, origin, normal, hx, hy, color=INK, label=None, xf=lambda
 
 
 def socket():
+    import sys
+
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import build_part_a_v21 as pa  # labels come from the generator, so they cannot go stale
+
+    wrap = np.sqrt(pa.CUP_R**2 - pa.MOUTH_R**2)
     m = stl("Part_A_Mount")
     cx, cy, bz = 28.0, 50.0, 9.5
     fig, ax = plt.subplots(figsize=(6.2, 4.4), dpi=150)
@@ -58,7 +64,7 @@ def socket():
     )
     ax.axhline(c, color=BALL, lw=0.5, ls=":")
     ax.annotate(
-        "leaves close to a 15.6 mm mouth\n3.6 mm ABOVE the ball's equator",
+        f"leaves close to a {2 * pa.MOUTH_R:.1f} mm mouth\n{wrap:.1f} mm ABOVE the ball's equator",
         xy=(7.8, c + 3.6),
         xytext=(9.6, c + 7.4),
         fontsize=7,
@@ -92,7 +98,7 @@ def socket():
     ax.set_xlabel("mm from socket axis")
     ax.set_ylabel("Z (mm)")
     ax.legend(loc="lower center", fontsize=7)
-    ax.set_title("v21 ball socket (6 leaves, unclipped seat, collar relief)", fontsize=9)
+    ax.set_title(f"v21 ball socket ({pa.N_SLOTS} leaves, unclipped seat, collar relief)", fontsize=9)
     fig.savefig(os.path.join(OUT, "socket_v21.png"), bbox_inches="tight")
     plt.close(fig)
 

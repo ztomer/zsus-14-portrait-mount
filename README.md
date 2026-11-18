@@ -46,7 +46,7 @@ Each step refuses to continue on failure:
 
 | Step | Script | Gate |
 | :--- | :--- | :--- |
-| Part A | `CAD/build_part_a_v21.py` (manifold3d) | watertight single shell; a rigid 17 mm ball must fit at the design centre AND be captured above its equator (fails on both v20 parts); the collar keeps >= 1.5 mm travel after it meets the crown for 19.2..19.95 mm apertures (fails on v21 before the relief: 0.40 mm) |
+| Part A | `CAD/build_part_a_v21.py` (manifold3d) | watertight single shell; a rigid 17 mm ball must fit at the design centre AND be captured above its equator (fails on both v20 parts); the collar keeps >= 1.5 mm travel after it meets the crown for 19.2..19.95 mm apertures (fails on v21 before the relief: 0.40 mm); leaf bending strain snapping the ball in <= 1.5 % (fails on the first v21 print's leaves: 3.07 %) |
 | Relief | `CAD/make_relief.py --self-test` | handedness end to end: a feature on the source's right seats on the viewer's right (red with the mirrored mapping the first cut had) |
 | Emblem | `CAD/build_emblem.py` (manifold3d) | arm strain <= 2 % at the deflection that passes the hole; barb grip >= 0.3 mm; arm tips >= 0.3 mm clear of the shoulder as printed and clear of body and spine when deflected (each fails when its margin is broken) |
 | Part B | `CAD/build_part_b_blender_v21.py` (Blender, headless) | every boolean result manifold; each part one shell (gauge two), outward-facing; nothing written unless all pass |
@@ -115,4 +115,9 @@ instead, with no supports.
   No caliper reading exists, so the fit gauge's stepped thin-side pieces settle it.
 - Part_A_Mount's base (VHB pad, step index, scribe ring, pedestal) has no parametric source: the v20 Fusion script held
   only the boss. v21 grafts its socket onto that base, read from `CAD/assets/Part_A_Mount_base_v20.stl`.
-- The 15.6 mm leaf mouth limits ball tilt at the socket to roughly +/-25 degrees. The articulated arm supplies the rest.
+- The 16.4 mm leaf mouth limits ball tilt at the socket (a little more than the first print's 15.6 mm mouth, about
+  +/-25 degrees). The articulated arm supplies the rest.
+- Plain PLA only: the first PLA socket snapped its leaves as the ball went in. They stand vertical in the print, so
+  the bend pulls across the layer lines, PLA's weakest direction. Eight leaves, a 0.3 mm snap per leaf and slots cut
+  2.3 mm deeper bring the modelled peak strain from 3.1 % to 1.0 % (gate: <= 1.5 %). Push the ball in straight and
+  firmly; the collar, not the snap, is what locks it. PETG would add a large margin if it is ever on hand.

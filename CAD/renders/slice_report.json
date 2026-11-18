@@ -5,8 +5,8 @@
   {
    "plate": 1,
    "name": "1 Fit tests (print first)",
-   "hours": 0.75,
-   "grams": 16.85,
+   "hours": 0.77,
+   "grams": 16.59,
    "objects": [
     "Part_A_Test",
     "Part_B_FitGauge"
@@ -16,8 +16,8 @@
   {
    "plate": 2,
    "name": "2 Part A mount + accents",
-   "hours": 1.22,
-   "grams": 32.77,
+   "hours": 1.24,
+   "grams": 32.51,
    "objects": [
     "Part_A_Mount",
     "Part_B_Emblem",

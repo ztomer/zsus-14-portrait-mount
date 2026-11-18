@@ -92,8 +92,9 @@ project file <b>ZSUS_v21_Complete_P1S_PLA.3mf</b> (4 plates, sliced clean in Bam
 
 <h2>2. Print plate 1 first and test both fits</h2>
 <p><b>Step 1, ball socket (Part_A_Test).</b> Back the collar off the arm's ball and thread it onto the coupon by hand:
-it should run smoothly. Unscrew it, push the 17 mm ball into the socket mouth until it snaps past the leaves
-(15.6 mm mouth), then screw the collar down. The collar's top edge rides the cone on the leaf tips and closes the
+it should run smoothly. Unscrew it, push the 17 mm ball straight into the socket mouth until it clicks past the
+leaves (16.4 mm mouth, a light 0.3 mm snap: in PLA, do not lever it in at an angle), then screw the collar
+down. The collar's top edge rides the cone on the leaf tips and closes the
 leaves <i>above</i> the ball's equator, so tightening pulls the ball deeper into its seat. The socket stands in a 3 mm
 relief, so the collar still has 2.5 to 3.4 mm of travel when it meets the cone: it must <i>not</i> bottom out on the
 coupon before the ball locks. Hand-tight, the ball must lock and must not pop out. If it does, stop and report:
@@ -142,8 +143,9 @@ up (+Y).</div>
 <h2>5. What changed from v20</h2>
 <ul>
 <li><b>Ball socket.</b> v20's cup floor clipped the seat 2.8 mm high, so the ball rested with its equator level with
-the rim and nothing held it; collar pressure squeezed it out. v21: full spherical seat, six leaves wrapping 3.6 mm
-above the equator, and a collar cone on the leaf tips.</li>
+the rim and nothing held it; collar pressure squeezed it out. v21: full spherical seat, eight leaves wrapping 2.6 mm
+above the equator, and a collar cone on the leaf tips. The first v21 print (six leaves, 15.6 mm mouth) snapped its
+leaves in PLA as the ball went in; eight leaves with a 0.3 mm snap and deeper slots bend about a third as far.</li>
 <li><b>Collar relief.</b> The collar's top edge (about 19.6 mm across) meets the leaf cone 9.7 mm up, and the collar
 is 9.8 mm tall, so on a flat pedestal it would bottom out before squeezing. The socket now stands in a 3 mm
 relief.</li>
