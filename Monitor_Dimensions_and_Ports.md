@@ -24,7 +24,7 @@ All coordinates are in **Portrait Mode (chin bezel on the left)**, viewed from t
 | **Slot #4** | `70.0 mm` | `67.5..72.5 mm` | Clears `Part_B_Upper` top-left bay & `6.5 mm` step |
 
 ## 3. Bottom-Left Controls (`X = 0.0..73.0 mm`, `Y = 0.0 mm`)
-- **Power button, OSD dial/rocker wheel, 3.5 mm audio jack, and status LED** all sit along the bottom-left edge (`X = 0..73 mm`) and remain unobstructed via `Part_B_Lower`'s open control bay (`X = 12.0..73.0 mm`, `Y = -29.5..0.0 mm`, `Z_b = 3.0..18.6 mm`).
+- **Power button, OSD dial/rocker wheel, 3.5 mm audio jack, and status LED** all sit along the bottom-left edge (`X = 0..73 mm`) and remain unobstructed via `Part_B_Lower`'s open control bay (`X = 12.0..73.0 mm`, `Y = -28.6..0.0 mm`, `Z_b = 3.0..18.6 mm`).
 
 ## 4. Polbecky PO-CA-001 Articulated Arm
 - **Ball Stud:** `17.0 mm` diameter (`~9.5 mm` neck) | **Max Load:** `1,200 g` (`1.2 kg`)
