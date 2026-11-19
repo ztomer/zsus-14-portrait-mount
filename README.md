@@ -57,9 +57,10 @@ warm-grey PLA for the bezel to match.
 **Print plate 1 first.** Part_A_Test must take the Polbecky collar smoothly, snap the 17 mm ball in, and lock it when
 the collar is hand-tight without the ball popping out, and without the collar bottoming on the coupon first. The thick
 gauge piece must slide onto the monitor's thick edge with light friction. For the thin edge, the first of the three
-notched pieces (1, 2, 3 notches = 6.2, 6.6, 7.0 mm slot) that slides on without rocking sets the panel thickness:
-1 notch keeps `MON_THIN = 5.7`; 2 or 3 means set `MON_THIN` to 6.1 or 6.5 in `CAD/build_part_b_blender_v21.py`
-and rebuild before printing plates 3 and 4. Thick edge off: adjust `MON_THICK` / `FIT_X` the same way.
+notched pieces (1, 2, 3 notches = 7.0, 7.4, 7.8 mm slot) that slides on without rocking sets the panel thickness:
+1 notch keeps `MON_THIN = 6.5`; 2 or 3 means raise `MON_THIN` in `CAD/monitor_spec.py` by 0.4 or 0.8 mm and rebuild
+before printing plates 3 and 4. Thick edge off: adjust `MON_THICK` (same file) / `FIT_X` the same way.
+On the owner's monitor (2026-11-18) the socket coupon, the thick piece and the first gauge's 7.0 mm thin piece all fit.
 
 ## Rebuild everything
 ```bash
@@ -136,8 +137,8 @@ recessed panel with no supports). Art under a personal-use licence goes in the g
   grid and the 33.0 mm barrel), squeezes the leaf crown (a 22-degree cone from 19.95 mm down to 17.9 mm). The socket
   stands in a 3 mm relief (r 21.5 mm) so the 9.8 mm collar meets that cone with 2.5 to 3.4 mm of travel left.
   Part_A_Test is how you check it.
-- The thin panel is 5.7 mm by hand measurement, but 6.1 to 6.8 mm scaled from a side photo against the port shells.
-  No caliper reading exists, so the fit gauge's stepped thin-side pieces settle it.
+- The thin panel was 5.7 mm by hand measurement, 6.1 to 6.8 mm scaled from a side photo. The first fit gauge settled
+  it at 6.5 mm (only its 7.0 mm slot slides on); the monitor's measurements live in `CAD/monitor_spec.py`.
 - Part_A_Mount's base (VHB pad, step index, scribe ring, pedestal) has no parametric source: the v20 Fusion script held
   only the boss. v21 grafts its socket onto that base, read from `CAD/assets/Part_A_Mount_base_v20.stl`.
 - The 16.4 mm leaf mouth limits ball tilt at the socket (a little more than the first print's 15.6 mm mouth, about

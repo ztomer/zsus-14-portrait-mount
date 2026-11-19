@@ -51,16 +51,15 @@ OUT = os.environ.get("PARTB_OUT", ROOT)
 
 # ---------------------------------------------------------------- monitor + fit (mm)
 # Monitor (Monitor_Dimensions_and_Ports.md, portrait, chin bezel left, front view; ZSUS spec 310 x 220 x 14)
-MON_W, MON_H = 220.0, 310.0
-MON_THICK = 13.6  # measured hump (X 0..73); ZSUS spec max is 14.0
-MON_THIN = 5.7  # measured flat panel (X 76..220)
-LEDGE = 3.0  # front ledge the glass rests on
+from monitor_spec import FIT_Z as FIT_Z_NOMINAL  # noqa: E402
+from monitor_spec import LEDGE, MON_H, MON_THICK, MON_THIN, MON_W  # noqa: E402  (one source: CAD/monitor_spec.py)
+
 H = 18.6  # frame height (v20: 18.0)
 FIT_X = 0.5  # per side, along the two long sliding channels
 FIT_Y = 0.3  # per end (monitor does not slide on these faces)
-FIT_Z = float(os.environ.get("PARTB_FIT_Z", "0.5"))  # glass-to-lip channel play
+FIT_Z = float(os.environ.get("PARTB_FIT_Z", FIT_Z_NOMINAL))  # glass-to-lip channel play
 LIP_T = 2.0  # thin-side lip thickness
-Z_THIN_LIP = LEDGE + MON_THIN + FIT_Z  # 9.2  (v20 9.0 -> 0.3 play)
+Z_THIN_LIP = LEDGE + MON_THIN + FIT_Z  # 10.0: a 7.0 mm slot, the gauge's 3-notch piece
 Z_THICK_LIP = LEDGE + MON_THICK + FIT_Z  # 17.1 (v20 16.9 -> 0.3 play; spec 14.0 hump still fits)
 XW0, XW1 = -FIT_X, MON_W + FIT_X  # pocket walls
 SEAM_Y = 177.35

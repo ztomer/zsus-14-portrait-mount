@@ -7,12 +7,17 @@ so the guide cannot drift from the files it describes. Needs pymupdf.
 import json
 import os
 import struct
+import sys
 
 import pymupdf
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 RENDERS = os.path.join(HERE, "renders")
+sys.path.insert(0, HERE)
+from monitor_spec import FIT_Z, MON_THIN  # noqa: E402
+
+SLOT = MON_THIN + FIT_Z  # the Lower's thin-side slot; the gauge's other two pieces are 0.4 / 0.8 mm taller
 OUT = os.path.join(ROOT, "ZSUS_v21_Assembly_Instructions.pdf")
 
 
@@ -102,15 +107,16 @@ Part_A_Mount uses the identical socket.</p>
 <p><b>Step 2, monitor channels (Part_B_FitGauge).</b> The gauge prints as four short pieces. Slide the wide piece
 onto the thick (bezel) edge of the monitor, glass against the front ledge: it should slide with light friction.
 The three narrow pieces are the thin edge's channel with stepped slots, counted by the notches on their backs:
-<b>1 notch = 6.2 mm</b> (what Part_B_Lower has now), <b>2 = 6.6 mm</b>, <b>3 = 7.0 mm</b>. Try them in that order and
-note the first one that slides on with light friction and no rocking. 1 notch: print the bezel as is. 2 or 3:
-set <code>MON_THIN</code> in <code>CAD/build_part_b_blender_v21.py</code> to 6.1 or 6.5 and run
+<b>1 notch = {SLOT:.1f} mm</b> (what Part_B_Lower has now), <b>2 = {SLOT + 0.4:.1f} mm</b>,
+<b>3 = {SLOT + 0.8:.1f} mm</b>. Try them in that order and note the first one that slides on with light friction
+and no rocking. 1 notch: print the bezel
+as is. 2 or 3: raise <code>MON_THIN</code> in <code>CAD/monitor_spec.py</code> by 0.4 or 0.8 mm and run
 <code>CAD/build_all.sh</code> before printing plates 3 and 4.</p>
 <img src="socket_v21.png" width="300"/>
 <img src="channels_v21.png" width="470"/>
 
 <h2>3. Part A: bond the socket to the monitor</h2>
-<p>Portrait, seen from the back: clean the 5.7 mm flat rear panel and the Part_A_Mount base with IPA. Apply the
+<p>Portrait, seen from the back: clean the {MON_THIN} mm flat rear panel and the Part_A_Mount base with IPA. Apply the
 VHB inside the 0.40 mm scribe ring. Butt the mount against the 3 mm step bevel (X = 76 mm), centre it vertically
 (Y = 155 mm); the socket then sits on the centre of gravity (X = 104 mm). Press firmly for 30 to 60 s.
 <b>Cure 24 hours unloaded before hanging.</b></p>
@@ -152,7 +158,8 @@ relief.</li>
 <li><b>Monitor fit.</b> Side channels 0.5 mm per side and 0.5 mm glass-to-lip (v20 0.3 mm); the thick channel also
 takes
 the ZSUS spec thickness of 14.0 mm; frame 18.6 mm (v20 18.0) to keep the thick-side lip 1.5 mm. The fit gauge
-steps the thin-side slot (6.2 / 6.6 / 7.0 mm) because a photo suggests the thin edge may be thicker than 5.7 mm.</li>
+steps the thin-side slot ({SLOT:.1f} / {SLOT + 0.4:.1f} / {SLOT + 0.8:.1f} mm). The thin panel is {MON_THIN} mm: the
+first gauge (6.2 / 6.6 / 7.0 mm) showed only the 7.0 mm slot slides on, where a hand measurement read 5.7 mm.</li>
 <li><b>Snow White styling.</b> Equal 22.3 mm borders on the left, right and top (the top was 3.5 mm short); lines on
 10 mm
 centres, 1.5 mm deep on both sides (were 6 mm, 1.0 / 1.8 mm deep), set back from the front edge and added to the top

@@ -10,15 +10,15 @@ from partb_mesh import apply_bool, bm_rounded_prism, duplicate, make_obj_from_bm
 
 def build_fit_gauge(part_b_lower, H, LEDGE, Z_THIN_LIP, XW1, LIP_T):
     """Fit gauge: 15 mm of the Lower's thick-side channel plus three thin-side channels with stepped slots
-    (taken before mirroring, so it mirrors with the parts). The thin panel is 5.7 mm by hand measurement but
-    6.1..6.8 mm scaled from the owner's side photo (2026-11-18), with no caliper to settle it: the first thin
-    piece is the Lower's own channel, the other two raise its lip. The notches on each piece's back count the step.
+    (taken before mirroring, so it mirrors with the parts). The first thin piece is the Lower's own channel, the
+    other two raise its lip by 0.4 / 0.8 mm (the first gauge settled the panel at 6.5 mm: CAD/monitor_spec.py).
+    The notches on each piece's back count the step.
     Returns the Part_B_FitGauge object (four shells)."""
     GAUGE_SLOTS = (
         Z_THIN_LIP - LEDGE,
         Z_THIN_LIP - LEDGE + 0.4,
         Z_THIN_LIP - LEDGE + 0.8,
-    )  # 6.2 / 6.6 / 7.0
+    )  # 7.0 / 7.4 / 7.8 for the 6.5 mm panel
     GAUGE_DX, GAUGE_DY = (
         -190.0,
         20.0,

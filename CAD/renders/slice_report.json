@@ -5,8 +5,8 @@
   {
    "plate": 1,
    "name": "1 Fit tests (print first)",
-   "hours": 0.77,
-   "grams": 16.59,
+   "hours": 0.76,
+   "grams": 16.58,
    "objects": [
     "Part_A_Test",
     "Part_B_FitGauge"
@@ -29,7 +29,7 @@
    "plate": 3,
    "name": "3 Part B lower bezel",
    "hours": 3.08,
-   "grams": 99.78,
+   "grams": 99.84,
    "objects": [
     "Part_B_Lower"
    ],
@@ -39,7 +39,7 @@
    "plate": 4,
    "name": "4 Part B upper bezel",
    "hours": 2.37,
-   "grams": 74.45,
+   "grams": 74.46,
    "objects": [
     "Part_B_Upper"
    ],

@@ -106,11 +106,17 @@ def socket():
 def channels():
     lo = stl("Part_B_Lower")
     fig, axs = plt.subplots(1, 2, figsize=(9.5, 3.4), dpi=150, gridspec_kw={"width_ratios": [1, 1]})
-    X = np.array([0, 0, 73, 76, 220, 220, 0])
-    Z = 3 + np.array([0, 13.6, 13.6, 5.7, 5.7, 0, 0])
+    import sys
+
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from monitor_spec import FIT_Z, HUMP_X1, LEDGE, MON_THICK, MON_THIN, MON_W, STEP_X1
+
+    X = np.array([0, 0, HUMP_X1, STEP_X1, MON_W, MON_W, 0])
+    Z = LEDGE + np.array([0, MON_THICK, MON_THICK, MON_THIN, MON_THIN, 0, 0])
+    z_thick, z_thin = LEDGE + MON_THICK + FIT_Z, LEDGE + MON_THIN + FIT_Z
     for ax, (x0, x1), title in (
-        (axs[0], (-6, 24), "thick side (bezel left, 13.6 mm hump)"),
-        (axs[1], (196, 242), "thin side (5.7 mm panel)"),
+        (axs[0], (-6, 24), f"thick side (bezel left, {MON_THICK} mm hump)"),
+        (axs[1], (196, 242), f"thin side ({MON_THIN} mm panel)"),
     ):
         draw_section(
             ax,
@@ -131,15 +137,15 @@ def channels():
         ax.set_xlabel("X, front view (mm)")
     axs[0].set_ylabel("Z from front face (mm)")
     axs[0].annotate(
-        "lip at Z 17.1: 0.5 mm play\n(ZSUS spec 14.0 still slides)",
-        xy=(1, 17.1),
+        f"lip at Z {z_thick:.1f}: {FIT_Z} mm play\n(ZSUS spec 14.0 still slides)",
+        xy=(1, z_thick),
         xytext=(6, 11),
         fontsize=7,
         arrowprops={"arrowstyle": "->", "lw": 0.7},
     )
     axs[1].annotate(
-        "lip at Z 9.2: 6.2 mm slot\nfor the 5.7 mm panel",
-        xy=(219, 9.2),
+        f"lip at Z {z_thin:.1f}: {MON_THIN + FIT_Z:.1f} mm slot\nfor the {MON_THIN} mm panel",
+        xy=(219, z_thin),
         xytext=(197, 13.5),
         fontsize=7,
         arrowprops={"arrowstyle": "->", "lw": 0.7},

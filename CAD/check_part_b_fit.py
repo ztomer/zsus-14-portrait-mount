@@ -10,7 +10,10 @@ import numpy as np
 import trimesh
 
 ROOT = sys.argv[1] if len(sys.argv) > 1 else os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-LEDGE = 3.0
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from monitor_spec import HUMP_X1, LEDGE, MON_H, MON_THICK, MON_THIN, MON_W, STEP_X1  # noqa: E402
+
+ZSUS_SPEC_THICK = 14.0  # the hump at the ZSUS spec's maximum thickness must still slide in
 
 
 def load(name):
@@ -27,9 +30,9 @@ def load(name):
 
 def monitor(thick):
     # XZ profile (front view X, depth Z), extruded along Y 0..310, plan corners R6
-    prof = [(0, 0), (0, thick), (73, thick), (76, 5.7), (220, 5.7), (220, 0)]
+    prof = [(0, 0), (0, thick), (HUMP_X1, thick), (STEP_X1, MON_THIN), (MON_W, MON_THIN), (MON_W, 0)]
     pts = [(-x, LEDGE + z) for x, z in prof]  # print-frame mirror
-    body = m3.Manifold.extrude(m3.CrossSection([pts]), 310.0).rotate((90, 0, 0)).translate((0, 310.0, 0))
+    body = m3.Manifold.extrude(m3.CrossSection([pts]), MON_H).rotate((90, 0, 0)).translate((0, MON_H, 0))
     plan = (
         m3.CrossSection.square((208.0, 298.0))
         .offset(6.0, m3.JoinType.Round, circular_segments=48)
@@ -50,16 +53,17 @@ def report(label, vol, limit=0.01):
 
 
 report("Upper vs Lower (assembled)", (up ^ lo).volume())
-for thick, tag in ((13.6, "measured 13.6 mm hump"), (14.0, "ZSUS spec 14.0 mm hump")):
+HUMPS = ((MON_THICK, f"measured {MON_THICK} mm hump"), (ZSUS_SPEC_THICK, f"ZSUS spec {ZSUS_SPEC_THICK} mm hump"))
+for thick, tag in HUMPS:
     mon = monitor(thick)
     b = mon.bounding_box()
-    assert abs((b[3] - b[0]) - 220.0) < 0.01 and abs((b[4] - b[1]) - 310.0) < 0.01, b
+    assert abs((b[3] - b[0]) - MON_W) < 0.01 and abs((b[4] - b[1]) - MON_H) < 0.01, b
     report(f"Upper vs monitor ({tag})", (up ^ mon).volume())
     report(f"Lower vs monitor ({tag})", (lo ^ mon).volume())
 # capture: lips must sit over the monitor's back (in plan) on both long sides
 for x_mon, z_back, side in (
-    (-1.0, LEDGE + 13.6, "thick-side lip"),
-    (-219.0, LEDGE + 5.7, "thin-side lip"),
+    (-1.0, LEDGE + MON_THICK, "thick-side lip"),
+    (-219.0, LEDGE + MON_THIN, "thin-side lip"),
 ):
     for part, nm, y in ((lo, "Lower", 100.0), (up, "Upper", 250.0)):
         probe = m3.Manifold.cube((0.4, 0.4, 3.0)).translate((x_mon - 0.2, y - 0.2, z_back + 0.05))
@@ -210,7 +214,7 @@ assert np.linalg.det(place[:, :3]) > 0.999, "EMBLEM_PLACE must move the printed 
 em = load("Part_B_Emblem").transform(place)
 eb = em.bounding_box()
 report("Emblem vs Lower (seated)", (em ^ lo).volume())
-report("Emblem vs monitor (14.0 mm hump)", (em ^ monitor(14.0)).volume())
+report(f"Emblem vs monitor ({ZSUS_SPEC_THICK} mm hump)", (em ^ monitor(ZSUS_SPEC_THICK)).volume())
 for dz, what in ((0.15, "pushed back 0.15 mm lands on the seat"), (-0.25, "pulled forward 0.25 mm: barbs catch")):
     hit = (em.translate((0, 0, dz)) ^ lo).volume()
     ok = hit > 0.05

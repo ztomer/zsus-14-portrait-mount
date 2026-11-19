@@ -13,7 +13,7 @@ All coordinates are in **Portrait Mode (chin bezel on the left)**, viewed from t
 | **Front Monitor Bezels** | Left `19.3 mm` \| Right `3.5-5.5 mm` \| Top `8.9 mm` \| Bottom `8.5 mm` | Part B equalizes Left/Right/Top to `24.3 mm` from the image edge (`22.3 mm` visible frame + `2.0 mm` black reveal) + `38.0 mm` chin |
 | **Rear Thick Hump (Left)** | `X = 0.0..73.0 mm`, `13.6 mm` thick | Houses 14W driver board; v21 Part B left lip wraps at `Z_b = 17.1..18.6 mm` (`0.5 mm` play; a `14.0 mm` hump still slides) |
 | **Rear Step Bevel** | `X = 73.0..76.0 mm`, `3.0 mm` run x `7.9 mm` drop (`45 deg`) | `Part_A_Mount` indexes flush against `X = 76.0 mm` |
-| **Rear Flat Panel (Right)** | `X = 76.0..220.0 mm`, `5.7 mm` thick (hand-measured; a side photo scales to `6.1..6.8 mm`, unconfirmed) | `Part_A_Mount` bonds here; v21 Part B right lip wraps at `Z_b = 9.2..11.2 mm` (`6.2 mm` slot, `0.5 mm` play); `Part_B_FitGauge` also has `6.6` / `7.0 mm` slots to settle it |
+| **Rear Flat Panel (Right)** | `X = 76.0..220.0 mm`, `6.5 mm` thick (fit gauge 2026-11-18; a hand measurement read `5.7 mm`) | `Part_A_Mount` bonds here; v21 Part B right lip wraps at `Z_b = 10.0..12.0 mm` (`7.0 mm` slot, `0.5 mm` play); `Part_B_FitGauge` also has `7.4` / `7.8 mm` slots |
 
 ## 2. Top-Edge Ports (`Y = 310.0 mm`, Left-to-Right)
 | Port / Feature | Center (`X`) | Span (`X`) | Clearance Notes |
@@ -21,7 +21,7 @@ All coordinates are in **Portrait Mode (chin bezel on the left)**, viewed from t
 | **Mini HDMI (`HD`)** | `21.9 mm` | `16.5..27.3 mm` | Inside top-left open rear bay (`X = 14.0..65.0 mm`) |
 | **USB-C #1 (Orange 90 deg Adapter)** | `40.0 mm` | `35.8..44.2 mm` | Stands `11.5 mm` above `Y = 310.0`; front nose/lanyard protrudes `~1.0 mm` forward (`X = 34..46`); cleared by `14.0 x 20.6 x 1.5 mm` relief channel (`X = 33..47`) |
 | **USB-C #2 (Lightning/Video)** | `57.2 mm` | `53.0..61.4 mm` | Inside top-left open rear bay (`X = 14.0..65.0 mm`) |
-| **Slot #4** | `70.0 mm` | `67.5..72.5 mm` | Clears `Part_B_Upper` top-left bay & `5.7 mm` step |
+| **Slot #4** | `70.0 mm` | `67.5..72.5 mm` | Clears `Part_B_Upper` top-left bay & `6.5 mm` step |
 
 ## 3. Bottom-Left Controls (`X = 0.0..73.0 mm`, `Y = 0.0 mm`)
 - **Power button, OSD dial/rocker wheel, 3.5 mm audio jack, and status LED** all sit along the bottom-left edge (`X = 0..73 mm`) and remain unobstructed via `Part_B_Lower`'s open control bay (`X = 12.0..73.0 mm`, `Y = -29.5..0.0 mm`, `Z_b = 3.0..18.6 mm`).
@@ -41,7 +41,8 @@ footprint above; it publishes no thin-edge thickness and no per-zone figures.
 | :--- | :--- | :--- | :--- |
 | Footprint | `220.0 x 310.0 mm` | `220 x 310 mm` (approx.) | `221.0 x 310.6 mm` pocket |
 | Thick hump | `13.6 mm` | `14 mm` max thickness | `14.1 mm` channel (front ledge to lip) |
-| Thin panel | `5.7 mm` (photo: `6.1..6.8 mm`) | not published | `6.2 mm` slot; gauge also `6.6` / `7.0 mm` |
+| Thin panel | `6.5 mm` (fit gauge; hand `5.7 mm`) | not published | `7.0 mm` slot; gauge also `7.4` / `7.8 mm` |
 
-The fit allowances live at the top of `CAD/build_part_b_blender_v21.py` (`FIT_X`, `FIT_Y`, `FIT_Z`, `MON_*`);
+The monitor's measurements (`MON_*`, `LEDGE`, `FIT_Z`) live in `CAD/monitor_spec.py`, the other fit allowances
+(`FIT_X`, `FIT_Y`) at the top of `CAD/build_part_b_blender_v21.py`;
 print `Part_B_FitGauge` (plate 1) to check them on the real monitor before printing the bezel.
