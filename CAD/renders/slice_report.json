@@ -6,44 +6,68 @@
    "plate": 1,
    "name": "1 Fit tests (print first)",
    "hours": 0.77,
-   "grams": 16.58,
+   "grams": 15.8,
    "objects": [
     "Part_A_Test",
     "Part_B_FitGauge"
    ],
-   "warnings": []
+   "warnings": [],
+   "air_travel": {
+    "total_mm": 17606.9,
+    "longest_mm": 116.8,
+    "spans": 867,
+    "layers": 184
+   }
   },
   {
    "plate": 2,
    "name": "2 Part A mount + accents",
-   "hours": 1.24,
+   "hours": 1.25,
    "grams": 32.51,
    "objects": [
     "Part_A_Mount",
     "Part_B_Emblem",
     "Part_B_LED"
    ],
-   "warnings": []
+   "warnings": [],
+   "air_travel": {
+    "total_mm": 13055.8,
+    "longest_mm": 107.5,
+    "spans": 282,
+    "layers": 132
+   }
   },
   {
    "plate": 3,
    "name": "3 Part B lower bezel",
-   "hours": 3.08,
-   "grams": 99.84,
+   "hours": 3.01,
+   "grams": 97.15,
    "objects": [
     "Part_B_Lower"
    ],
-   "warnings": []
+   "warnings": [],
+   "air_travel": {
+    "total_mm": 23571.5,
+    "longest_mm": 273.6,
+    "spans": 211,
+    "layers": 93
+   }
   },
   {
    "plate": 4,
    "name": "4 Part B upper bezel",
-   "hours": 2.37,
-   "grams": 74.46,
+   "hours": 2.28,
+   "grams": 71.48,
    "objects": [
     "Part_B_Upper"
    ],
-   "warnings": []
+   "warnings": [],
+   "air_travel": {
+    "total_mm": 22958.0,
+    "longest_mm": 250.9,
+    "spans": 188,
+    "layers": 93
+   }
   },
   {
    "plate": 5,
@@ -53,7 +77,13 @@
    "objects": [
     "Part_B_Emblem_Cthulhu"
    ],
-   "warnings": []
+   "warnings": [],
+   "air_travel": {
+    "total_mm": 17.8,
+    "longest_mm": 11.3,
+    "spans": 5,
+    "layers": 152
+   }
   }
  ],
  "printer_settings_id": "Bambu Lab P1S 0.4 nozzle",
@@ -61,5 +91,6 @@
  "curr_bed_type": "Textured PEI Plate",
  "additional_cooling_fan_speed": "10",
  "enable_support": "0",
- "filament_colour": "#D3CFC6"
+ "filament_colour": "#D3CFC6",
+ "reduce_crossing_wall": "1"
 }

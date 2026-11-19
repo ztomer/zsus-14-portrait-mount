@@ -9,8 +9,8 @@ All coordinates are in **Portrait Mode (chin bezel on the left)**, viewed from t
 | Feature | Dimensions / Coordinates | Notes |
 | :--- | :--- | :--- |
 | **Outer Chassis Footprint** | `220.0 mm (W) x 310.0 mm (H)`, `R = 6.0 mm` corners | v21 cradle pocket is `221.0 x 310.6 mm` (`0.50 mm`/side along the sliding channels, `0.30 mm` at the ends) |
-| **Active LCD Area** | `197.2 x 295.9 mm` (`X = 19.3..216.5`, `Y = 8.5..304.4`) | Part B inner aperture (`197.6 x 296.3 mm`) leaves `0.20 mm` margin/side |
-| **Front Monitor Bezels** | Left `19.3 mm` \| Right `3.5-5.5 mm` \| Top `8.9 mm` \| Bottom `8.5 mm` | Part B equalizes Left/Right/Top to `24.3 mm` from the image edge (`22.3 mm` visible frame + `2.0 mm` black reveal) + `38.0 mm` chin |
+| **Active LCD Area** | `197.2 x 295.9 mm`; spec sheet `X = 19.3..216.5`, `Y = 8.5..304.4`; as photographed in the bezel (2026-11-19) `X = 18.1..214.1`, `Y = 8.2..304.4` (top not photographed) | Part B's opening meets the glass `0.8 mm` outside the photographed image on every side (`IMAGE`, `REVEAL` in `CAD/monitor_spec.py`) |
+| **Front Monitor Bezels** | Left `19.3 mm` \| Right `3.5-5.5 mm` \| Top `8.9 mm` \| Bottom `8.5 mm` (hand-measured; the photo puts the image `1.2..2.4 mm` further left) | Part B equalizes Left/Right/Top to a `22.3 mm` visible frame + `0.8 mm` black reveal, and a `36.0 mm` chin |
 | **Rear Thick Hump (Left)** | `X = 0.0..73.0 mm`, `13.6 mm` thick | Houses 14W driver board; v21 Part B left lip wraps at `Z_b = 17.1..18.6 mm` (`0.5 mm` play; a `14.0 mm` hump still slides) |
 | **Rear Step Bevel** | `X = 73.0..76.0 mm`, `3.0 mm` run x `7.9 mm` drop (`45 deg`) | `Part_A_Mount` indexes flush against `X = 76.0 mm` |
 | **Rear Flat Panel (Right)** | `X = 76.0..220.0 mm`, `6.5 mm` thick (fit gauge 2026-11-18; a hand measurement read `5.7 mm`) | `Part_A_Mount` bonds here; v21 Part B right lip wraps at `Z_b = 10.0..12.0 mm` (`7.0 mm` slot, `0.5 mm` play); `Part_B_FitGauge` also has `7.4` / `7.8 mm` slots |

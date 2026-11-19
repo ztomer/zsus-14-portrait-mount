@@ -19,7 +19,9 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 OUT = os.path.join(ROOT, "docs", "images")
 sys.path.insert(0, HERE)
-from chin_spec import CHIN_CY, EMBLEM_PLACE, LED_CX  # noqa: E402
+from bezel_spec import BEZEL_CX, FY0, FY1  # noqa: E402
+from chin_spec import CHIN_CY, EMBLEM_CX, EMBLEM_PLACE, LED_CX  # noqa: E402
+from monitor_spec import IMAGE  # noqa: E402
 
 PLATINUM = (0.827, 0.812, 0.776, 1)
 EMBLEM = os.environ.get("EMBLEM", "Part_B_Emblem_Cthulhu")
@@ -102,9 +104,9 @@ stl(
     Matrix.Translation((-LED_CX - 2.0, CHIN_CY + 4.7, 3.8)) @ Matrix.Rotation(3.14159265, 4, "X"),
 )
 box(-220, 0, 0, 310, 3.06, 8.7, (0.03, 0.03, 0.035, 1))  # monitor body; its glass sits behind the 3 mm ledge
-box(-216.5, -19.3, 8.5, 304.4, 3.0, 3.05, (0.6, 0.62, 0.65, 1))  # the image area
+box(-IMAGE[1], -IMAGE[0], IMAGE[2], IMAGE[3], 3.0, 3.05, (0.6, 0.62, 0.65, 1))  # the image area
 box(-73, 0, 0, 310, 8.7, 16.6, (0.05, 0.05, 0.06, 1))  # the 13.6 mm hump
-C = (-118.1, 147.85, 9.0)
+C = (-BEZEL_CX, (FY0 + FY1) / 2, 9.0)  # the bezel's centre, print frame
 render(
     sc,
     cam,
@@ -112,7 +114,7 @@ render(
         "front": {"loc": (C[0], C[1], -600), "size": 380, "at": C, "res": (800, 1000)},
         "three_quarter": {"loc": (260, 60, -560), "lens": 55, "at": C, "res": (800, 1000)},
         "chin": {"loc": (60, -110, -150), "lens": 60, "at": (-20, -10, 5)},
-        "emblem": {"loc": (-10, -70, -90), "lens": 60, "at": (-26.725, CHIN_CY, 0)},
+        "emblem": {"loc": (-10, -70, -90), "lens": 60, "at": (-EMBLEM_CX, CHIN_CY, 0)},
         "back": {"loc": (-300, 120, 520), "lens": 55, "at": C, "res": (800, 1000)},
     },
 )

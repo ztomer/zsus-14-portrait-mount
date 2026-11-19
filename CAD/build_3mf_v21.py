@@ -27,6 +27,9 @@ import zipfile
 
 import numpy as np
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from gcode_travel import air_travel
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 OUT_3MF = os.path.join(ROOT, "ZSUS_v21_Complete_P1S_PLA.3mf")
@@ -85,7 +88,16 @@ PROJECT = {
     "enable_support": "0",
     "brim_type": "auto_brim",
     "filament_colour": ["#D3CFC6"],
+    # Avoid crossing walls: the first bezel print came off strung (2026-11-19), hairs across the pocket the monitor
+    # slides into. Routing travel inside the part cuts the open-air hops on the Lower from 552 to about 180.
+    "reduce_crossing_wall": "1",
 }
+PROCESS_OVERRIDES = ("reduce_crossing_wall",)  # shown as changed from the system process in Bambu Studio
+# Travel over open air (CAD/gcode_travel.py) on the two bezel plates: at most this many hops each. The v21.1.0
+# project made 552 (Lower) and 512 (Upper); about half of what remains is the move to each layer's start, lifted and
+# wiped, which avoid-crossing-walls does not route.
+AIR_SPANS_MAX = 250
+AIR_GATED = ("Part_B_Lower", "Part_B_Upper")
 FILAMENT_OVERRIDES = {"additional_cooling_fan_speed": ["10"]}  # README: aux fan 10 %
 
 
@@ -252,6 +264,7 @@ def main(layout=LAYOUT, plate_names=PLATE_NAMES, out_3mf=OUT_3MF, stl_dir=None, 
     for k, v in FILAMENT_OVERRIDES.items():
         ps[k] = v
     diff = ps.get("different_settings_to_system", ["", "", ""])
+    diff[0] = ";".join(sorted(PROCESS_OVERRIDES))
     diff[1] = ";".join(sorted(FILAMENT_OVERRIDES))
     ps["different_settings_to_system"] = diff
     files["Metadata/project_settings.config"] = json.dumps(ps, indent=4).encode()
@@ -321,6 +334,14 @@ def main(layout=LAYOUT, plate_names=PLATE_NAMES, out_3mf=OUT_3MF, stl_dir=None, 
         n_support = len(re.findall(r"^; FEATURE: Support", gp, re.MULTILINE))
         assert n_support > 0, f"plate {p} asks for supports but its slice has none"
         print(f"    plate {p} supports: {n_support} support features")
+    # stringing: travel over open air, read from the G-code the printer runs (CAD/gcode_travel.py)
+    for p in slice_report["plates"]:
+        gp = zs.read(f"Metadata/plate_{p['plate']}.gcode").decode(errors="ignore")
+        p["air_travel"] = air_travel(gp)
+        gated = any(o in AIR_GATED for o in p["objects"])
+        ok = not gated or p["air_travel"]["spans"] <= AIR_SPANS_MAX
+        print(f"    plate {p['plate']} travel over open air: {p['air_travel']}{'' if ok else '  FAIL'}")
+        assert ok, f"plate {p['plate']}: {p['air_travel']['spans']} open-air travel hops > {AIR_SPANS_MAX}"
     g1 = zs.read(gcodes[0]).decode(errors="ignore")
     for key in (
         "printer_settings_id",
@@ -329,6 +350,7 @@ def main(layout=LAYOUT, plate_names=PLATE_NAMES, out_3mf=OUT_3MF, stl_dir=None, 
         "additional_cooling_fan_speed",
         "enable_support",
         "filament_colour",
+        "reduce_crossing_wall",
     ):
         m = re.search(rf"^; {key} = (.*)$", g1, re.MULTILINE)
         slice_report[key] = m.group(1) if m else None

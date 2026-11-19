@@ -8,11 +8,11 @@ import bpy
 from partb_mesh import apply_bool, bm_rounded_prism, duplicate, make_obj_from_bm
 
 
-def build_fit_gauge(part_b_lower, H, LEDGE, Z_THIN_LIP, XW1, LIP_T):
+def build_fit_gauge(part_b_lower, H, LEDGE, Z_THIN_LIP, XW1, LIP_T, FX1):
     """Fit gauge: 15 mm of the Lower's thick-side channel plus three thin-side channels with stepped slots
     (taken before mirroring, so it mirrors with the parts). The first thin piece is the Lower's own channel, the
     other two raise its lip by 0.4 / 0.8 mm (the first gauge settled the panel at 6.5 mm: CAD/monitor_spec.py).
-    The notches on each piece's back count the step.
+    The notches on each piece's back count the step (4.8..9.8 mm in from the frame's outer edge FX1).
     Returns the Part_B_FitGauge object (four shells)."""
     GAUGE_SLOTS = (
         Z_THIN_LIP - LEDGE,
@@ -55,7 +55,7 @@ def build_fit_gauge(part_b_lower, H, LEDGE, Z_THIN_LIP, XW1, LIP_T):
             y0 = 107.5 - (k + 1) * 1.2 + n * 2.4 + 0.6
             apply_bool(
                 thin,
-                bm_rounded_prism(231.0, 236.0, y0, y0 + 1.2, H - 0.8, H + 1.0),
+                bm_rounded_prism(FX1 - 9.8, FX1 - 4.8, y0, y0 + 1.2, H - 0.8, H + 1.0),
                 "DIFFERENCE",
                 f"Gauge_Notch_{k}_{n}",
             )

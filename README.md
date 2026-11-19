@@ -30,9 +30,9 @@ Material: Generic PLA / PLA+ / Matte PLA. Monitor: ZSUS 14" 2K (PM14A-2K), see `
 | `ZSUS_v21_Assembly_Instructions.pdf` | Print order, fit tests, assembly, disassembly, v20 to v21 changes |
 | `STLs/Part_A_Test.stl` | 26.0 x 26.0 x 18.4 mm socket coupon: the mount's exact socket and collar relief, for the collar + ball test |
 | `STLs/Part_A_Mount.stl` | 85.0 x 100.0 x 21.3 mm VHB glue-on ball socket |
-| `STLs/Part_B_FitGauge.stl` | 55.8 x 55.0 x 18.6 mm: 15 mm of the thick-side channel plus three thin-side channels with 6.2 / 6.6 / 7.0 mm slots (1 / 2 / 3 notches) |
-| `STLs/Part_B_Lower.stl` | 245.8 x 211.9 x 18.6 mm lower bezel: chin, emblem window + slit light, side channels, lap tongue, snap catch |
-| `STLs/Part_B_Upper.stl` | 245.8 x 157.7 x 18.6 mm upper bezel: USB-C bay, snap arm, top-right detent tab |
+| `STLs/Part_B_FitGauge.stl` | 52.2 x 55.0 x 18.6 mm: 15 mm of the thick-side channel plus three thin-side channels with 7.0 / 7.4 / 7.8 mm slots (1 / 2 / 3 notches) |
+| `STLs/Part_B_Lower.stl` | 242.2 x 211.0 x 18.6 mm lower bezel: chin, emblem window + slit light, side channels, lap tongue, snap catch |
+| `STLs/Part_B_Upper.stl` | 242.2 x 156.5 x 18.6 mm upper bezel: USB-C bay, snap arm, top-right detent tab |
 | `STLs/Part_B_Emblem.stl` | 18.0 x 18.0 x 11.1 mm snap-in chin emblem tile (blank face), removable from behind |
 | `STLs/Part_B_Emblem_Cthulhu.stl` | 18.0 x 22.4 x 12.3 mm emblem tile with the Cthulhu head as an onlay (CC BY, see below) |
 | `STLs/Part_B_LED.stl` | 4.0 x 9.4 x 3.8 mm press-fit plug for the vertical slit power light |
@@ -44,13 +44,14 @@ Material: Generic PLA / PLA+ / Matte PLA. Monitor: ZSUS 14" 2K (PM14A-2K), see `
 ## Plates (from the last slice, `CAD/renders/slice_report.json`)
 | Plate | Contents | Settings | Time | PLA |
 | :--- | :--- | :--- | :--- | :--- |
-| 1 Fit tests (print first) | Part_A_Test, Part_B_FitGauge | A: 0.16 mm, 5 walls, 40% gyroid, brim; gauge: 0.20 mm, 3 walls, 15% | 0.8 h | 17 g |
+| 1 Fit tests (print first) | Part_A_Test, Part_B_FitGauge | A: 0.16 mm, 5 walls, 40% gyroid, brim; gauge: 0.20 mm, 3 walls, 15% | 0.8 h | 16 g |
 | 2 Part A mount + accents | Part_A_Mount, Part_B_Emblem, Part_B_LED | 0.16 mm; mount 5 walls 40% gyroid; accents 3 walls 100% | 1.2 h | 33 g |
-| 3 Part B lower bezel | Part_B_Lower | 0.20 mm, 3 walls, 15% gyroid, no brim | 3.1 h | 100 g |
-| 4 Part B upper bezel | Part_B_Upper | 0.20 mm, 3 walls, 15% gyroid, no brim | 2.4 h | 75 g |
+| 3 Part B lower bezel | Part_B_Lower | 0.20 mm, 3 walls, 15% gyroid, no brim | 3.0 h | 97 g |
+| 4 Part B upper bezel | Part_B_Upper | 0.20 mm, 3 walls, 15% gyroid, no brim | 2.3 h | 72 g |
 | 5 Cthulhu emblem (optional) | Part_B_Emblem_Cthulhu | 0.08 mm, 3 walls, 100%, tree supports from the plate | 0.4 h | 4 g |
 
-Global: supports off (plate 5's tile turns them on for itself), aux fan 10%, Generic PLA. Part B prints face-down (front on the plate). The project tints the
+Global: supports off (plate 5's tile turns them on for itself), aux fan 10%, avoid crossing walls on (the first bezel
+print came off strung), Generic PLA. Part B prints face-down (front on the plate). The project tints the
 filament warm light grey (`#D3CFC6`, near Apple "Platinum"; Snow White products were never bright white): load a matte
 warm-grey PLA for the bezel to match.
 
@@ -75,10 +76,10 @@ Each step refuses to continue on failure:
 | Relief | `CAD/make_relief.py --self-test` | handedness end to end: a feature on the source's right seats on the viewer's right (red with the mirrored mapping the first cut had) |
 | Emblem | `CAD/build_emblem.py` (manifold3d) | arm strain <= 2 % at the deflection that passes the hole; barb grip >= 0.3 mm; arm tips >= 0.3 mm clear of the shoulder as printed and clear of body and spine when deflected (each fails when its margin is broken) |
 | Part B | `CAD/build_part_b_blender_v21.py` (Blender, headless) | every boolean result manifold; each part one shell (gauge two), outward-facing; nothing written unless all pass |
-| Fit | `CAD/check_part_b_fit.py` | Upper / Lower / monitor overlap 0 for a 13.6 mm (measured) and 14.0 mm (spec) hump; lips over the monitor back (fails at v20's 0.3 mm play); gauge thin slots measured as the Lower's slot + 0 / 0.4 / 0.8 mm; styling: equal visible left / right / top borders, equal groove depth both sides, only the parting-line groove reaches the front edge, the front parting line sits in a groove (all four fail on the pre-2026-11-18 bezel; borders are measured on the screen opening's own run, since the rim round's flanks also lie behind the glass plane); emblem (seated by `chin_spec.EMBLEM_PLACE`, asserted a rotation, never a mirror): no overlap seated, face flush, pushed back 0.15 mm it lands on the seat, pulled forward 0.25 mm the barbs catch |
+| Fit | `CAD/check_part_b_fit.py` | Upper / Lower / monitor overlap 0 for a 13.6 mm (measured) and 14.0 mm (spec) hump; lips over the monitor back (fails at v20's 0.3 mm play); gauge thin slots measured as the Lower's slot + 0 / 0.4 / 0.8 mm; styling: equal visible left / right / top borders, equal groove depth both sides, only the parting-line groove reaches the front edge, the front parting line sits in a groove (all four fail on the pre-2026-11-18 bezel; borders are measured on the screen opening's own run, since the rim round's flanks also lie behind the glass plane); the reveal round the photographed image 0.8 mm on all four sides (fails on v21.1.0: 0.80 / 4.40 / 1.70 / 2.00 left / right / bottom / top); emblem (seated by `chin_spec.EMBLEM_PLACE`, asserted a rotation, never a mirror): no overlap seated, face flush, pushed back 0.15 mm it lands on the seat, pulled forward 0.25 mm the barbs catch |
 | Emblem art | `CAD/make_relief.py`, `CAD/build_emblem.py --relief` | the Cthulhu head's top inside the tile, the onlay seated in the real Lower with no overlap and on flat chin face all round |
 | STL files | `CAD/stl_io.py` (every manifold3d writer), `CAD/check_stl_files.py` | every shipped STL read back as a slicer reads it (vertices joined by exact float32 equality): each edge shared by exactly two faces, positive volume, one body (the gauge four); fails on v21.0.0's 171 / 336 / 1084 pinched edges |
-| Project | `CAD/build_3mf_v21.py` | P1S 0.4 nozzle profile, every part inside its plate and clear of the exclusion corner; all 5 plates slice with exit 0 and no warnings; a plate whose part asks for supports has them in its G-code |
+| Project | `CAD/build_3mf_v21.py` | P1S 0.4 nozzle profile, every part inside its plate and clear of the exclusion corner; all 5 plates slice with exit 0 and no warnings; a plate whose part asks for supports has them in its G-code; travel over open air (`CAD/gcode_travel.py`, more than 2 mm from that layer's extrusion) at most 250 hops on each bezel plate (fails on v21.1.0's project: 552 / 512) |
 | Guide | `CAD/render_sections.py`, `CAD/build_pdf_v21.py` | figures cut from the shipped STLs; sizes and times read from the STLs and the slice report |
 | Pictures | `CAD/render_views.py` (Blender), `CAD/pack_images.py` | the README pictures, light and dark, placed by the same rigid matrices as the fit checks |
 
@@ -90,7 +91,9 @@ lip 1.5 mm thick.
 ## Bezel styling (Snow White pass, 2026-11-18)
 Measured against the Snow White rules (2 mm lines on 10 mm centres set back from the front and back, zero-draft walls,
 2 mm front / 3 mm rear edges, inlaid badge, Fog or Platinum colour) and the 1989 Macintosh Portrait Display:
-- Visible frame 22.3 mm on the left, right and top (24.3 mm from the image edge, 2.0 mm black reveal), 36.0 mm chin.
+- Visible frame 22.3 mm on the left, right and top, 36.0 mm chin. The bezel's edge stops 0.8 mm short of the lit image
+  on every side (`REVEAL`), measured against the image as the owner's monitor shows it (`IMAGE` in
+  `CAD/monitor_spec.py`, 2026-11-19), not the spec sheet: v21.1 left 0.8 mm left, 4.4 mm right and 1.7 mm at the bottom.
 - Lines 2.0 mm wide, 1.5 mm deep, 10 mm pitch on both long sides (35 each, from the parting line), the top (clear of the
   USB-C bay) and the bottom (clear of the control bay), from 5.0 mm behind the face (past the front round) to the start of the rear round.
 - The Upper / Lower parting line runs through one full-depth side line and a 0.6 mm front-face groove, so it reads as a

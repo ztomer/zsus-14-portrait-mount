@@ -151,6 +151,28 @@ print(
 if not ok:
     fails.append("borders")
 
+# the reveal: black glass left showing between the image and the bezel's edge where it meets the glass, measured on
+# the meshes at every side against the image as photographed (CAD/monitor_spec.py IMAGE), the same on all four
+# (fails on v21.1.0: 0.80 left, 4.40 right, 1.70 bottom, 2.00 top against the 2026-11-19 photo)
+from monitor_spec import IMAGE, REVEAL  # noqa: E402
+
+ys_b = np.arange(by0 + 0.05, 150.0, 0.05)
+open_b = open_run(ys_b, first_z(both, [(-118.0, y) for y in ys_b]), 140.0)
+reveal = {
+    "left": IMAGE[0] - -open_x.max(),
+    "right": -open_x.min() - IMAGE[1],
+    "bottom": IMAGE[2] - open_b.min(),
+    "top": open_y.max() - IMAGE[3],
+}
+ok = all(abs(v - REVEAL) <= 0.05 for v in reveal.values())
+print(
+    f"{'OK  ' if ok else 'FAIL'} reveal round the image "
+    + ", ".join(f"{k} {v:.2f}" for k, v in reveal.items())
+    + f" mm (each {REVEAL} within 0.05)"
+)
+if not ok:
+    fails.append("reveal")
+
 
 def side_grooves(z, outer, d):
     """(y, depth) of every groove on one long side at height z; d = inward ray direction in x."""

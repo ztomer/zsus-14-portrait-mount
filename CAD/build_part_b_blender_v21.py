@@ -51,6 +51,7 @@ OUT = os.environ.get("PARTB_OUT", ROOT)
 
 # ---------------------------------------------------------------- monitor + fit (mm)
 # Monitor (Monitor_Dimensions_and_Ports.md, portrait, chin bezel left, front view; ZSUS spec 310 x 220 x 14)
+from bezel_spec import BEVEL_FACE, BEVEL_IN, FX0, FX1, FY0, FY1, MICRO, OPENING, grow  # noqa: E402  (the front)
 from monitor_spec import FIT_Z as FIT_Z_NOMINAL  # noqa: E402
 from monitor_spec import LEDGE, MON_H, MON_THICK, MON_THIN, MON_W  # noqa: E402  (one source: CAD/monitor_spec.py)
 
@@ -63,9 +64,9 @@ Z_THIN_LIP = LEDGE + MON_THIN + FIT_Z  # 10.0: a 7.0 mm slot, the gauge's 3-notc
 Z_THICK_LIP = LEDGE + MON_THICK + FIT_Z  # 17.1 (v20 16.9 -> 0.3 play; spec 14.0 hump still fits)
 XW0, XW1 = -FIT_X, MON_W + FIT_X  # pocket walls
 SEAM_Y = 177.35
-# Outer frame, centred on the screen opening so the visible borders (face + bevel to the glass) are equal:
-# 22.3 mm left / right / top (v21 before 2026-11-18: 22.1 / 22.5 / 18.8), 36.0 mm chin.
-FX0, FX1, FY0, FY1 = -5.0, 240.8, -29.5, 328.7
+# Outer frame (CAD/bezel_spec.py): placed round the screen opening so the visible borders (face + bevel to the glass)
+# are equal, 22.3 mm left / right / top, and the chin is 36 mm. The opening is the photographed image plus a 0.8 mm
+# reveal on every side (2026-11-19; v21.1: 2.0 mm round the spec sheet's image, 0.8 / 4.4 / 1.7 as printed).
 # Front rim: a 4 mm round in the spirit of the Apple IIc monitor's soft rim. Face-down, the part of a round
 # flatter than 45 deg would droop off the plate, so below its 45-deg point it continues as a 45-deg chamfer
 # (a teardrop round): it reads as a round and prints clean. Snow White's rule is 2 mm front / 3 mm rear.
@@ -92,7 +93,8 @@ scene.unit_settings.length_unit = "MILLIMETERS"
 
 
 # ---------------------------------------------------------------- master frame
-# Outer frame: 245.8 x 358.2 x H mm (FX/FY, plan R=3.0), teardrop-rounded front rim, rounded back edge
+# Outer frame: FX0..FX1 x FY0..FY1 x H mm (CAD/bezel_spec.py; 242.2 x 356.1, plan R=3.0), teardrop-rounded
+# front rim, rounded back edge
 t45 = FRONT_ROUND * (1 - math.sqrt(0.5))  # the round's 45-deg point: z = inset = 0.293 R
 rings = [(0.0, 2 * t45)]
 rings += [
@@ -109,19 +111,19 @@ rings += [
 part_b = make_obj_from_bm("Part_B_Master", bm_profiled_prism(FX0, FX1, FY0, FY1, 3.0, rings))
 apply_bool(
     part_b,
-    bm_frustum_rect(15.34, 220.46, 4.54, 308.36, -0.2, 15.64, 220.16, 4.84, 308.06, 0.30),
+    bm_frustum_rect(*grow(OPENING, BEVEL_FACE + MICRO), -0.2, *grow(OPENING, BEVEL_FACE), 0.30),
     "DIFFERENCE",
     "CRT_MicroChamfer",
 )
 apply_bool(
     part_b,
-    bm_frustum_rect(15.64, 220.16, 4.84, 308.06, 0.25, 19.1, 216.7, 8.3, 304.6, 6.02),
+    bm_frustum_rect(*grow(OPENING, BEVEL_FACE), 0.25, *grow(OPENING, -BEVEL_IN), 6.02),
     "DIFFERENCE",
     "CRT_Bevel",
 )
 apply_bool(
     part_b,
-    bm_rounded_prism(19.1, 216.7, 8.3, 304.6, 5.95, H + 0.5, r=0.0),
+    bm_rounded_prism(*grow(OPENING, -BEVEL_IN), 5.95, H + 0.5, r=0.0),
     "DIFFERENCE",
     "Screen_Through",
 )
@@ -395,7 +397,7 @@ apply_bool(
 )
 
 # Fit gauge: cut from the Lower before mirroring, so it mirrors with the parts (CAD/partb_accessories.py)
-build_fit_gauge(part_b_lower, H, LEDGE, Z_THIN_LIP, XW1, LIP_T)
+build_fit_gauge(part_b_lower, H, LEDGE, Z_THIN_LIP, XW1, LIP_T, FX1)
 
 # Mirror X so the Z=0 face-down print has true front-view L/R
 for name in ["Part_B_Upper", "Part_B_Lower", "Part_B_FitGauge"]:

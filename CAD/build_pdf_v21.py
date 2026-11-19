@@ -168,6 +168,13 @@ bottom; the parting line now sits in a groove across the front; a 4 mm front rou
 rear round. The chin takes the IIc's vertical slit light and a snap-in 18 mm emblem you can swap. Print the
 bezel
 in a matte warm light-grey PLA (Apple's Platinum), not bright white.</li>
+<li><b>Screen reveal (v21.2).</b> The opening is cut round the image as the monitor shows it, not the spec sheet:
+v21.1 left 0.8 mm of black glass on the left, 4.4 mm on the right and 1.7 mm at the bottom. Every side now leaves
+0.8 mm, and the right border and the chin move with the opening so the frame stays even.</li>
+<li><b>Stringing (v21.2).</b> The project turns on avoid crossing walls, which keeps most travel over the part instead
+of across the screen opening and the pocket. Strings that remain are usually wet filament: dry the PLA
+(about 55 C for 8 h) before printing the bezel, and pull any hairs out of the channels before sliding the monitor
+in.</li>
 <li><b>Bezel geometry repaired.</b> v20's Blender booleans failed silently: the thick-side lip and the lap tongue
 were missing,
 the thin-side lip and snap features were loose shells, and the snap arm collided with the solid Lower frame.

@@ -8,13 +8,13 @@ toward the back. The window sits in the 3 mm chin plate over the open control ba
 so the tile's back is reachable from behind without taking the bezel off.
 """
 
-# Placement (Apple IIc monitor: emblem lower-left, light lower-right, both on the chin's centre line). The visible
-# chin runs Y -29.5..6.5 (36 mm), so its centre line is Y -11.5; the emblem's visible edge (the pocket plus the
-# 0.225 mm its front chamfer is wide at the face) lines up with the screen opening's left edge at X 17.3,
-# and the light mirrors it about the bezel centre.
-CHIN_CY = -11.5
-OPENING_X0, BEZEL_CX = 17.3, 117.9
-EMBLEM_CX, EMBLEM_CY = OPENING_X0 + 18.4 / 2 + 0.225, CHIN_CY  # window centre (26.725, -11.5)
+# Placement (Apple IIc monitor: emblem lower-left, light lower-right, both on the visible chin's centre line, from
+# CAD/bezel_spec.py); the emblem's visible edge (the pocket plus the 0.225 mm its front chamfer is wide at the face)
+# lines up with the screen opening's left edge, and the light mirrors it about the bezel centre.
+from bezel_spec import BEZEL_CX, CHIN_CY, OPENING
+
+OPENING_X0 = OPENING[0]
+EMBLEM_CX, EMBLEM_CY = OPENING_X0 + 18.4 / 2 + 0.225, CHIN_CY  # window centre (26.725, -10.6)
 # The window is stepped so the tile seats from the front with its face flush: an 18.4 mm pocket 0.8 mm deep,
 # a 45-deg seat narrowing it to a 16.4 mm hole (z 0.8..1.8), and the hole through the rest of the plate.
 # The seat is 45 deg so it prints as a roof with the bezel face-down and as an overhang with the tile face-up.
@@ -25,7 +25,7 @@ CHIN_PLATE = 3.0  # plate thickness the tile's barbs catch behind (the bezel's L
 TILE_DEPTH = 11.1  # emblem tile, face to the back of its bridge (in the bay, which is open to Z = 18.6)
 
 # Vertical slit power-light window, lower-right (the IIc monitor's slit), and its plug's rear counterbore
-LED_CX = 2 * BEZEL_CX - EMBLEM_CX  # 209.0
+LED_CX = 2 * BEZEL_CX - EMBLEM_CX  # 205.5
 LED_SLIT = (LED_CX - 0.8, LED_CX + 0.8, CHIN_CY - 3.5, CHIN_CY + 3.5)  # X0, X1, Y0, Y1: 1.6 x 7 mm
 LED_BORE = (LED_CX - 3.0, LED_CX + 3.0, CHIN_CY - 5.5, CHIN_CY + 5.5)
 

@@ -1,5 +1,17 @@
 # Changelog
 
+## v21.2.0 (2026-11-19)
+
+- **Even screen reveal:** the opening is cut round the image as the owner's monitor shows it (photo of the printed
+  Lower, 2026-11-19), not the spec sheet, which put the image 1.2..2.4 mm too far right. v21.1 left 0.8 mm of black
+  glass on the left, 4.4 mm on the right and 1.7 mm at the bottom; every side now leaves 0.8 mm (`IMAGE`, `REVEAL` in
+  `CAD/monitor_spec.py`). The right border and the chin move with the opening (`CAD/bezel_spec.py`), so the frame
+  stays 22.3 mm left / right / top with a 36 mm chin; the bezel is 3.6 mm narrower. `CAD/check_part_b_fit.py` gates the
+  reveal on all four sides.
+- **Less stringing:** the first bezel print came off strung. The project turns on avoid crossing walls, and
+  `CAD/gcode_travel.py` gates travel over open air in the sliced G-code: the Lower's open-air hops drop from 552 to
+  about 180. Dry the PLA before printing the bezel.
+
 ## v21.1.0 (2026-11-18)
 
 - **Thin panel 6.5 mm** (fit gauge: only the 7.0 mm slot slides on); the Lower's thin slot is 7.0 mm and the gauge
