@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v21.1.0 (2026-11-18)
 
 - **Thin panel 6.5 mm** (fit gauge: only the 7.0 mm slot slides on); the Lower's thin slot is 7.0 mm and the gauge
   steps 7.0 / 7.4 / 7.8. The monitor's measurements live in one module, `CAD/monitor_spec.py`.
