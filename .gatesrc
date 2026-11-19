@@ -34,6 +34,4 @@ GOH_UNREAPED_SPAWN_MIN_FILES=1
 GOH_SUBPROCESS_STDIN_MIN_CALLS=1
 GOH_BUSY_LOOP_MIN_FILES=7
 GOH_INSTALLED_VERSION_MIN_FILES=5
-# md-links reads Markdown link syntax only: the README's 14 image references are HTML <img src>/srcset, which it
-# does not read (2026-11-18), so its subject here is the one LICENSE link. Raise this when it reads HTML references.
-GOH_MD_LINKS_MIN_LINKS=1
+GOH_MD_LINKS_MIN_LINKS=13
