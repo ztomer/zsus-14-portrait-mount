@@ -32,6 +32,9 @@ echo "-> Cthulhu emblem (CC BY, CAD/assets/cthulhu/ATTRIBUTION.md): relief + til
 echo "-> Part B assembly fit: CAD/check_part_b_fit.py"
 "${PY[@]}" CAD/check_part_b_fit.py
 
+echo "-> Every STL as a slicer reads it: CAD/check_stl_files.py"
+"${PY[@]}" CAD/check_stl_files.py
+
 echo "-> Bambu project + slice check: CAD/build_3mf_v21.py"
 "${PY[@]}" CAD/build_3mf_v21.py
 

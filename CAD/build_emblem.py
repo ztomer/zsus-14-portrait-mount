@@ -31,6 +31,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
 from chin_spec import CHIN_PLATE, EMBLEM_HOLE, EMBLEM_POCKET, EMBLEM_WIN, TILE_DEPTH  # noqa: E402
+from stl_io import write_stl  # noqa: E402
 
 # ---------------------------------------------------------------- design parameters (mm)
 CAP = EMBLEM_WIN / 2 - 0.2  # cap half-width: 0.2 mm per side in the pocket
@@ -197,21 +198,6 @@ def gates(t, relief=None):
     return fails
 
 
-def write_stl(man, path):
-    mesh = man.to_mesh()
-    v = np.asarray(mesh.vert_properties)[:, :3].astype(np.float32)
-    f = np.asarray(mesh.tri_verts, np.uint32)
-    tri = v[f]
-    n = np.cross(tri[:, 1] - tri[:, 0], tri[:, 2] - tri[:, 0])
-    n /= np.maximum(np.linalg.norm(n, axis=1, keepdims=True), 1e-12)
-    rec = np.zeros(len(f), dtype=[("n", "<f4", 3), ("v", "<f4", (3, 3)), ("a", "<u2")])
-    rec["n"], rec["v"] = n, tri
-    with open(path, "wb") as fh:
-        fh.write(b"ZSUS v21 Part_B_Emblem".ljust(80, b" "))
-        fh.write(np.uint32(len(f)).tobytes())
-        fh.write(rec.tobytes())
-
-
 def main(argv):
     relief = None
     if "--relief" in argv:
@@ -235,7 +221,7 @@ def main(argv):
         out = os.path.join(
             os.path.dirname(os.path.abspath(src)), f"Part_B_Emblem_{os.path.splitext(os.path.basename(src))[0]}.stl"
         )
-    write_stl(printed, out)
+    write_stl(printed, out, header="ZSUS v21 Part_B_Emblem")
     b = printed.bounding_box()
     print(f"wrote {os.path.relpath(out, ROOT)}  {b[3] - b[0]:.2f} x {b[4] - b[1]:.2f} x {b[5] - b[2]:.2f} mm, "
           f"{printed.volume() / 1000:.2f} cm3")  # fmt: skip

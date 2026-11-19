@@ -36,6 +36,9 @@ import manifold3d as m3
 import numpy as np
 import trimesh
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from stl_io import write_stl
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 BASE_ASSET = os.path.join(HERE, "assets", "Part_A_Mount_base_v20.stl")
@@ -149,7 +152,6 @@ def collet_boss():
         ]
     )
     thr = thread_solid(Z_THREAD_BOT, Z_THREAD_TOP) ^ env
-    core = m3.Manifold.cylinder(Z_THREAD_TOP - Z_THREAD_BOT, R_MINOR, R_MINOR, SEG).translate((0, 0, Z_THREAD_BOT))
     crown = revolve(
         [
             (0, Z_THREAD_TOP - 0.01),
@@ -158,7 +160,10 @@ def collet_boss():
             (0, Z_TIP),
         ]
     )
-    return thr + core + crown
+    # No separate core: the thread's slice outline is filled from the axis out, so it already holds the core. A core
+    # cylinder at R_MINOR touched the thread's root along lines (two polygons of one radius, different facets), and
+    # the STL came out with pinched edges once a slicer merged its vertices (CAD/check_stl_files.py).
+    return thr + crown
 
 
 def collet_cuts():
@@ -166,10 +171,12 @@ def collet_cuts():
     seat = m3.Manifold.sphere(CUP_R, SEG).translate((0, 0, BALL_C))
     z_mouth = BALL_C + math.sqrt(CUP_R**2 - MOUTH_R**2)
     mouth = m3.Manifold.cylinder(Z_TIP + 1.0 - BALL_C, MOUTH_R, MOUTH_R, SEG).translate((0, 0, BALL_C))
+    # the chamfer's 45-deg line runs on 0.5 mm into the mouth's void: a lead-in cut that STARTED on the mouth
+    # cylinder shared its corner circle with it, and the STL pinched along that circle (CAD/check_stl_files.py)
     lead = revolve(
         [
-            (0, Z_TIP - LEAD_IN),
-            (MOUTH_R, Z_TIP - LEAD_IN),
+            (0, Z_TIP - LEAD_IN - 0.5),
+            (MOUTH_R - 0.5, Z_TIP - LEAD_IN - 0.5),
             (MOUTH_R + LEAD_IN + 1.0, Z_TIP + 1.0),
             (0, Z_TIP + 1.0),
         ]
@@ -350,11 +357,12 @@ if __name__ == "__main__":
         ("Part_A_Test", build_test, (0.0, 0.0, TEST_BZ)),
         ("Part_A_Mount", build_mount, MOUNT_AXIS),
     ):
-        tm = check(name, fn())
+        man = fn()
+        tm = check(name, man)
         check_seat(name, tm, *axis)
         check_collar_travel(name, tm, *axis)
         check_leaf_strain()
-        tm.export(os.path.join(out, name + ".stl"))
+        write_stl(man, os.path.join(out, name + ".stl"), header=f"ZSUS v21 {name}")
     z_mouth = BALL_C + math.sqrt(CUP_R**2 - MOUTH_R**2)
     wrap = math.degrees(math.asin((z_mouth - BALL_C) / CUP_R))
     print(

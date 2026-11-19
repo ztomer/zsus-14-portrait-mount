@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+- **Thin panel 6.5 mm** (fit gauge: only the 7.0 mm slot slides on); the Lower's thin slot is 7.0 mm and the gauge
+  steps 7.0 / 7.4 / 7.8. The monitor's measurements live in one module, `CAD/monitor_spec.py`.
+- **STL files a slicer reads as closed:** v21.0.0 shipped pinched edges (edges shared by 4 to 10 faces) in
+  Part_A_Mount (171), Part_A_Test (336) and the Cthulhu tile (1084); Bambu Studio sliced them without a warning.
+  Causes removed: a redundant thread core and a lead-in that started on the mouth cylinder (Part A), a relief
+  silhouette whose walls stood on the height field's grid lines and an anchor cut from the same outline (tile).
+  Every manifold3d writer now goes through `CAD/stl_io.py` (float32 weld, read-back refusal), and
+  `CAD/check_stl_files.py` gates every STL in the build.
+
 ## v21.0.0 (2026-11-18)
 
 The first public release: a 14" portrait monitor mount (ball socket, Part A) and the Snow White

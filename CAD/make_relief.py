@@ -38,8 +38,10 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
 from build_emblem import CAP, RELIEF_D, RIM  # noqa: E402
+from stl_io import write_stl  # noqa: E402
 
 GRID = 0.06  # tile-side sample pitch (mm): finer than the 0.4 mm nozzle can draw, coarse enough to stay small
+SIL_GROW = 0.013  # mm the silhouette grows by: off the grid lines (see onlay_solid)
 EDGE_SOFT = 0.06  # mm: smooths the silhouette step (below what a 0.4 mm nozzle resolves)
 H_BG = 0.03  # panel floor stands this proud of the cut floor, so the union never meets a coplanar face
 # viewer side -> (axis looked along, right-hand axis in the picture, its sign); picture up is always +z
@@ -115,8 +117,8 @@ def heightfield(us, vs, top, bottom):
 
 def onlay_solid(us, vs, ht):
     """The proud relief: the height field (w = -ht, back on the face plane w = 0) cut to the feature's
-    silhouette, plus an anchor 0.3 mm into the tile's cap wherever the two overlap, so the union with the tile
-    never meets a coplanar face."""
+    silhouette, plus an anchor 0.3 mm into the tile's cap wherever the two overlap (and 0.1 mm past the cap's
+    edge), so the union with the tile never meets a coplanar face or edge."""
     from skimage import measure
 
     polys = [
@@ -124,11 +126,19 @@ def onlay_solid(us, vs, ht):
         for cont in measure.find_contours(ht, (H_BG + 0.15) / 2)
         if len(cont) > 8
     ]
-    sil = m3.CrossSection(polys, m3.FillRule.EvenOdd)
+    # The silhouette grows by SIL_GROW: marching squares puts every contour vertex ON a grid edge, where the
+    # height field's own triangle edges run, so walls cut exactly there met the slab at coincident edges, and
+    # contours touching at a saddle point made a prism edge shared by four faces; the STL pinched at both
+    # (CAD/check_stl_files.py). Grown by a fraction of GRID that is no simple ratio of it, the walls sit between
+    # grid lines and touching contours merge.
+    sil = m3.CrossSection(polys, m3.FillRule.EvenOdd).offset(SIL_GROW, m3.JoinType.Round)
     slab = heightfield(us, vs, -ht, 0.0)
     prism = m3.Manifold.extrude(sil, RELIEF_D + 0.2).translate((0.0, 0.0, -(RELIEF_D + 0.2)))
-    cap = m3.CrossSection.square((2 * CAP - 0.1, 2 * CAP - 0.1)).translate((-(CAP - 0.05), -(CAP - 0.05)))
-    anchor = m3.Manifold.extrude(sil ^ cap, 0.32).translate((0.0, 0.0, -0.02))
+    # the anchor reaches 0.1 mm PAST the cap's edge (into its 0.2 mm pocket clearance), so the cap's front edge is
+    # buried in it; inset, the relief's back lay on the cap face up to that edge and the STL pinched along it
+    cap = m3.CrossSection.square((2 * CAP + 0.2, 2 * CAP + 0.2)).translate((-(CAP + 0.1), -(CAP + 0.1)))
+    # inset 0.03 mm from the silhouette: cut from the same outline, the anchor's walls lay ON the relief's walls
+    anchor = m3.Manifold.extrude(sil.offset(-0.03, m3.JoinType.Round) ^ cap, 0.32).translate((0.0, 0.0, -0.02))
     return (slab ^ prism) + anchor
 
 
@@ -239,8 +249,7 @@ def main(argv):
     out_dir = os.path.join(ROOT, r["out_dir"]) if "out_dir" in r else os.path.dirname(src)
     os.makedirs(out_dir, exist_ok=True)
     stem = os.path.join(out_dir, os.path.splitext(os.path.basename(recipe_path))[0] + "_relief")
-    mesh_out = solid.to_mesh()
-    trimesh.Trimesh(np.asarray(mesh_out.vert_properties)[:, :3], np.asarray(mesh_out.tri_verts)).export(stem + ".stl")
+    write_stl(solid, stem + ".stl", header="ZSUS relief", shells=None)  # an onlay may be several islands
     # the preview is drawn as the viewer sees the face: picture right = -u, so flip the u axis
     img = (ht[::-1, ::-1] / RELIEF_D * 255).astype(np.uint8)
     Image.fromarray(img).resize((ht.shape[1] * 2, ht.shape[0] * 2)).save(stem + ".png")
