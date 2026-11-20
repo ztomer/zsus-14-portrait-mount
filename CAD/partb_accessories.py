@@ -1,7 +1,7 @@
 """
 Accessory parts for CAD/build_part_b_blender_v21.py: the fit gauge (cut from the finished Lower), the seam test
-(the thin-side latch corner cut from both halves) and the press-fit chin inserts. Imported by that script; runs only
-inside Blender.
+(the thin-side screw-joint corner cut from both halves) and the press-fit chin inserts. Imported by that script; runs
+only inside Blender.
 """
 
 import bmesh
@@ -72,8 +72,9 @@ def build_fit_gauge(part_b_lower, H, LEDGE, Z_THIN_LIP, XW1, LIP_T, FX1):
 
 def build_seam_test(part_b_upper, part_b_lower, H, seam_y, fx1):
     """Seam test: the thin-side corner of each half round the seam (front-view X 205 to the outer edge, 15 mm each
-    side of the parting line), cut before mirroring so it mirrors with the parts. It is the real latch, snap arm,
-    notch, lip and channel, so the two pieces snap together as the bezel will, in minutes of print instead of hours.
+    side of the parting line), cut before mirroring so it mirrors with the parts. It is the real joint, tab,
+    recess, nut pocket, lip and channel, so the two pieces screw together as the bezel will, in minutes of print instead
+    of hours.
     Returns the (Part_B_SeamTest_Upper, Part_B_SeamTest_Lower) objects, one shell each."""
     out = []
     for part, tag, y0, y1 in (

@@ -11,7 +11,7 @@ import trimesh
 
 ROOT = sys.argv[1] if len(sys.argv) > 1 else os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from bezel_spec import LATCH_CATCH  # noqa: E402
+from bezel_spec import CLEAR_D, HEAD_K, HOLE_Z0, NUT_T, SCREW, TAB_Z0  # noqa: E402
 from monitor_spec import HUMP_X1, LEDGE, MON_H, MON_THICK, MON_THIN, MON_W, STEP_X1  # noqa: E402
 
 ZSUS_SPEC_THICK = 14.0  # the hump at the ZSUS spec's maximum thickness must still slide in
@@ -74,27 +74,49 @@ for x_mon, z_back, side in (
             fails.append(f"{nm} {side}")
 
 
-# right latch (thin side): the Upper's snap arm hangs into the Lower's notch. Lifted off its seat along +y (the halves
-# parting), the Upper travels LATCH_CATCH (+/- 0.2) before the barb meets the ledge, so the hook still holds with the
-# seam that far open; just past that, the barb bears on the ledge across >= 0.6 mm in x. A square hook bears across
-# all 0.8 mm of it; v21.2's 40-degree ramp met it at a corner after 0.65 mm and cammed the arm out.
-lo_latch = lo ^ m3.Manifold.cube((9.0, 16.0, 9.0)).translate((-233.5, 165.0, 4.5))  # print frame x = -X
+# thin-side screw joint: an M3 screw through the Lower's tab into a nut in the Upper's hex pocket, modelled in place
+# (print frame x = -X): a 3.0 mm shank from the head's seat to the hole's bottom, a 5.5 mm nut on the pocket's floor and
+# a 5.5 mm socket head in the counterbore. Shut, it clears both halves; pulled apart along y, the Lower's tab meets
+# the shank and the Upper meets the nut within 0.4 mm each, so the seam opens <= 0.8 mm and then the screw bears
+# (v21.3's snap arm had no such stop); turned 30 degrees, the nut cannot sit in its pocket; and the hole leaves the
+# front face whole.
+SX, SY = -SCREW[0], SCREW[1]
+H_FRAME = 18.6
+NUT_Z0 = TAB_Z0 - 0.1 - NUT_T
 
 
-def latch_hit(t):
-    return up.translate((0.0, t, 0.0)) ^ lo_latch
+def at_axis(m):
+    return m.translate((SX, SY, 0.0))
 
 
-stop = next((t for t in np.arange(0.05, 3.0, 0.05) if latch_hit(float(t)).volume() > 1e-3), None)
-bb = latch_hit(float(stop) + 0.2).bounding_box() if stop is not None else (0.0,) * 6
-bear = bb[3] - bb[0]
+shank = at_axis(m3.Manifold.cylinder(H_FRAME - HEAD_K - HOLE_Z0, 1.5, 1.5, 32).translate((0, 0, HOLE_Z0 + 0.05)))
+head = at_axis(m3.Manifold.cylinder(HEAD_K - 0.2, 2.75, 2.75, 32).translate((0, 0, H_FRAME - HEAD_K)))
+floor = at_axis(m3.Manifold.cylinder(HOLE_Z0 - 0.6, CLEAR_D / 2, CLEAR_D / 2, 32).translate((0, 0, 0.5)))
+
+
+def first_hit(a, b, step=0.05, upto=3.0):
+    """How far `a` moves along +y before it meets `b`."""
+    steps = (float(t) for t in np.arange(step, upto, step))
+    return next((round(t, 2) for t in steps if (a.translate((0.0, t, 0.0)) ^ b).volume() > 1e-3), None)
+
+
+def nut_at(deg):
+    r = 5.5 / np.sqrt(3)
+    return at_axis(m3.Manifold.cylinder(2.4, r, r, 6).rotate((0, 0, deg)).translate((0, 0, NUT_Z0)))
+
+
+nut, turned = nut_at(0), nut_at(30)
+screw = shank + nut + head
+lo_stop, up_stop = first_hit(shank, lo), first_hit(up, nut)  # the Lower pulled -y, the Upper +y
+solid = (up ^ floor).volume()
+clear_up, clear_lo = (up ^ screw).volume() <= 0.01, (lo ^ screw).volume() <= 0.01  # a stop means nothing without these
 for what, ok, got in (
-    (
-        f"latch catches after {LATCH_CATCH:g} mm of parting",
-        stop is not None and abs(stop - LATCH_CATCH) <= 0.2,
-        "none" if stop is None else f"{stop:.2f} mm",
-    ),
-    ("latch hook bears >= 0.6 mm on the ledge", bear >= 0.6, f"{bear:.2f} mm"),
+    ("screw clears the Upper, shut", clear_up, f"{(up ^ screw).volume():.3f} mm3"),
+    ("screw and nut clear the Lower, shut", clear_lo, f"{(lo ^ screw).volume():.3f} mm3"),
+    ("pulled apart, the Lower's tab meets the screw within 0.4 mm", clear_lo and (lo_stop or 9) <= 0.4, f"{lo_stop}"),
+    ("pulled apart, the Upper meets the nut within 0.4 mm", clear_up and (up_stop or 9) <= 0.4, f"{up_stop} mm"),
+    ("the nut cannot turn in its pocket", (up ^ turned).volume() > 0.5, f"{(up ^ turned).volume():.2f} mm3 in the way"),
+    ("front face solid under the screw hole", solid >= 0.99 * floor.volume(), f"{solid:.1f}/{floor.volume():.1f} mm3"),
 ):
     print(f"{'OK  ' if ok else 'FAIL'} {what}: {got}")
     if not ok:

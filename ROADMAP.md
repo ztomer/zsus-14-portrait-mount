@@ -10,12 +10,13 @@ Open work only. What shipped is in git history.
   break cleanly off the onlay's back, and the onlay sits flat on the chin face.
   Done when: it does, or `CAD/build_emblem.py`'s barb (`BARB`, `CATCH_DEG`) or clearances are adjusted and rebuilt.
 
-- **FIT.SEAM** Print plate 1's seam test (`Part_B_SeamTest_Upper` + `_Lower`): the barb clicks into the notch, the
-  pieces hold when pulled apart along the seam, and the finger tab releases them. Then print the v21.3 Upper and
-  Lower (plates 3 and 4) on the monitor: the halves meet at the seam on both sides and the thin side latches.
-  Done when: they do, or `LATCH_CATCH` (`CAD/bezel_spec.py`), `MON_H` (`CAD/monitor_spec.py`, tape 311.0) or the
-  shrink compensation (`filament_shrink` 99.4 %, `CAD/layout.json`, from one tape reading of the closed bezel: about
-  354 of 356.1 mm) is corrected and rebuilt. The closed v21.3 bezel should measure 355.8 mm (the model's length).
+- **FIT.SEAM** Print plate 1's seam test (`Part_B_SeamTest_Upper` + `_Lower`) with an M3 nut and screw: the nut
+  drops into its hex pocket and does not turn, the tab seats over it, the screw reaches the nut, and pulled apart the
+  pieces move no more than a fraction of a millimetre. Then print the v21.4 Upper and Lower (plates 3 and 4) on the
+  monitor: the halves meet at the seam on both sides. Done when: they do, or the joint (`TAB_*`, `NUT_*`, `CLEAR_D`
+  in `CAD/bezel_spec.py`), `MON_H` (`CAD/monitor_spec.py`, tape 311.0) or the shrink compensation (`filament_shrink`
+  99.4 %, `CAD/layout.json`, from one tape reading of the closed bezel: about 354 of 356.1 mm) is corrected and
+  rebuilt. The closed v21.4 bezel should measure 355.8 mm (the model's length).
 
 - **FIT.REVEAL** With the v21.3 bezel on, check the black gap between the image and the bezel's edge: 0.8 mm on every
   side (`REVEAL`). The top edge is now the image's bottom plus its active height (304.1), not a photographed edge,

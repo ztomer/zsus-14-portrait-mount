@@ -1,5 +1,19 @@
 # Changelog
 
+## v21.4.0 (2026-11-20)
+
+- **The thin side is held by an M3 screw and nut, not a snap latch:** v21.3's square-hook latch let go when pulled
+  (owner's seam test, 2026-11-20). Its arm, a 1.8 x 17 mm cantilever, has to bend to snap in, so it bends away under
+  any pull, and a stiffer one would not snap in at all. Now a 9 x 10 x 6 mm tab on the Lower's back laps over a recess
+  in the Upper's, and one M3 screw (6 to 12 mm) drops through the tab into an M3 nut held in a hex pocket in the
+  recess floor: pulling the halves apart is shear on the screw. No heat-set insert. The tab is the Lower's because
+  its tree supports string: on the Upper they added 49 open-air hops and put plate 4 over its 250. `CAD/check_part_b_fit.py` models
+  the screw and nut in place: they clear both halves shut, pulled apart the Lower's tab meets the screw after 0.25 mm
+  and the Upper meets the nut after 0.2 mm, the nut cannot turn (1.9 mm3 in the way at 30 degrees), and the front face is
+  solid under the hole (v21.3.0's parts: red). The Upper's supports under the snap arm's tip are gone; the Lower
+  takes one under the tab. The seam test on plate 1 is cut from the new parts; the guide's figure is a section through the
+  screw. Reprint both halves and the seam test.
+
 ## v21.3.0 (2026-11-19)
 
 - **The bezel prints to size:** the two halves stood about 2 mm apart on the monitor (flush without it) because PLA

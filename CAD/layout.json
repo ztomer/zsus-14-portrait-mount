@@ -123,8 +123,7 @@
    "settings": {
     "brim_type": "no_brim"
    },
-   "shells": 1,
-   "support_regions_json": "STLs/Part_B_supports.json"
+   "shells": 1
   },
   {
    "name": "Part_B_SeamTest_Lower",
@@ -138,7 +137,8 @@
    "settings": {
     "brim_type": "no_brim"
    },
-   "shells": 1
+   "shells": 1,
+   "support_regions_json": "STLs/Part_B_supports.json"
   },
   {
    "name": "Part_A_Mount",
@@ -185,7 +185,8 @@
    "settings": {
     "brim_type": "no_brim"
    },
-   "shells": 1
+   "shells": 1,
+   "support_regions_json": "STLs/Part_B_supports.json"
   },
   {
    "name": "Part_B_Upper",

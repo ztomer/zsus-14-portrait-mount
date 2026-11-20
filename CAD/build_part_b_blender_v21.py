@@ -12,8 +12,7 @@ v21 changes against v20 (all measured on the v20 STLs):
   * Fit is parametric (see FIT_*): sliding channels get 0.5 mm per side instead of 0.3 mm, the
     thick-side channel is sized so the ZSUS spec thickness (14.0 mm) still slides in, and the
     frame is 18.6 mm (v20 18.0) so the thick-side lip keeps 1.5 mm of material.
-  * The left lap tongue / pocket stop at the pocket wall (v20 protruded 0.2 mm into the monitor edge),
-    and the right snap anchor starts at the pocket wall.
+  * The left lap tongue / pocket stop at the pocket wall (v20 protruded 0.2 mm into the monitor edge).
   * The LED window gets a rear counterbore so the LED plug sits flush with the chin face
     (v20: an 18 mm-deep 2 mm tunnel; the 3 mm plug ended up 14 mm below the surface).
   * Adds Part_B_FitGauge: a 15 mm slice of the Lower's two side channels to test-slide on the
@@ -52,10 +51,13 @@ OUT = os.environ.get("PARTB_OUT", ROOT)
 
 # ---------------------------------------------------------------- monitor + fit (mm)
 # Monitor (Monitor_Dimensions_and_Ports.md, portrait, chin bezel left, front view; 311 x 220 x 13.6 measured)
-from bezel_spec import BEVEL_FACE, BEVEL_IN, FX0, FX1, FY0, FY1, LATCH_CATCH, MICRO, OPENING, grow  # noqa: E402
+import bezel_spec as bs  # noqa: E402
+from bezel_spec import BEVEL_FACE, BEVEL_IN, FX0, FX1, FY0, FY1, MICRO, OPENING, SEAM_Y, grow  # noqa: E402
 from monitor_spec import FIT_Z as FIT_Z_NOMINAL  # noqa: E402
 from monitor_spec import LEDGE, MON_H, MON_THICK, MON_THIN, MON_W  # noqa: E402  (one source: CAD/monitor_spec.py)
 
+CLEAR_D, HEAD_D, HEAD_K, HOLE_Z0 = bs.CLEAR_D, bs.HEAD_D, bs.HEAD_K, bs.HOLE_Z0  # the thin-side screw joint
+NUT_AF, NUT_T, SCREW, TAB_LEN, TAB_X, TAB_Z0 = bs.NUT_AF, bs.NUT_T, bs.SCREW, bs.TAB_LEN, bs.TAB_X, bs.TAB_Z0
 H = 18.6  # frame height (v20: 18.0)
 FIT_X = 0.5  # per side, along the two long sliding channels
 FIT_Y = 0.3  # per end (monitor does not slide on these faces)
@@ -64,7 +66,6 @@ LIP_T = 2.0  # thin-side lip thickness
 Z_THIN_LIP = LEDGE + MON_THIN + FIT_Z  # 10.0: a 7.0 mm slot, the gauge's 3-notch piece
 Z_THICK_LIP = LEDGE + MON_THICK + FIT_Z  # 17.1 (v20 16.9 -> 0.3 play; spec 14.0 hump still fits)
 XW0, XW1 = -FIT_X, MON_W + FIT_X  # pocket walls
-SEAM_Y = 177.35
 # Outer frame (CAD/bezel_spec.py): placed round the screen opening so the visible borders (face + bevel to the glass)
 # are equal, 22.3 mm left / right / top, and the chin is 36 mm. The opening is the photographed image plus a 0.8 mm
 # reveal on every side (2026-11-19; v21.1: 2.0 mm round the spec sheet's image, 0.8 / 4.4 / 1.7 as printed).
@@ -330,84 +331,36 @@ apply_bool(
     "Left_Detent_Recess",
 )
 
-# Right-flank screwless compliant snap latch (1.80 mm = 4 x 0.45 mm wall multiple).
-# v20 placed the arm and catch inside the SOLID right frame: the arm (Y 171..177.35) collided with the Lower
-# and the catch notch was a sealed internal cavity, so the halves could not mate. v21 cuts a back-open
-# channel (Z 4.0..H) for the arm through both halves; the arm hangs free from the Upper (root at Y 188.0),
-# its barb rides the Lower's catch wall (X 230.2, 0.2 mm off the arm face) via a lead-in and drops into the
-# notch; pressing the finger tab -X (toward the screen) releases it. The barb's top face is a square hook on the
-# notch's ledge (v21.2: a 40-degree ramp, a detent that cammed out at about 2 kg), and the ledge stands LATCH_CATCH
-# above it (CAD/bezel_spec.py), so the hook holds with the seam anywhere from shut to that far open
-# (check_part_b_fit.py gates both).
-ARM_X0, ARM_X1 = 228.2, 230.0
-BARB_Y0, BARB_Y1 = 171.0, 174.2  # the barb's lead-in starts at its foot; its hook face is at the top
-CH_X0, CH_X1 = (
-    226.0,
-    ARM_X1 + 0.2,
-)  # 2.2 mm flex room on the -X side, 0.2 mm on the catch side
-CH_Z0 = 4.0
-ARM_Z0 = 4.5
-# Face-down, the arm is a 17 mm beam that starts in mid-air: the slicer calls it a floating cantilever. Tree supports
-# from the plate carry its tip past the seam (SUPPORTS below), so it prints as a bridge from its root at y 188 over
-# the Upper's own channel. That floor is 1.5 mm below the arm (v21.2.0: 0.5), so a sagging first layer cannot fuse the
-# arm to it; the 3.0 mm skin left is the ledge's.
-CH_Z0_UPPER = ARM_Z0 - 1.5
-apply_bool(
-    part_b_upper,
-    bm_rounded_prism(CH_X0, 232.5, SEAM_Y - 1.0, 188.0, CH_Z0_UPPER, H + 0.5, r=0.0),
-    "DIFFERENCE",
-    "Snap_Relief_Upper",
-)
-apply_bool(
-    part_b_upper,
-    bm_rounded_prism(ARM_X0, ARM_X1, 171.0, 188.5, ARM_Z0, 13.5, r=0.0),
-    "UNION",
-    "Snap_Arm",
-)
-apply_bool(
-    part_b_upper,
-    bm_prism_xy(
-        [(ARM_X1 - 0.2, BARB_Y0), (231.0, BARB_Y0 + 1.0), (231.0, BARB_Y1), (ARM_X1 - 0.2, BARB_Y1)],
-        ARM_Z0,
-        13.5,
-    ),
-    "UNION",
-    "Snap_Barb",
-)
-apply_bool(
-    part_b_upper,
-    bm_rounded_prism(227.7, ARM_X1, 171.0, 173.5, 13.4, 16.8, r=0.0),
-    "UNION",
-    "Snap_FingerTab",
-)
+# Thin-side screw joint (CAD/bezel_spec.py): the Lower's tab laps over the Upper's recess, and an M3 screw through the
+# tab into a nut in the recess floor's hex pocket pins the seam shut. Face-down, the tab's 10 mm past the seam is in
+# mid-air: tree supports from the plate carry it (SUPPORTS below). Everything else here is a pocket open to the back.
+SX, SY = SCREW
+NUT_R = NUT_AF / math.sqrt(3)  # the hex's corner radius; a corner on +-X puts a flat across the pull (+-Y)
+
+
+def ring(r, n=24):
+    """An n-gon round (SX, SY) whose flats clear radius r."""
+    rc = r / math.cos(math.pi / n)
+    return [(SX + rc * math.cos(2 * math.pi * k / n), SY + rc * math.sin(2 * math.pi * k / n)) for k in range(n)]
+
+
 apply_bool(
     part_b_lower,
-    bm_rounded_prism(CH_X0, CH_X1, 170.5, SEAM_Y + 1.0, CH_Z0, H + 0.5, r=0.0),
-    "DIFFERENCE",
-    "Catch_Arm_Channel",
+    bm_rounded_prism(TAB_X[0], TAB_X[1], SEAM_Y - 0.5, SEAM_Y + TAB_LEN, TAB_Z0, H, r=0.0),
+    "UNION",
+    "Screw_Tab",
 )
+apply_bool(part_b_lower, bm_prism_xy(ring(CLEAR_D / 2), TAB_Z0 - 0.5, H + 0.5), "DIFFERENCE", "Screw_Tab_Hole")
+apply_bool(part_b_lower, bm_prism_xy(ring(HEAD_D / 2), H - HEAD_K, H + 0.5), "DIFFERENCE", "Screw_Head_Counterbore")
 apply_bool(
-    part_b_lower,
-    bm_rounded_prism(CH_X1 - 0.1, 231.4, BARB_Y0 - 0.2, BARB_Y1 + LATCH_CATCH, CH_Z0, H + 0.5, r=0.0),
+    part_b_upper,
+    bm_rounded_prism(TAB_X[0] - 0.2, TAB_X[1] + 0.2, SEAM_Y - 0.5, SEAM_Y + TAB_LEN + 0.5, TAB_Z0 - 0.1, H + 0.5),
     "DIFFERENCE",
-    "Catch_Notch",
+    "Screw_Tab_Recess",
 )
-apply_bool(
-    part_b_lower,
-    bm_prism_xy(
-        [
-            (CH_X1 - 0.1, SEAM_Y + 1.0),
-            (CH_X1 - 0.1, 175.9),
-            (CH_X1, 175.9),
-            (231.4, SEAM_Y),
-            (231.4, SEAM_Y + 1.0),
-        ],
-        CH_Z0,
-        H + 0.5,
-    ),
-    "DIFFERENCE",
-    "Catch_LeadIn",
-)
+hexagon = [(SX + NUT_R * math.cos(math.pi * k / 3), SY + NUT_R * math.sin(math.pi * k / 3)) for k in range(6)]
+apply_bool(part_b_upper, bm_prism_xy(hexagon, TAB_Z0 - 0.1 - NUT_T, TAB_Z0), "DIFFERENCE", "Screw_Nut_Pocket")
+apply_bool(part_b_upper, bm_prism_xy(ring(CLEAR_D / 2), HOLE_Z0, TAB_Z0), "DIFFERENCE", "Screw_Hole_Upper")
 
 # Fit gauge: cut from the Lower before mirroring, so it mirrors with the parts (CAD/partb_accessories.py)
 build_fit_gauge(part_b_lower, H, LEDGE, Z_THIN_LIP, XW1, LIP_T, FX1)
@@ -418,15 +371,17 @@ build_seam_test(part_b_upper, part_b_lower, H, SEAM_Y, FX1)
 # else). Every other downward face is 45 deg, a short ledge or a bridge. Pre-mirror (x0, x1, y0, y1, z0, z1);
 # mirrored at export. Each box reaches 0.5 mm into the solid above its overhang: a face on a slice plane first
 # prints one layer up.
+TAB_SUPPORT = (TAB_X[0] - 0.3, TAB_X[1] + 0.3, SEAM_Y, SEAM_Y + TAB_LEN + 0.3, 0.0, TAB_Z0 + 0.5)
 SUPPORTS = {
     "Part_B_Upper": [
-        ("snap arm tip past the seam: 6.4 mm over open air down to the plate",
-         (ARM_X0 - 0.3, 231.3, 170.7, SEAM_Y, 0.0, ARM_Z0 + 0.5)),
         ("lip over the left lap pocket at the seam: 4.2 mm flat off the outer wall, the Lower's tongue seats under it",
          (-2.6, 1.8, SEAM_Y, 182.6, Z_THICK_LIP - 0.3, Z_THICK_LIP + 0.5)),
     ],
-    "Part_B_SeamTest_Upper": [
-        ("snap arm tip past the seam, as on the Upper", (ARM_X0 - 0.3, 231.3, 170.7, SEAM_Y, 0.0, ARM_Z0 + 0.5)),
+    "Part_B_Lower": [
+        ("screw tab past the seam: 10 mm at 12.6 mm over open air down to the plate", TAB_SUPPORT),
+    ],
+    "Part_B_SeamTest_Lower": [
+        ("screw tab past the seam, as on the Lower", TAB_SUPPORT),
     ],
 }  # fmt: skip
 

@@ -1,17 +1,6 @@
 {
  "Part_B_Upper": [
   {
-   "why": "snap arm tip past the seam: 6.4 mm over open air down to the plate",
-   "box": [
-    -231.3,
-    -227.9,
-    170.7,
-    177.35,
-    0.0,
-    5.0
-   ]
-  },
-  {
    "why": "lip over the left lap pocket at the seam: 4.2 mm flat off the outer wall, the Lower's tongue seats under it",
    "box": [
     -1.8,
@@ -23,16 +12,29 @@
    ]
   }
  ],
- "Part_B_SeamTest_Upper": [
+ "Part_B_Lower": [
   {
-   "why": "snap arm tip past the seam, as on the Upper",
+   "why": "screw tab past the seam: 10 mm at 12.6 mm over open air down to the plate",
    "box": [
-    -231.3,
-    -227.9,
-    170.7,
+    -233.3,
+    -223.7,
     177.35,
+    187.65,
     0.0,
-    5.0
+    13.1
+   ]
+  }
+ ],
+ "Part_B_SeamTest_Lower": [
+  {
+   "why": "screw tab past the seam, as on the Lower",
+   "box": [
+    -233.3,
+    -223.7,
+    177.35,
+    187.65,
+    0.0,
+    13.1
    ]
   }
  ]

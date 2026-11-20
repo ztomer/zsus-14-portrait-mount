@@ -35,6 +35,19 @@ FY1 = OPENING[3] + BORDER
 BEZEL_CX = (FX0 + FX1) / 2
 CHIN_CY = (FY0 + OPENING[2]) / 2  # the visible chin's centre line
 
-# The thin-side latch (CAD/build_part_b_blender_v21.py builds it, CAD/check_part_b_fit.py gates it): the barb's square
-# hook sits this far below the Lower's ledge with the halves shut, so it still holds with the seam that far open.
-LATCH_CATCH = 1.5
+# The halves part along Y at SEAM_Y (front view). On the thin side they are held by ONE M3 screw used as a pin
+# (CAD/build_part_b_blender_v21.py builds it, CAD/check_part_b_fit.py gates it): a tab on the Lower's back laps over a
+# recess in the Upper's, and the screw drops through the tab into an M3 nut held in a hex pocket in the recess floor, so
+# pulling the halves apart is shear on the screw, not a bend. (v21.3's snap arm, a 1.8 mm cantilever, bent and let go.)
+# Face-down, the tab past the seam takes tree supports, and their travel strings: on the Upper its 49 open-air hops put
+# plate 4 over its 250 (256), so the tab is the Lower's, whose plate had the room (183 before).
+# The thick side keeps its lap tongue and detent: its 4.5 mm wall has no room for a nut.
+SEAM_Y = 177.35
+TAB_X = (224.0, 233.0)  # front-view X: the pocket wall is at 220.5, the outer face's back round starts at 234.2
+TAB_LEN = 10.0  # how far the tab reaches past the seam over the Upper
+TAB_Z0 = 12.6  # the tab's underside: 6.0 mm of tab under the 18.6 mm back face
+SCREW = ((TAB_X[0] + TAB_X[1]) / 2, SEAM_Y + TAB_LEN / 2)  # the screw's axis, front view (X, Y)
+CLEAR_D = 3.4  # M3 clearance, through the tab and below the nut
+HEAD_D, HEAD_K = 6.5, 3.2  # counterbore in the tab's back: an M3 socket, button or pan head sits below the face
+NUT_AF, NUT_T = 5.8, 2.7  # hex pocket for an M3 nut (5.5 across flats, 2.4 thick), a flat facing the pull
+HOLE_Z0 = 3.0  # the hole's bottom, 3 mm behind the front face: an M3 x 6 to x 12 screw fits
