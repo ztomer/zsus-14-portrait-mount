@@ -7,7 +7,13 @@ Front-view monitor coordinates (Monitor_Dimensions_and_Ports.md): X right, Y up,
 back. Portrait, the chin bezel on the left: a 13.6 mm hump over X 0..73, a step, and a flat panel over X 76..220.
 """
 
-MON_W, MON_H = 220.0, 310.0
+# MON_H is the owner's tape, 310.5..311 mm (2026-11-19), not the spec sheet's 310.0. The printed bezel's halves stood
+# about 2 mm apart on the monitor because PLA shrank, not because the monitor is longer: the closed bezel measured
+# about 354 mm against the model's 356.1 (0.6 %), so the 310.6 mm pocket printed near 308.8. The slicer now
+# compensates (CAD/layout.json filament_shrink 99.4 %). The screen-on photo's 8.8 mm "top bezel" was read with the
+# monitor in that bezel, against an Upper riding those 2 mm high; the tape makes it 311 - 304.1 = 6.9 mm.
+MON_W, MON_H = 220.0, 311.0
+ACTIVE_H = 295.9  # the lit image's height (the panel's active area)
 MON_THICK = 13.6  # measured hump (X 0..73); ZSUS spec max is 14.0; the thick gauge piece slides on (2026-11-18)
 # The flat panel (X 76..220) is 5.7 mm by hand measurement and 6.1..6.8 mm scaled from a side photo. The fit gauge
 # settled it (2026-11-18): only the 3-notch piece (7.0 mm slot) slides on, with light friction and no rocking, and the
@@ -22,6 +28,7 @@ FIT_Z = 0.5  # glass-to-lip channel play (CAD/build_part_b_blender_v21.py lets P
 # printed Lower on the monitor (2026-11-19, monitor resting on the chin, 0.3 mm below centre) read the black between
 # the image and the bezel's edge as 0.8 mm left, 4.4 mm right (4.2..4.6 along the side) and 1.4 mm at the bottom,
 # measured in each row against the image's own 197.2 mm width: the image sits 1.2 mm left of the sheet on its left
-# edge, 2.4 mm left on its right edge, and 0.3 mm low. The top was not in the photo; it keeps the sheet's 304.4.
-IMAGE = (18.1, 214.1, 8.2, 304.4)
+# edge, 2.4 mm left on its right edge, and 0.3 mm low. Its top is the bottom plus the active height. The bottom was
+# read against the Lower's pocket floor, which the monitor rests on, so the 0.6 % shrink moves it by 0.05 mm.
+IMAGE = (18.1, 214.1, 8.2, 8.2 + ACTIVE_H)
 REVEAL = 0.8  # black glass left showing round the image: every side as the photo's left side (owner, 2026-11-19)

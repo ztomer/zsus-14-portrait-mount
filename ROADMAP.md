@@ -10,9 +10,18 @@ Open work only. What shipped is in git history.
   break cleanly off the onlay's back, and the onlay sits flat on the chin face.
   Done when: it does, or `CAD/build_emblem.py`'s barb (`BARB`, `CATCH_DEG`) or clearances are adjusted and rebuilt.
 
-- **FIT.REVEAL** Print the v21.2 Upper and Lower (plates 3 and 4) and check the black gap between the image and the
-  bezel's edge: 0.8 mm on every side (`REVEAL`). The top was not in the 2026-11-19 photo, so its edge still follows
-  the spec sheet's image top (304.4). A straight-on photo of the assembled bezel with a light image settles it.
+- **FIT.SEAM** Print plate 1's seam test (`Part_B_SeamTest_Upper` + `_Lower`): the barb clicks into the notch, the
+  pieces hold when pulled apart along the seam, and the finger tab releases them. Then print the v21.3 Upper and
+  Lower (plates 3 and 4) on the monitor: the halves meet at the seam on both sides and the thin side latches.
+  Done when: they do, or `LATCH_CATCH` (`CAD/bezel_spec.py`), `MON_H` (`CAD/monitor_spec.py`, tape 311.0) or the
+  shrink compensation (`filament_shrink` 99.4 %, `CAD/layout.json`, from one tape reading of the closed bezel: about
+  354 of 356.1 mm) is corrected and rebuilt. The closed v21.3 bezel should measure 355.8 mm (the model's length).
+
+- **FIT.REVEAL** With the v21.3 bezel on, check the black gap between the image and the bezel's edge: 0.8 mm on every
+  side (`REVEAL`). The top edge is now the image's bottom plus its active height (304.1), not a photographed edge,
+  and the screen-on photo of 2026-11-19 put the image's left edge 16.8..17.0 mm from the monitor's, against the
+  18.1 the opening was cut for. The image's X edges were read against the v21.1 Lower's opening, which shrank 0.6 %
+  (about 0.5 mm at each side edge), so they may move by that much. A straight-on photo of the assembled bezel with a light image settles both.
   Done when: all four gaps match, or `IMAGE` in `CAD/monitor_spec.py` takes the photographed edges and is rebuilt.
 
 ## Phase 2: styling decisions left open

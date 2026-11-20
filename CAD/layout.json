@@ -36,6 +36,9 @@
  "filament_overrides": {
   "additional_cooling_fan_speed": [
    "10"
+  ],
+  "filament_shrink": [
+   "99.4%"
   ]
  },
  "presets": {
@@ -107,6 +110,35 @@
     "brim_type": "no_brim"
    },
    "shells": 4
+  },
+  {
+   "name": "Part_B_SeamTest_Upper",
+   "stl": "STLs/Part_B_SeamTest_Upper.stl",
+   "plate": 1,
+   "centre": [
+    200.0,
+    80.0
+   ],
+   "preset": "PART_B",
+   "settings": {
+    "brim_type": "no_brim"
+   },
+   "shells": 1,
+   "support_regions_json": "STLs/Part_B_supports.json"
+  },
+  {
+   "name": "Part_B_SeamTest_Lower",
+   "stl": "STLs/Part_B_SeamTest_Lower.stl",
+   "plate": 1,
+   "centre": [
+    200.0,
+    120.0
+   ],
+   "preset": "PART_B",
+   "settings": {
+    "brim_type": "no_brim"
+   },
+   "shells": 1
   },
   {
    "name": "Part_A_Mount",

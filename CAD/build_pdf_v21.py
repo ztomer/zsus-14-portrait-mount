@@ -15,7 +15,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 RENDERS = os.path.join(HERE, "renders")
 sys.path.insert(0, HERE)
-from monitor_spec import FIT_Z, MON_THIN  # noqa: E402
+from monitor_spec import FIT_Z, MON_H, MON_THIN  # noqa: E402
 
 SLOT = MON_THIN + FIT_Z  # the Lower's thin-side slot; the gauge's other two pieces are 0.4 / 0.8 mm taller
 OUT = os.path.join(ROOT, "ZSUS_v21_Assembly_Instructions.pdf")
@@ -51,6 +51,8 @@ ROWS = [
         "0.20 mm, 3 walls, 15% gyroid",
         "Thick-side channel + 3 stepped thin-side channels",
     ),
+    (1, "Part_B_SeamTest_Upper", "0.20 mm, 3 walls, 15% gyroid", "Seam test: the Upper's snap arm corner"),
+    (1, "Part_B_SeamTest_Lower", "0.20 mm, 3 walls, 15% gyroid", "Seam test: the Lower's catch corner"),
     (2, "Part_A_Mount", "0.16 mm, 5 walls, 40% gyroid", "VHB glue-on ball socket"),
     (2, "Part_B_Emblem", "0.16 mm, 3 walls, 100%", "Lower-left snap-in chin emblem (removable)"),
     (
@@ -113,27 +115,32 @@ The three narrow pieces are the thin edge's channel with stepped slots, counted 
 and no rocking. 1 notch: print the bezel
 as is. 2 or 3: raise <code>MON_THIN</code> in <code>CAD/monitor_spec.py</code> by 0.4 or 0.8 mm and run
 <code>CAD/build_all.sh</code> before printing plates 3 and 4.</p>
+<p><b>Step 3, seam latch (Part_B_SeamTest_Upper + Part_B_SeamTest_Lower).</b> The two small pieces are the bezel's
+thin-side corner round the parting line, cut from both halves. Snap the tree support off the snap arm's tip. Push the
+pieces together along the seam until the arm's barb clicks into the notch: pulled apart, they must hold firmly
+(the barb is a square hook). Press the finger tab toward the screen side and they come apart. If the barb does not
+click in, or it lets go when pulled, stop and report before printing plates 3 and 4.</p>
 <img src="socket_v21.png" width="300"/>
 <img src="channels_v21.png" width="470"/>
 
 <h2>3. Part A: bond the socket to the monitor</h2>
 <p>Portrait, seen from the back: clean the {MON_THIN} mm flat rear panel and the Part_A_Mount base with IPA. Apply the
 VHB inside the 0.40 mm scribe ring. Butt the mount against the 3 mm step bevel (X = 76 mm), centre it vertically
-(Y = 155 mm); the socket then sits on the centre of gravity (X = 104 mm). Press firmly for 30 to 60 s.
+(Y = {MON_H / 2:.1f} mm); the socket then sits on the centre of gravity (X = 104 mm). Press firmly for 30 to 60 s.
 <b>Cure 24 hours unloaded before hanging.</b></p>
 
 <h2>4. Part B: tool-free bezel</h2>
-<p><b>Step 3, chin accents.</b> Lay Part_B_Lower face-down. Press Part_B_LED into the slit window lower-right from
+<p><b>Step 4, chin accents.</b> Lay Part_B_Lower face-down. Press Part_B_LED into the slit window lower-right from
 the back until its 0.8 mm flange sits flat; it finishes flush with the chin face. Push Part_B_Emblem into the 18 mm
 window lower-left from the front, face out, until both barbs click behind the plate. To change the emblem later,
 reach into the control bay from behind and press the tile's back bridge forward: it pops out the front.</p>
 <img src="emblem_v21.png" width="300"/>
-<p><b>Step 4, monitor into the Lower.</b> Hold the monitor in portrait (bezel on the left, glass toward the bezel
+<p><b>Step 5, monitor into the Lower.</b> Hold the monitor in portrait (bezel on the left, glass toward the bezel
 face) and
 slide it down (-Y) into the open top of Part_B_Lower: the thick hump runs in the left channel and the thin panel in
 the right
 channel, under the rear lips, until the bottom edge passes under the bottom-right lip and stops on the chin.</p>
-<p><b>Step 5, close with the Upper.</b> First snap the two small tree supports off Part_B_Upper: one under the
+<p><b>Step 6, close with the Upper.</b> First snap the two small tree supports off Part_B_Upper: one under the
 right snap arm's tip (it sticks out past the seam face), one in the left lap-joint pocket at the seam. Check the arm
 flexes freely toward the screen. Keep the orange 90-deg USB-C adapter in the top-left port. Slide Part_B_Upper
 down
@@ -141,7 +148,7 @@ over the top of the monitor (the adapter nose runs in its relief channel) until 
 lap
 joint detent, the right snap arm (its barb drops into the catch notch), and the top-right detent tab over the monitor
 edge.</p>
-<p><b>Step 6, hang it.</b> After the 24 h cure: collar onto the arm, ball into the Part_A_Mount socket (it snaps in),
+<p><b>Step 7, hang it.</b> After the 24 h cure: collar onto the arm, ball into the Part_A_Mount socket (it snaps in),
 collar down hand-tight, as in Step 1.</p>
 <img src="latch_v21.png" width="230"/>
 <div class="tip"><b>Taking it apart:</b> through the rear opening at the right seam, press the snap arm's finger tab

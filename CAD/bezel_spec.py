@@ -34,3 +34,7 @@ FY0 = OPENING[2] - CHIN
 FY1 = OPENING[3] + BORDER
 BEZEL_CX = (FX0 + FX1) / 2
 CHIN_CY = (FY0 + OPENING[2]) / 2  # the visible chin's centre line
+
+# The thin-side latch (CAD/build_part_b_blender_v21.py builds it, CAD/check_part_b_fit.py gates it): the barb's square
+# hook sits this far below the Lower's ledge with the halves shut, so it still holds with the seam that far open.
+LATCH_CATCH = 1.5

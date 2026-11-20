@@ -2,24 +2,24 @@
 
 All coordinates are in **Portrait Mode (chin bezel on the left)**, viewed from the **front**:
 - **X:** `0.0 mm` (left outer edge) -> `220.0 mm` (right outer edge)
-- **Y:** `0.0 mm` (bottom outer edge) -> `310.0 mm` (top outer edge)
+- **Y:** `0.0 mm` (bottom outer edge) -> `311.0 mm` (top outer edge)
 - **Z:** `0.0 mm` (front glass plane) -> `+Z` toward the rear
 
 ## 1. Monitor Chassis & Active LCD
 | Feature | Dimensions / Coordinates | Notes |
 | :--- | :--- | :--- |
-| **Outer Chassis Footprint** | `220.0 mm (W) x 310.0 mm (H)`, `R = 6.0 mm` corners | v21 cradle pocket is `221.0 x 310.6 mm` (`0.50 mm`/side along the sliding channels, `0.30 mm` at the ends) |
-| **Active LCD Area** | `197.2 x 295.9 mm`; spec sheet `X = 19.3..216.5`, `Y = 8.5..304.4`; as photographed in the bezel (2026-11-19) `X = 18.1..214.1`, `Y = 8.2..304.4` (top not photographed) | Part B's opening meets the glass `0.8 mm` outside the photographed image on every side (`IMAGE`, `REVEAL` in `CAD/monitor_spec.py`) |
+| **Outer Chassis Footprint** | `220.0 mm (W) x 311.0 mm (H)`, `R = 6.0 mm` corners; the height is the owner's tape (`310.5..311`, 2026-11-19), not the spec sheet's `310` | the cradle pocket is `221.0 x 311.6 mm` (`0.50 mm`/side along the sliding channels, `0.30 mm` at the ends) |
+| **Active LCD Area** | `197.2 x 295.9 mm`; spec sheet `X = 19.3..216.5`, `Y = 8.5..304.4`; as photographed in the bezel (2026-11-19) `X = 18.1..214.1`, `Y = 8.2..304.1` (the top from the bottom plus the active height; `8.9 mm` below the top edge, as measured) | Part B's opening meets the glass `0.8 mm` outside the photographed image on every side (`IMAGE`, `REVEAL` in `CAD/monitor_spec.py`) |
 | **Front Monitor Bezels** | Left `19.3 mm` \| Right `3.5-5.5 mm` \| Top `8.9 mm` \| Bottom `8.5 mm` (hand-measured; the photo puts the image `1.2..2.4 mm` further left) | Part B equalizes Left/Right/Top to a `22.3 mm` visible frame + `0.8 mm` black reveal, and a `36.0 mm` chin |
 | **Rear Thick Hump (Left)** | `X = 0.0..73.0 mm`, `13.6 mm` thick | Houses 14W driver board; v21 Part B left lip wraps at `Z_b = 17.1..18.6 mm` (`0.5 mm` play; a `14.0 mm` hump still slides) |
 | **Rear Step Bevel** | `X = 73.0..76.0 mm`, `3.0 mm` run x `7.9 mm` drop (`45 deg`) | `Part_A_Mount` indexes flush against `X = 76.0 mm` |
 | **Rear Flat Panel (Right)** | `X = 76.0..220.0 mm`, `6.5 mm` thick (fit gauge 2026-11-18; a hand measurement read `5.7 mm`) | `Part_A_Mount` bonds here; v21 Part B right lip wraps at `Z_b = 10.0..12.0 mm` (`7.0 mm` slot, `0.5 mm` play); `Part_B_FitGauge` also has `7.4` / `7.8 mm` slots |
 
-## 2. Top-Edge Ports (`Y = 310.0 mm`, Left-to-Right)
+## 2. Top-Edge Ports (`Y = 311.0 mm`, Left-to-Right)
 | Port / Feature | Center (`X`) | Span (`X`) | Clearance Notes |
 | :--- | :--- | :--- | :--- |
 | **Mini HDMI (`HD`)** | `21.9 mm` | `16.5..27.3 mm` | Inside top-left open rear bay (`X = 14.0..65.0 mm`) |
-| **USB-C #1 (Orange 90 deg Adapter)** | `40.0 mm` | `35.8..44.2 mm` | Stands `11.5 mm` above `Y = 310.0`; front nose/lanyard protrudes `~1.0 mm` forward (`X = 34..46`); cleared by `14.0 x 20.6 x 1.5 mm` relief channel (`X = 33..47`) |
+| **USB-C #1 (Orange 90 deg Adapter)** | `40.0 mm` | `35.8..44.2 mm` | Stands `11.5 mm` above `Y = 311.0`; front nose/lanyard protrudes `~1.0 mm` forward (`X = 34..46`); cleared by `14.0 x 20.6 x 1.5 mm` relief channel (`X = 33..47`) |
 | **USB-C #2 (Lightning/Video)** | `57.2 mm` | `53.0..61.4 mm` | Inside top-left open rear bay (`X = 14.0..65.0 mm`) |
 | **Slot #4** | `70.0 mm` | `67.5..72.5 mm` | Clears `Part_B_Upper` top-left bay & `6.5 mm` step |
 
@@ -34,15 +34,16 @@ All coordinates are in **Portrait Mode (chin bezel on the left)**, viewed from t
 ## 5. Cross-check against the ZSUS published spec (2026-11-18)
 The ZSUS 14" 2K portable monitor (PM14A-2K / PM14T-2K, 2160 x 1440, 15:10) user manual lists the product as
 **310 mm (W) x 220 mm (H) x 14 mm (thickness), approx. 500 g (PM14A-2K) / 750 g (PM14T-2K)**, with the note that the
-figures are hand-measured and approximate (manuals.plus/ae/1005006111326351). That matches the `220.0 x 310.0 mm`
-footprint above; it publishes no thin-edge thickness and no per-zone figures.
+figures are hand-measured and approximate (manuals.plus/ae/1005006111326351). The width matches; the height does not:
+the tape reads `310.5..311 mm`. (A bezel built for `310` stood about `2 mm` open at the seam; that was PLA shrinking
+`0.6 %`, now compensated in the slicer, not the monitor.) It publishes no thin-edge thickness and no per-zone figures.
 
 | Quantity | Measured (above) | ZSUS spec | v21 bezel sized for |
 | :--- | :--- | :--- | :--- |
-| Footprint | `220.0 x 310.0 mm` | `220 x 310 mm` (approx.) | `221.0 x 310.6 mm` pocket |
+| Footprint | `220.0 x 311.0 mm` | `220 x 310 mm` (approx.) | `221.0 x 311.6 mm` pocket |
 | Thick hump | `13.6 mm` | `14 mm` max thickness | `14.1 mm` channel (front ledge to lip) |
 | Thin panel | `6.5 mm` (fit gauge; hand `5.7 mm`) | not published | `7.0 mm` slot; gauge also `7.4` / `7.8 mm` |
 
 The monitor's measurements (`MON_*`, `LEDGE`, `FIT_Z`) live in `CAD/monitor_spec.py`, the other fit allowances
 (`FIT_X`, `FIT_Y`) at the top of `CAD/build_part_b_blender_v21.py`;
-print `Part_B_FitGauge` (plate 1) to check them on the real monitor before printing the bezel.
+print `Part_B_FitGauge` and the seam test (plate 1) to check them on the real monitor before printing the bezel.

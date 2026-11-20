@@ -30,7 +30,7 @@ import bpy
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from chin_spec import CHIN_PLATE, EMBLEM_CX, EMBLEM_CY, EMBLEM_HOLE, EMBLEM_POCKET, EMBLEM_WIN, LED_BORE, LED_SLIT
-from partb_accessories import build_chin_inserts, build_fit_gauge
+from partb_accessories import build_chin_inserts, build_fit_gauge, build_seam_test
 from partb_mesh import (
     apply_bool,
     bm_frustum_rect,
@@ -51,8 +51,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.environ.get("PARTB_OUT", ROOT)
 
 # ---------------------------------------------------------------- monitor + fit (mm)
-# Monitor (Monitor_Dimensions_and_Ports.md, portrait, chin bezel left, front view; ZSUS spec 310 x 220 x 14)
-from bezel_spec import BEVEL_FACE, BEVEL_IN, FX0, FX1, FY0, FY1, MICRO, OPENING, grow  # noqa: E402  (the front)
+# Monitor (Monitor_Dimensions_and_Ports.md, portrait, chin bezel left, front view; 311 x 220 x 13.6 measured)
+from bezel_spec import BEVEL_FACE, BEVEL_IN, FX0, FX1, FY0, FY1, LATCH_CATCH, MICRO, OPENING, grow  # noqa: E402
 from monitor_spec import FIT_Z as FIT_Z_NOMINAL  # noqa: E402
 from monitor_spec import LEDGE, MON_H, MON_THICK, MON_THIN, MON_W  # noqa: E402  (one source: CAD/monitor_spec.py)
 
@@ -84,6 +84,8 @@ EXPECTED_SHELLS = {
     "Part_B_Lower": 1,
     "Part_B_LED": 1,
     "Part_B_FitGauge": 4,
+    "Part_B_SeamTest_Upper": 1,
+    "Part_B_SeamTest_Lower": 1,
 }
 
 bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -138,13 +140,13 @@ apply_bool(
 # Rear retaining lips + top-right detent tab (each overlaps its wall by 0.5 mm)
 apply_bool(
     part_b,
-    bm_rounded_prism(XW0 - 0.5, 1.7, 6.0, 304.0, Z_THICK_LIP, H, r=0.0),
+    bm_rounded_prism(XW0 - 0.5, 1.7, 6.0, MON_H - 6.0, Z_THICK_LIP, H, r=0.0),
     "UNION",
     "Left_Rear_Lip",
 )
 apply_bool(
     part_b,
-    bm_rounded_prism(218.3, XW1 + 0.5, 6.0, 304.0, Z_THIN_LIP, Z_THIN_LIP + LIP_T, r=0.0),
+    bm_rounded_prism(218.3, XW1 + 0.5, 6.0, MON_H - 6.0, Z_THIN_LIP, Z_THIN_LIP + LIP_T, r=0.0),
     "UNION",
     "Right_Rear_Lip",
 )
@@ -158,13 +160,13 @@ apply_bool(
 # A 1.0 mm overhang prints unsupported.)
 apply_bool(
     part_b,
-    bm_rounded_prism(196.0, 206.0, 309.3, 311.0, Z_THIN_LIP, Z_THIN_LIP + LIP_T, r=0.0),
+    bm_rounded_prism(196.0, 206.0, MON_H - 0.7, MON_H + 1.0, Z_THIN_LIP, Z_THIN_LIP + LIP_T, r=0.0),
     "UNION",
     "Detent_Tab",
 )
 apply_bool(
     part_b,
-    bm_rounded_prism(196.0, 206.0, 312.6, 314.2, LEDGE, H + 0.5, r=0.0),
+    bm_rounded_prism(196.0, 206.0, MON_H + 2.6, MON_H + 4.2, LEDGE, H + 0.5, r=0.0),
     "DIFFERENCE",
     "Detent_Flex_Slot",
 )
@@ -172,13 +174,13 @@ apply_bool(
 # Port & control bays
 apply_bool(
     part_b,
-    bm_rounded_prism(14.0, 65.0, 310.0, FY1 + 0.6, 6.0, H + 0.5, r=0.0),
+    bm_rounded_prism(14.0, 65.0, MON_H, FY1 + 0.6, 6.0, H + 0.5, r=0.0),
     "DIFFERENCE",
     "TopLeft_USBC_Bay",
 )
 apply_bool(
     part_b,
-    bm_rounded_prism(33.0, 47.0, 304.6, FY1 + 0.6, 1.5, 3.1, r=0.0),
+    bm_rounded_prism(33.0, 47.0, MON_H - 5.4, FY1 + 0.6, 1.5, 3.1, r=0.0),
     "DIFFERENCE",
     "USBC_Nose_Relief",
 )
@@ -333,8 +335,12 @@ apply_bool(
 # and the catch notch was a sealed internal cavity, so the halves could not mate. v21 cuts a back-open
 # channel (Z 4.0..H) for the arm through both halves; the arm hangs free from the Upper (root at Y 188.0),
 # its barb rides the Lower's catch wall (X 230.2, 0.2 mm off the arm face) via a lead-in and drops into the
-# notch; pressing the finger tab -X (toward the screen) releases it.
+# notch; pressing the finger tab -X (toward the screen) releases it. The barb's top face is a square hook on the
+# notch's ledge (v21.2: a 40-degree ramp, a detent that cammed out at about 2 kg), and the ledge stands LATCH_CATCH
+# above it (CAD/bezel_spec.py), so the hook holds with the seam anywhere from shut to that far open
+# (check_part_b_fit.py gates both).
 ARM_X0, ARM_X1 = 228.2, 230.0
+BARB_Y0, BARB_Y1 = 171.0, 174.2  # the barb's lead-in starts at its foot; its hook face is at the top
 CH_X0, CH_X1 = (
     226.0,
     ARM_X1 + 0.2,
@@ -361,7 +367,7 @@ apply_bool(
 apply_bool(
     part_b_upper,
     bm_prism_xy(
-        [(ARM_X1 - 0.2, 171.0), (231.0, 172.0), (231.0, 173.2), (ARM_X1 - 0.2, 174.2)],
+        [(ARM_X1 - 0.2, BARB_Y0), (231.0, BARB_Y0 + 1.0), (231.0, BARB_Y1), (ARM_X1 - 0.2, BARB_Y1)],
         ARM_Z0,
         13.5,
     ),
@@ -382,7 +388,7 @@ apply_bool(
 )
 apply_bool(
     part_b_lower,
-    bm_rounded_prism(CH_X1 - 0.1, 231.4, 170.8, 174.6, CH_Z0, H + 0.5, r=0.0),
+    bm_rounded_prism(CH_X1 - 0.1, 231.4, BARB_Y0 - 0.2, BARB_Y1 + LATCH_CATCH, CH_Z0, H + 0.5, r=0.0),
     "DIFFERENCE",
     "Catch_Notch",
 )
@@ -405,6 +411,7 @@ apply_bool(
 
 # Fit gauge: cut from the Lower before mirroring, so it mirrors with the parts (CAD/partb_accessories.py)
 build_fit_gauge(part_b_lower, H, LEDGE, Z_THIN_LIP, XW1, LIP_T, FX1)
+build_seam_test(part_b_upper, part_b_lower, H, SEAM_Y, FX1)
 
 # Where the Upper takes supports (Bambu tree supports from the plate, only inside these boxes; goh's CAD layer,
 # checks/cad_bambu.py, turns each into a support enforcer and gates that its slice has support there and nowhere
@@ -418,10 +425,13 @@ SUPPORTS = {
         ("lip over the left lap pocket at the seam: 4.2 mm flat off the outer wall, the Lower's tongue seats under it",
          (-2.6, 1.8, SEAM_Y, 182.6, Z_THICK_LIP - 0.3, Z_THICK_LIP + 0.5)),
     ],
+    "Part_B_SeamTest_Upper": [
+        ("snap arm tip past the seam, as on the Upper", (ARM_X0 - 0.3, 231.3, 170.7, SEAM_Y, 0.0, ARM_Z0 + 0.5)),
+    ],
 }  # fmt: skip
 
 # Mirror X so the Z=0 face-down print has true front-view L/R
-for name in ["Part_B_Upper", "Part_B_Lower", "Part_B_FitGauge"]:
+for name in ["Part_B_Upper", "Part_B_Lower", "Part_B_FitGauge", "Part_B_SeamTest_Upper", "Part_B_SeamTest_Lower"]:
     obj = bpy.data.objects[name]
     bm = bmesh.new()
     bm.from_mesh(obj.data)

@@ -1,6 +1,7 @@
 """
-Accessory parts for CAD/build_part_b_blender_v21.py: the fit gauge (cut from the finished Lower) and the
-press-fit chin inserts. Imported by that script; runs only inside Blender.
+Accessory parts for CAD/build_part_b_blender_v21.py: the fit gauge (cut from the finished Lower), the seam test
+(the thin-side latch corner cut from both halves) and the press-fit chin inserts. Imported by that script; runs only
+inside Blender.
 """
 
 import bmesh
@@ -67,6 +68,22 @@ def build_fit_gauge(part_b_lower, H, LEDGE, Z_THIN_LIP, XW1, LIP_T, FX1):
     print("GAUGE thin-side slots " + " / ".join(f"{s:.1f}" for s in GAUGE_SLOTS) + " mm (1 / 2 / 3 notches)")
 
     return part_b_gauge
+
+
+def build_seam_test(part_b_upper, part_b_lower, H, seam_y, fx1):
+    """Seam test: the thin-side corner of each half round the seam (front-view X 205 to the outer edge, 15 mm each
+    side of the parting line), cut before mirroring so it mirrors with the parts. It is the real latch, snap arm,
+    notch, lip and channel, so the two pieces snap together as the bezel will, in minutes of print instead of hours.
+    Returns the (Part_B_SeamTest_Upper, Part_B_SeamTest_Lower) objects, one shell each."""
+    out = []
+    for part, tag, y0, y1 in (
+        (part_b_upper, "Upper", seam_y - 15.0, seam_y + 15.0),
+        (part_b_lower, "Lower", seam_y - 15.0, seam_y + 15.0),
+    ):
+        piece = duplicate(part, f"Part_B_SeamTest_{tag}")
+        apply_bool(piece, bm_rounded_prism(205.0, fx1 + 1.0, y0, y1, -5.0, H + 5.0), "INTERSECT", f"Seam_Cut_{tag}")
+        out.append(piece)
+    return tuple(out)
 
 
 def build_chin_inserts():

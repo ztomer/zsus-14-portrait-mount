@@ -1,5 +1,26 @@
 # Changelog
 
+## v21.3.0 (2026-11-19)
+
+- **The bezel prints to size:** the two halves stood about 2 mm apart on the monitor (flush without it) because PLA
+  shrinks as it cools and nothing compensated: the closed bezel measured about 354 mm against the model's 356.1
+  (0.6 %), so the 310.6 mm pocket printed near 308.8. The slicer now scales every part by 1 / 0.994
+  (`filament_shrink` 99.4 % in `CAD/layout.json`), and the slice check fails if the G-code did not use a filament
+  override (gates_of_heck GOH.CADOVERRIDE). The shrink also left the Upper riding high, which is the wide black band
+  along the top edge.
+- **The monitor's length is the tape's, 311.0 mm** (310.5..311, was the spec sheet's 310): `MON_H`
+  (`CAD/monitor_spec.py`); the pocket, the top rear lips, the top detent tab and its flex slot and the USB-C bay
+  follow it, and the image's top is its bottom plus the active height (304.1, was the sheet's 304.4). The extra length
+  is all in the Upper.
+- **The thin-side latch holds:** its barb was a 40-degree ramp, a detent that cammed out at about 2 kg, and it caught
+  only with the seam within 0.7 mm of shut. The barb is now a square hook, and the Lower's ledge stands 1.5 mm above
+  it (`LATCH_CATCH`, `CAD/bezel_spec.py`), so it holds with the seam anywhere from shut to 1.5 mm open. Nothing gated
+  the latch before: `CAD/check_part_b_fit.py` now lifts the Upper off its seat and requires the barb to meet the ledge
+  after 1.5 (+/- 0.2) mm and bear on it across >= 0.6 mm (v21.2.1: 0.75 mm and 0.26 mm, red). Reprint both halves:
+  the hook is on the Upper, the ledge in the Lower.
+- **Seam test on plate 1:** `Part_B_SeamTest_Upper` and `Part_B_SeamTest_Lower`, the thin-side corner of each half
+  round the parting line, cut from the real parts: snap them together before printing the bezel.
+
 ## v21.2.2 (2026-11-19)
 
 - **One copy of the print checks, in gates_of_heck:** the mesh, leaf-strain, slicer and stringing checks this repo

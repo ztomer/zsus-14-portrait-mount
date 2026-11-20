@@ -11,6 +11,7 @@ import trimesh
 
 ROOT = sys.argv[1] if len(sys.argv) > 1 else os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from bezel_spec import LATCH_CATCH  # noqa: E402
 from monitor_spec import HUMP_X1, LEDGE, MON_H, MON_THICK, MON_THIN, MON_W, STEP_X1  # noqa: E402
 
 ZSUS_SPEC_THICK = 14.0  # the hump at the ZSUS spec's maximum thickness must still slide in
@@ -29,14 +30,14 @@ def load(name):
 
 
 def monitor(thick):
-    # XZ profile (front view X, depth Z), extruded along Y 0..310, plan corners R6
+    # XZ profile (front view X, depth Z), extruded along Y 0..MON_H, plan corners R6
     prof = [(0, 0), (0, thick), (HUMP_X1, thick), (STEP_X1, MON_THIN), (MON_W, MON_THIN), (MON_W, 0)]
     pts = [(-x, LEDGE + z) for x, z in prof]  # print-frame mirror
     body = m3.Manifold.extrude(m3.CrossSection([pts]), MON_H).rotate((90, 0, 0)).translate((0, MON_H, 0))
     plan = (
-        m3.CrossSection.square((208.0, 298.0))
+        m3.CrossSection.square((MON_W - 12.0, MON_H - 12.0))
         .offset(6.0, m3.JoinType.Round, circular_segments=48)
-        .translate((-214.0, 6.0))
+        .translate((6.0 - MON_W, 6.0))
     )
     return body ^ m3.Manifold.extrude(plan, 40.0)
 
@@ -71,6 +72,33 @@ for x_mon, z_back, side in (
         print(f"{'OK  ' if hit else 'FAIL'} {nm} {side} over the monitor back at y={y:.0f}")
         if not hit:
             fails.append(f"{nm} {side}")
+
+
+# right latch (thin side): the Upper's snap arm hangs into the Lower's notch. Lifted off its seat along +y (the halves
+# parting), the Upper travels LATCH_CATCH (+/- 0.2) before the barb meets the ledge, so the hook still holds with the
+# seam that far open; just past that, the barb bears on the ledge across >= 0.6 mm in x. A square hook bears across
+# all 0.8 mm of it; v21.2's 40-degree ramp met it at a corner after 0.65 mm and cammed the arm out.
+lo_latch = lo ^ m3.Manifold.cube((9.0, 16.0, 9.0)).translate((-233.5, 165.0, 4.5))  # print frame x = -X
+
+
+def latch_hit(t):
+    return up.translate((0.0, t, 0.0)) ^ lo_latch
+
+
+stop = next((t for t in np.arange(0.05, 3.0, 0.05) if latch_hit(float(t)).volume() > 1e-3), None)
+bb = latch_hit(float(stop) + 0.2).bounding_box() if stop is not None else (0.0,) * 6
+bear = bb[3] - bb[0]
+for what, ok, got in (
+    (
+        f"latch catches after {LATCH_CATCH:g} mm of parting",
+        stop is not None and abs(stop - LATCH_CATCH) <= 0.2,
+        "none" if stop is None else f"{stop:.2f} mm",
+    ),
+    ("latch hook bears >= 0.6 mm on the ledge", bear >= 0.6, f"{bear:.2f} mm"),
+):
+    print(f"{'OK  ' if ok else 'FAIL'} {what}: {got}")
+    if not ok:
+        fails.append(what)
 
 
 # fit gauge: its first thin-side slot must BE the Lower's slot, the other two 0.4 / 0.8 mm taller (measured

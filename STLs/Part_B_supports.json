@@ -22,5 +22,18 @@
     17.6
    ]
   }
+ ],
+ "Part_B_SeamTest_Upper": [
+  {
+   "why": "snap arm tip past the seam, as on the Upper",
+   "box": [
+    -231.3,
+    -227.9,
+    170.7,
+    177.35,
+    0.0,
+    5.0
+   ]
+  }
  ]
 }
