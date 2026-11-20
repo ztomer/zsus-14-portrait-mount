@@ -47,25 +47,25 @@
    ],
    "warnings": [],
    "air_travel": {
-    "total_mm": 23571.5,
+    "total_mm": 23442.8,
     "longest_mm": 273.6,
-    "spans": 211,
+    "spans": 213,
     "layers": 93
    }
   },
   {
    "plate": 4,
    "name": "4 Part B upper bezel",
-   "hours": 2.28,
-   "grams": 71.48,
+   "hours": 2.31,
+   "grams": 71.69,
    "objects": [
     "Part_B_Upper"
    ],
    "warnings": [],
    "air_travel": {
-    "total_mm": 22958.0,
-    "longest_mm": 250.9,
-    "spans": 188,
+    "total_mm": 32144.6,
+    "longest_mm": 250.8,
+    "spans": 233,
     "layers": 93
    }
   },
@@ -86,6 +86,38 @@
    }
   }
  ],
+ "support_regions": {
+  "Part_B_Upper": {
+   "moves_under": [
+    31,
+    32
+   ],
+   "regions": [
+    {
+     "why": "snap arm tip past the seam: 6.4 mm over open air down to the plate",
+     "box": [
+      -231.3,
+      -227.9,
+      170.7,
+      177.35,
+      0.0,
+      5.0
+     ]
+    },
+    {
+     "why": "lip over the left lap pocket at the seam: 4.2 mm flat off the outer wall, the Lower's tongue seats under it",
+     "box": [
+      -1.8,
+      2.6,
+      177.35,
+      182.6,
+      16.8,
+      17.6
+     ]
+    }
+   ]
+  }
+ },
  "printer_settings_id": "Bambu Lab P1S 0.4 nozzle",
  "nozzle_diameter": "0.4",
  "curr_bed_type": "Textured PEI Plate",

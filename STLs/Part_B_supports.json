@@ -1,0 +1,26 @@
+{
+ "Part_B_Upper": [
+  {
+   "why": "snap arm tip past the seam: 6.4 mm over open air down to the plate",
+   "box": [
+    -231.3,
+    -227.9,
+    170.7,
+    177.35,
+    0.0,
+    5.0
+   ]
+  },
+  {
+   "why": "lip over the left lap pocket at the seam: 4.2 mm flat off the outer wall, the Lower's tongue seats under it",
+   "box": [
+    -1.8,
+    2.6,
+    177.35,
+    182.6,
+    16.8,
+    17.6
+   ]
+  }
+ ]
+}

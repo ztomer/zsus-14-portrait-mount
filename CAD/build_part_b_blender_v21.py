@@ -20,6 +20,7 @@ v21 changes against v20 (all measured on the v20 STLs):
     monitor before committing ~300 g of filament.
 """
 
+import json
 import math
 import os
 import sys
@@ -339,15 +340,21 @@ CH_X0, CH_X1 = (
     ARM_X1 + 0.2,
 )  # 2.2 mm flex room on the -X side, 0.2 mm on the catch side
 CH_Z0 = 4.0
+ARM_Z0 = 4.5
+# Face-down, the arm is a 17 mm beam that starts in mid-air: the slicer calls it a floating cantilever. Tree supports
+# from the plate carry its tip past the seam (SUPPORTS below), so it prints as a bridge from its root at y 188 over
+# the Upper's own channel. That floor is 1.5 mm below the arm (v21.2.0: 0.5), so a sagging first layer cannot fuse the
+# arm to it; the 3.0 mm skin left is the ledge's.
+CH_Z0_UPPER = ARM_Z0 - 1.5
 apply_bool(
     part_b_upper,
-    bm_rounded_prism(CH_X0, 232.5, SEAM_Y - 1.0, 188.0, CH_Z0, H + 0.5, r=0.0),
+    bm_rounded_prism(CH_X0, 232.5, SEAM_Y - 1.0, 188.0, CH_Z0_UPPER, H + 0.5, r=0.0),
     "DIFFERENCE",
     "Snap_Relief_Upper",
 )
 apply_bool(
     part_b_upper,
-    bm_rounded_prism(ARM_X0, ARM_X1, 171.0, 188.5, 4.5, 13.5, r=0.0),
+    bm_rounded_prism(ARM_X0, ARM_X1, 171.0, 188.5, ARM_Z0, 13.5, r=0.0),
     "UNION",
     "Snap_Arm",
 )
@@ -355,7 +362,7 @@ apply_bool(
     part_b_upper,
     bm_prism_xy(
         [(ARM_X1 - 0.2, 171.0), (231.0, 172.0), (231.0, 173.2), (ARM_X1 - 0.2, 174.2)],
-        4.5,
+        ARM_Z0,
         13.5,
     ),
     "UNION",
@@ -399,6 +406,19 @@ apply_bool(
 # Fit gauge: cut from the Lower before mirroring, so it mirrors with the parts (CAD/partb_accessories.py)
 build_fit_gauge(part_b_lower, H, LEDGE, Z_THIN_LIP, XW1, LIP_T, FX1)
 
+# Where the Upper takes supports (Bambu tree supports from the plate, only inside these boxes; CAD/build_3mf_v21.py
+# turns each into a support enforcer and gates that its slice has support there and nowhere else). Every other
+# downward face is 45 deg, a short ledge or a bridge. Pre-mirror (x0, x1, y0, y1, z0, z1); mirrored at export. Each box
+# reaches 0.5 mm into the solid above its overhang: a face on a slice plane first prints one layer up.
+SUPPORTS = {
+    "Part_B_Upper": [
+        ("snap arm tip past the seam: 6.4 mm over open air down to the plate",
+         (ARM_X0 - 0.3, 231.3, 170.7, SEAM_Y, 0.0, ARM_Z0 + 0.5)),
+        ("lip over the left lap pocket at the seam: 4.2 mm flat off the outer wall, the Lower's tongue seats under it",
+         (-2.6, 1.8, SEAM_Y, 182.6, Z_THICK_LIP - 0.3, Z_THICK_LIP + 0.5)),
+    ],
+}  # fmt: skip
+
 # Mirror X so the Z=0 face-down print has true front-view L/R
 for name in ["Part_B_Upper", "Part_B_Lower", "Part_B_FitGauge"]:
     obj = bpy.data.objects[name]
@@ -436,6 +456,12 @@ if failures:  # nothing is written unless every part passes
     raise SystemExit(f"gate failed: {failures}")
 for name in EXPECTED_SHELLS:
     write_stl(bpy.data.objects[name], os.path.join(OUT, "STLs", name + ".stl"))
+with open(os.path.join(OUT, "STLs", "Part_B_supports.json"), "w") as fh:  # the X mirror applied, as the STLs are
+    mirrored = {
+        n: [{"why": w, "box": [round(v, 3) for v in (-x1, -x0, y0, y1, z0, z1)]} for w, (x0, x1, y0, y1, z0, z1) in r]
+        for n, r in SUPPORTS.items()
+    }
+    json.dump(mirrored, fh, indent=1)
 if OUT == ROOT:
     bpy.context.preferences.filepaths.save_version = 0  # no .blend1 backups
     bpy.ops.wm.save_as_mainfile(filepath=os.path.join(ROOT, "CAD", "Part_B_SnowWhite_Bezel_v21.blend"))

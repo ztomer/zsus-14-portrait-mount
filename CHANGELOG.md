@@ -1,5 +1,19 @@
 # Changelog
 
+## v21.2.1 (2026-11-19)
+
+- **Upper prints without a floating cantilever:** face-down, the right snap arm is a 17 mm beam that starts 4.5 mm
+  above the plate with nothing under it; Bambu Studio warned "floating cantilever" and the tip would have printed as
+  spaghetti. The Upper now carries two support enforcer volumes (tree supports from the plate): under the arm's tip past
+  the seam, and under the 4.2 mm lip over the left lap pocket, where the Lower's tongue seats. Nothing else on the
+  Upper takes support (`tree(auto)` also filled the 1.6 mm USB-C nose slot). The Upper's arm channel floor drops to
+  3.0 mm so the arm, now a bridge from its root to the supported tip, has 1.5 mm of air under it (0.5 before) and
+  cannot sag onto the floor. Snap the two supports off before assembly.
+- **Every slicing warning fails the build:** the CLI writes the warnings Bambu Studio shows over the plate to
+  `result.json` and its log, not to `slice_info.config`, which was all the gate read, so v21.2.0 passed with this one.
+  Turning supports on in the GUI did not clear it either: the project set `enable_support` off per object, which
+  overrides the global switch.
+
 ## v21.2.0 (2026-11-19)
 
 - **Even screen reveal:** the opening is cut round the image as the owner's monitor shows it (photo of the printed

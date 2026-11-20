@@ -132,7 +132,9 @@ face) and
 slide it down (-Y) into the open top of Part_B_Lower: the thick hump runs in the left channel and the thin panel in
 the right
 channel, under the rear lips, until the bottom edge passes under the bottom-right lip and stops on the chin.</p>
-<p><b>Step 5, close with the Upper.</b> Keep the orange 90-deg USB-C adapter in the top-left port. Slide Part_B_Upper
+<p><b>Step 5, close with the Upper.</b> First snap the two small tree supports off Part_B_Upper: one under the
+right snap arm's tip (it sticks out past the seam face), one in the left lap-joint pocket at the seam. Check the arm
+flexes freely toward the screen. Keep the orange 90-deg USB-C adapter in the top-left port. Slide Part_B_Upper
 down
 over the top of the monitor (the adapter nose runs in its relief channel) until three things click: the left 45-deg
 lap
@@ -180,7 +182,8 @@ were missing,
 the thin-side lip and snap features were loose shells, and the snap arm collided with the solid Lower frame.
 v21 builds every part as one manifold solid and adds a working snap channel and an LED counterbore.</li>
 <li><b>Project file.</b> 0.4 mm nozzle profile (v20: 0.2 mm), all parts on four plates (v20 left Part_B_Lower
-off the bed), per-object layer heights, aux fan 10%, supports off.</li>
+off the bed), per-object layer heights, aux fan 10%, supports only where a part needs them (the Upper's snap-arm
+tip and lap corner, the onlay emblem).</li>
 </ul>
 """
 

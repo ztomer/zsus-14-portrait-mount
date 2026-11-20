@@ -47,10 +47,11 @@ Material: Generic PLA / PLA+ / Matte PLA. Monitor: ZSUS 14" 2K (PM14A-2K), see `
 | 1 Fit tests (print first) | Part_A_Test, Part_B_FitGauge | A: 0.16 mm, 5 walls, 40% gyroid, brim; gauge: 0.20 mm, 3 walls, 15% | 0.8 h | 16 g |
 | 2 Part A mount + accents | Part_A_Mount, Part_B_Emblem, Part_B_LED | 0.16 mm; mount 5 walls 40% gyroid; accents 3 walls 100% | 1.2 h | 33 g |
 | 3 Part B lower bezel | Part_B_Lower | 0.20 mm, 3 walls, 15% gyroid, no brim | 3.0 h | 97 g |
-| 4 Part B upper bezel | Part_B_Upper | 0.20 mm, 3 walls, 15% gyroid, no brim | 2.3 h | 72 g |
+| 4 Part B upper bezel | Part_B_Upper | 0.20 mm, 3 walls, 15% gyroid, no brim; tree supports from the plate under the snap-arm tip and the left lap corner only | 2.3 h | 72 g |
 | 5 Cthulhu emblem (optional) | Part_B_Emblem_Cthulhu | 0.08 mm, 3 walls, 100%, tree supports from the plate | 0.4 h | 4 g |
 
-Global: supports off (plate 5's tile turns them on for itself), aux fan 10%, avoid crossing walls on (the first bezel
+Global: supports off; a part that needs them turns them on for itself (plate 5's tile; the Upper, as enforcer volumes
+named in `STLs/Part_B_supports.json`, so the GUI's global support switch does not change it), aux fan 10%, avoid crossing walls on (the first bezel
 print came off strung), Generic PLA. Part B prints face-down (front on the plate). The project tints the
 filament warm light grey (`#D3CFC6`, near Apple "Platinum"; Snow White products were never bright white): load a matte
 warm-grey PLA for the bezel to match.
@@ -79,7 +80,7 @@ Each step refuses to continue on failure:
 | Fit | `CAD/check_part_b_fit.py` | Upper / Lower / monitor overlap 0 for a 13.6 mm (measured) and 14.0 mm (spec) hump; lips over the monitor back (fails at v20's 0.3 mm play); gauge thin slots measured as the Lower's slot + 0 / 0.4 / 0.8 mm; styling: equal visible left / right / top borders, equal groove depth both sides, only the parting-line groove reaches the front edge, the front parting line sits in a groove (all four fail on the pre-2026-11-18 bezel; borders are measured on the screen opening's own run, since the rim round's flanks also lie behind the glass plane); the reveal round the photographed image 0.8 mm on all four sides (fails on v21.1.0: 0.80 / 4.40 / 1.70 / 2.00 left / right / bottom / top); emblem (seated by `chin_spec.EMBLEM_PLACE`, asserted a rotation, never a mirror): no overlap seated, face flush, pushed back 0.15 mm it lands on the seat, pulled forward 0.25 mm the barbs catch |
 | Emblem art | `CAD/make_relief.py`, `CAD/build_emblem.py --relief` | the Cthulhu head's top inside the tile, the onlay seated in the real Lower with no overlap and on flat chin face all round |
 | STL files | `CAD/stl_io.py` (every manifold3d writer), `CAD/check_stl_files.py` | every shipped STL read back as a slicer reads it (vertices joined by exact float32 equality): each edge shared by exactly two faces, positive volume, one body (the gauge four); fails on v21.0.0's 171 / 336 / 1084 pinched edges |
-| Project | `CAD/build_3mf_v21.py` | P1S 0.4 nozzle profile, every part inside its plate and clear of the exclusion corner; all 5 plates slice with exit 0 and no warnings; a plate whose part asks for supports has them in its G-code; travel over open air (`CAD/gcode_travel.py`, more than 2 mm from that layer's extrusion) at most 250 hops on each bezel plate (fails on v21.1.0's project: 552 / 512) |
+| Project | `CAD/build_3mf_v21.py` | P1S 0.4 nozzle profile, every part inside its plate and clear of the exclusion corner; all 5 plates slice with exit 0 and no slicing warnings (read from the CLI's `result.json` and log, where Bambu Studio puts the warnings it shows over the plate; fails on v21.2.0's Upper: "floating cantilever"); a plate whose part asks for supports has them in its G-code, and an enforced part has support under every region and none more than 15 mm from one (fails with `tree(auto)`, which fills the USB-C nose slot); travel over open air (`CAD/gcode_travel.py`, more than 2 mm from that layer's extrusion) at most 250 hops on each bezel plate (fails on v21.1.0's project: 552 / 512) |
 | Guide | `CAD/render_sections.py`, `CAD/build_pdf_v21.py` | figures cut from the shipped STLs; sizes and times read from the STLs and the slice report |
 | Pictures | `CAD/render_views.py` (Blender), `CAD/pack_images.py` | the README pictures, light and dark, placed by the same rigid matrices as the fit checks |
 

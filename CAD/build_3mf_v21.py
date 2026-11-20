@@ -28,6 +28,7 @@ import zipfile
 import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from bambu_supports import add_enforcers, gate_regions
 from gcode_travel import air_travel
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -62,6 +63,11 @@ ACCENT = {"layer_height": "0.16", "wall_loops": "3", "sparse_infill_density": "1
 # so tree supports rise from the plate to carry it; the snap features are all 45 deg or steeper and take none.
 EMBLEM_FINE = {"layer_height": "0.08", "wall_loops": "3", "sparse_infill_density": "100%", "brim_type": "no_brim"}
 EMBLEM_ONLAY = dict(EMBLEM_FINE, enable_support="1", support_type="tree(auto)", support_on_build_plate_only="1")
+# A part whose generator names support regions (STLs/Part_B_supports.json, CAD/build_part_b_blender_v21.py SUPPORTS)
+# gets tree supports from the plate only where it says: each region becomes a support enforcer volume. tree(auto)
+# also filled the Upper's 1.6 mm USB-C nose slot, where the adapter's nose sits and nothing pulls a support out.
+ENFORCED = {"enable_support": "1", "support_type": "tree(manual)", "support_on_build_plate_only": "1"}
+SUPPORT_REGIONS = "Part_B_supports.json"
 
 # name, plate (1-based), centre on that plate (x, y), per-object settings
 LAYOUT = [
@@ -148,7 +154,14 @@ def main(layout=LAYOUT, plate_names=PLATE_NAMES, out_3mf=OUT_3MF, stl_dir=None, 
     assert mach["nozzle_diameter"] == ["0.4"], mach["nozzle_diameter"]
 
     # 1. let Bambu Studio import the STLs (writes a valid project_settings + object meshes)
-    stls = [os.path.join(stl_dir or os.path.join(ROOT, "STLs"), n + ".stl") for n, *_ in layout]
+    stl_dir = stl_dir or os.path.join(ROOT, "STLs")
+    stls = [os.path.join(stl_dir, n + ".stl") for n, *_ in layout]
+    regions_file = os.path.join(stl_dir, SUPPORT_REGIONS)
+    regions = {}
+    if os.path.exists(regions_file):
+        with open(regions_file) as fh:
+            regions = {n: r for n, r in json.load(fh).items() if any(n == ln for ln, *_ in layout)}
+    layout = [(n, p, c, dict(st, **ENFORCED) if n in regions else st) for n, p, c, st in layout]
     base = os.path.join(tmp, "base.3mf")
     rc = run(
         [
@@ -247,6 +260,12 @@ def main(layout=LAYOUT, plate_names=PLATE_NAMES, out_3mf=OUT_3MF, stl_dir=None, 
 ''')
     ms = re.sub(r"  <plate>.*</plate>\n", "".join(plates), ms, flags=re.DOTALL)
     files["Metadata/model_settings.config"] = ms.encode()
+    next_id = 1 + max(
+        int(i) for f in files.values() if isinstance(f, bytes) for i in re.findall(rb'<object id="(\d+)"', f)
+    )
+    for oid, (name, *_rest) in placed.items():
+        if name in regions:
+            next_id = add_enforcers(files, oid, regions[name], next_id)
     files["Metadata/filament_sequence.json"] = json.dumps(
         {
             f"plate_{p}": {
@@ -299,6 +318,9 @@ def main(layout=LAYOUT, plate_names=PLATE_NAMES, out_3mf=OUT_3MF, stl_dir=None, 
         os.path.join(tmp, "slice.log"),
     )
     print(f"slice exit code {rc}  (log {tmp}/slice.log)")
+    if rc != 0:  # say why, from the CLI's own result.json, before reading a sliced 3MF that is not there
+        with open(os.path.join(sliced, "result.json")) as fh:
+            raise AssertionError(f"slice failed rc={rc}: {json.load(fh).get('error_string')}")
     zs = zipfile.ZipFile(os.path.join(sliced, "sliced.3mf"))
     info = zs.read("Metadata/slice_info.config").decode()
     slice_report = {
@@ -325,6 +347,21 @@ def main(layout=LAYOUT, plate_names=PLATE_NAMES, out_3mf=OUT_3MF, stl_dir=None, 
             }
         )
         print(f"  plate {idx}: {hours:5.2f} h  {grams:6.1f} g  {objs}  warnings={warns or 'none'}")
+    # Slicing warnings (the ones Bambu Studio shows over the plate, e.g. "floating cantilever") are NOT in
+    # slice_info.config; the CLI writes them to result.json and its log. Any of them fails the build.
+    with open(os.path.join(sliced, "result.json")) as fh:
+        for sp in json.load(fh)["sliced_plates"]:
+            msg = sp.get("warning_message", "")
+            if msg:
+                slice_report["plates"][sp["id"] - 1]["warnings"].append(msg)
+    with open(os.path.join(tmp, "slice.log")) as fh:
+        for m in re.finditer(r"plate (\d+): found (\w+) slicing warnings: (.*)", fh.read()):
+            w = slice_report["plates"][int(m.group(1)) - 1]["warnings"]
+            if m.group(3).strip() not in w:
+                w.append(m.group(3).strip())
+    for p in slice_report["plates"]:
+        if p["warnings"]:
+            print(f"  plate {p['plate']} WARNING: {p['warnings']}")
     gcodes = sorted(n for n in zs.namelist() if n.endswith(".gcode"))
     assert rc == 0 and len(gcodes) == len(plate_names), f"slice failed: rc={rc}, gcode files {gcodes}"
     assert not any(p["warnings"] for p in slice_report["plates"]), "slicer warnings, see above"
@@ -334,6 +371,13 @@ def main(layout=LAYOUT, plate_names=PLATE_NAMES, out_3mf=OUT_3MF, stl_dir=None, 
         n_support = len(re.findall(r"^; FEATURE: Support", gp, re.MULTILINE))
         assert n_support > 0, f"plate {p} asks for supports but its slice has none"
         print(f"    plate {p} supports: {n_support} support features")
+    # enforced supports: support under every region and none far off (CAD/bambu_supports.py)
+    for name, plate, t, _size in placed.values():
+        if name in regions:
+            gp = zs.read(f"Metadata/plate_{plate}.gcode").decode(errors="ignore")
+            origin = (((plate - 1) % cols) * PLATE_STRIDE, -((plate - 1) // cols) * PLATE_STRIDE)
+            under = gate_regions(gp, t, origin, regions[name], name, plate)
+            slice_report.setdefault("support_regions", {})[name] = {"moves_under": under, "regions": regions[name]}
     # stringing: travel over open air, read from the G-code the printer runs (CAD/gcode_travel.py)
     for p in slice_report["plates"]:
         gp = zs.read(f"Metadata/plate_{p['plate']}.gcode").decode(errors="ignore")
