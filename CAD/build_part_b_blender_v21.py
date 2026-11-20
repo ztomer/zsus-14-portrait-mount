@@ -406,10 +406,11 @@ apply_bool(
 # Fit gauge: cut from the Lower before mirroring, so it mirrors with the parts (CAD/partb_accessories.py)
 build_fit_gauge(part_b_lower, H, LEDGE, Z_THIN_LIP, XW1, LIP_T, FX1)
 
-# Where the Upper takes supports (Bambu tree supports from the plate, only inside these boxes; CAD/build_3mf_v21.py
-# turns each into a support enforcer and gates that its slice has support there and nowhere else). Every other
-# downward face is 45 deg, a short ledge or a bridge. Pre-mirror (x0, x1, y0, y1, z0, z1); mirrored at export. Each box
-# reaches 0.5 mm into the solid above its overhang: a face on a slice plane first prints one layer up.
+# Where the Upper takes supports (Bambu tree supports from the plate, only inside these boxes; goh's CAD layer,
+# checks/cad_bambu.py, turns each into a support enforcer and gates that its slice has support there and nowhere
+# else). Every other downward face is 45 deg, a short ledge or a bridge. Pre-mirror (x0, x1, y0, y1, z0, z1);
+# mirrored at export. Each box reaches 0.5 mm into the solid above its overhang: a face on a slice plane first
+# prints one layer up.
 SUPPORTS = {
     "Part_B_Upper": [
         ("snap arm tip past the seam: 6.4 mm over open air down to the plate",

@@ -1,5 +1,15 @@
 # Changelog
 
+## v21.2.2 (2026-11-19)
+
+- **One copy of the print checks, in gates_of_heck:** the mesh, leaf-strain, slicer and stringing checks this repo
+  carried (`CAD/check_stl_files.py`, the strain model in `CAD/build_part_a_v21.py`, the slice gates in
+  `CAD/build_3mf_v21.py`, `CAD/bambu_supports.py`, `CAD/gcode_travel.py`) are gates_of_heck's CAD layer now, and the
+  push gate runs it (`gates/cad_gate.sh`, `GOH_CAD_LAYOUT=CAD/layout.json`). The plates, per-object settings, support
+  regions and limits are data in `CAD/layout.json`; the generator writes the socket's spec to
+  `STLs/Part_A_socket.strain.json`. The printed parts and the project are unchanged (same STLs; the rebuilt 3MF differs
+  only in UUIDs and dates). The mesh check also fails a zero stored normal, which Bambu Studio refuses to load.
+
 ## v21.2.1 (2026-11-19)
 
 - **Upper prints without a floating cantilever:** face-down, the right snap arm is a 17 mm beam that starts 4.5 mm

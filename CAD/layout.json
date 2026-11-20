@@ -1,0 +1,203 @@
+{
+ "_what": "ZSUS v21 P1S PLA project: plates, per-object settings, support regions, gates. Built and sliced by goh's CAD layer (checks/cad_bambu.py, gates/cad_gate.sh); CAD/build_3mf_v21.py writes the committed project from it.",
+ "machine": "Bambu Lab P1S 0.4 nozzle",
+ "process": "0.20mm Standard @BBL X1C",
+ "filament": "Generic PLA",
+ "expect": {
+  "printable_area": [
+   "0x0",
+   "256x0",
+   "256x256",
+   "0x256"
+  ],
+  "nozzle_diameter": [
+   "0.4"
+  ],
+  "bed_type": "Textured PEI Plate"
+ },
+ "bed": 256.0,
+ "plate_gap": 0.2,
+ "exclude": [
+  18.0,
+  28.0
+ ],
+ "project": {
+  "curr_bed_type": "Textured PEI Plate",
+  "enable_support": "0",
+  "brim_type": "auto_brim",
+  "filament_colour": [
+   "#D3CFC6"
+  ],
+  "reduce_crossing_wall": "1"
+ },
+ "process_overrides": [
+  "reduce_crossing_wall"
+ ],
+ "filament_overrides": {
+  "additional_cooling_fan_speed": [
+   "10"
+  ]
+ },
+ "presets": {
+  "PART_A": {
+   "layer_height": "0.16",
+   "wall_loops": "5",
+   "sparse_infill_density": "40%",
+   "sparse_infill_pattern": "gyroid"
+  },
+  "PART_B": {
+   "layer_height": "0.2",
+   "wall_loops": "3",
+   "sparse_infill_density": "15%",
+   "sparse_infill_pattern": "gyroid"
+  },
+  "ACCENT": {
+   "layer_height": "0.16",
+   "wall_loops": "3",
+   "sparse_infill_density": "100%"
+  },
+  "EMBLEM_FINE": {
+   "layer_height": "0.08",
+   "wall_loops": "3",
+   "sparse_infill_density": "100%",
+   "brim_type": "no_brim"
+  },
+  "EMBLEM_ONLAY": {
+   "layer_height": "0.08",
+   "wall_loops": "3",
+   "sparse_infill_density": "100%",
+   "brim_type": "no_brim",
+   "enable_support": "1",
+   "support_type": "tree(auto)",
+   "support_on_build_plate_only": "1"
+  }
+ },
+ "plates": {
+  "1": "1 Fit tests (print first)",
+  "2": "2 Part A mount + accents",
+  "3": "3 Part B lower bezel",
+  "4": "4 Part B upper bezel",
+  "5": "5 Cthulhu emblem (optional, 0.08 mm, supports)"
+ },
+ "objects": [
+  {
+   "name": "Part_A_Test",
+   "stl": "STLs/Part_A_Test.stl",
+   "plate": 1,
+   "centre": [
+    128.0,
+    90.0
+   ],
+   "preset": "PART_A",
+   "settings": {
+    "brim_type": "outer_only"
+   },
+   "shells": 1
+  },
+  {
+   "name": "Part_B_FitGauge",
+   "stl": "STLs/Part_B_FitGauge.stl",
+   "plate": 1,
+   "centre": [
+    128.0,
+    190.0
+   ],
+   "preset": "PART_B",
+   "settings": {
+    "brim_type": "no_brim"
+   },
+   "shells": 4
+  },
+  {
+   "name": "Part_A_Mount",
+   "stl": "STLs/Part_A_Mount.stl",
+   "plate": 2,
+   "centre": [
+    110.0,
+    140.0
+   ],
+   "preset": "PART_A",
+   "shells": 1
+  },
+  {
+   "name": "Part_B_Emblem",
+   "stl": "STLs/Part_B_Emblem.stl",
+   "plate": 2,
+   "centre": [
+    200.0,
+    160.0
+   ],
+   "preset": "ACCENT",
+   "shells": 1
+  },
+  {
+   "name": "Part_B_LED",
+   "stl": "STLs/Part_B_LED.stl",
+   "plate": 2,
+   "centre": [
+    200.0,
+    120.0
+   ],
+   "preset": "ACCENT",
+   "shells": 1
+  },
+  {
+   "name": "Part_B_Lower",
+   "stl": "STLs/Part_B_Lower.stl",
+   "plate": 3,
+   "centre": [
+    128.0,
+    142.0
+   ],
+   "preset": "PART_B",
+   "settings": {
+    "brim_type": "no_brim"
+   },
+   "shells": 1
+  },
+  {
+   "name": "Part_B_Upper",
+   "stl": "STLs/Part_B_Upper.stl",
+   "plate": 4,
+   "centre": [
+    128.0,
+    135.0
+   ],
+   "preset": "PART_B",
+   "settings": {
+    "brim_type": "no_brim"
+   },
+   "shells": 1,
+   "support_regions_json": "STLs/Part_B_supports.json"
+  },
+  {
+   "name": "Part_B_Emblem_Cthulhu",
+   "stl": "STLs/Part_B_Emblem_Cthulhu.stl",
+   "plate": 5,
+   "centre": [
+    128.0,
+    128.0
+   ],
+   "preset": "EMBLEM_ONLAY",
+   "shells": 1
+  }
+ ],
+ "air_travel": {
+  "max_spans": 250,
+  "objects": [
+   "Part_B_Lower",
+   "Part_B_Upper"
+  ]
+ },
+ "support_reach": 15.0,
+ "report_keys": [
+  "additional_cooling_fan_speed",
+  "filament_colour",
+  "reduce_crossing_wall"
+ ],
+ "out_3mf": "ZSUS_v21_Complete_P1S_PLA.3mf",
+ "report": "CAD/renders/slice_report.json",
+ "strain": [
+  "STLs/Part_A_socket.strain.json"
+ ]
+}

@@ -2,13 +2,16 @@
 # Rebuild every deliverable from source, gating each step:
 #   STLs/*.stl, ZSUS_v21_Complete_P1S_PLA.3mf (sliced to verify), CAD/renders/*, ZSUS_v21_Assembly_Instructions.pdf,
 #   docs/images/* (README pictures)
-# Needs: uv (Python deps are fetched per run), Blender >= 4.5 (MANIFOLD boolean solver), Bambu Studio.
+# Needs: uv (Python deps are fetched per run), Blender >= 4.5 (MANIFOLD boolean solver), Bambu Studio, and
+# gates_of_heck at $GOH_DIR (its CAD layer: checks/cad_mesh.py, cad_strain.py, cad_bambu.py).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
 PY=(uv run --quiet --no-project --python 3.14 --with manifold3d --with trimesh --with numpy --with scipy
     --with rtree --with shapely --with networkx --with matplotlib --with pymupdf --with embreex --with pillow --with scikit-image python -I)
 BLENDER=${BLENDER:-blender}
+GOH=${GOH_DIR:-$HOME/Projects/gates_of_heck}  # the CAD layer: mesh, strain and slicer checks
+export GOH_DIR="$GOH"
 
 echo "-> Part A (ball socket): CAD/build_part_a_v21.py"
 "${PY[@]}" CAD/build_part_a_v21.py
@@ -32,8 +35,8 @@ echo "-> Cthulhu emblem (CC BY, CAD/assets/cthulhu/ATTRIBUTION.md): relief + til
 echo "-> Part B assembly fit: CAD/check_part_b_fit.py"
 "${PY[@]}" CAD/check_part_b_fit.py
 
-echo "-> Every STL as a slicer reads it: CAD/check_stl_files.py"
-"${PY[@]}" CAD/check_stl_files.py
+echo "-> Every STL as a slicer reads it: gates_of_heck checks/cad_mesh.py"
+"${PY[@]}" "$GOH/checks/cad_mesh.py" --layout CAD/layout.json --root .
 
 echo "-> Bambu project + slice check: CAD/build_3mf_v21.py"
 "${PY[@]}" CAD/build_3mf_v21.py

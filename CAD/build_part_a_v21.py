@@ -28,6 +28,7 @@ read from CAD/assets/Part_A_Mount_base_v20.stl (the v20 mount with its boss remo
 `--extract-base <v20 Part_A_Mount.stl>`).
 """
 
+import json
 import math
 import os
 import sys
@@ -38,6 +39,9 @@ import trimesh
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from stl_io import write_stl
+
+sys.path.insert(0, os.path.join(os.environ.get("GOH_DIR", os.path.expanduser("~/Projects/gates_of_heck")), "checks"))
+from cad_strain import leaf_strain  # gates_of_heck's CAD layer
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -162,7 +166,7 @@ def collet_boss():
     )
     # No separate core: the thread's slice outline is filled from the axis out, so it already holds the core. A core
     # cylinder at R_MINOR touched the thread's root along lines (two polygons of one radius, different facets), and
-    # the STL came out with pinched edges once a slicer merged its vertices (CAD/check_stl_files.py).
+    # the STL came out with pinched edges once a slicer merged its vertices (goh checks/cad_mesh.py).
     return thr + crown
 
 
@@ -172,7 +176,7 @@ def collet_cuts():
     z_mouth = BALL_C + math.sqrt(CUP_R**2 - MOUTH_R**2)
     mouth = m3.Manifold.cylinder(Z_TIP + 1.0 - BALL_C, MOUTH_R, MOUTH_R, SEG).translate((0, 0, BALL_C))
     # the chamfer's 45-deg line runs on 0.5 mm into the mouth's void: a lead-in cut that STARTED on the mouth
-    # cylinder shared its corner circle with it, and the STL pinched along that circle (CAD/check_stl_files.py)
+    # cylinder shared its corner circle with it, and the STL pinched along that circle (goh checks/cad_mesh.py)
     lead = revolve(
         [
             (0, Z_TIP - LEAD_IN - 0.5),
@@ -296,46 +300,25 @@ def check_collar_travel(name, tm, cx, cy, bz):
 
 def check_leaf_strain():
     """Peak bending strain in a leaf as the ball's equator passes the mouth (each leaf pushed out by the snap,
-    ball radius - MOUTH_R). The leaf is a cantilever from the keyhole up to the load near the mouth; each
-    section is the annular sector between the seat and the thread core (teeth ignored), bent radially. For an
-    imposed tip deflection d: strain(z) = d * arm(z) c(z) / I(z) / integral(arm^2 / I dz). A model, not a test:
-    it explains the first print's break (3.1 % with 6 leaves and a 0.7 mm snap) and gates the class."""
-
-    def r_in(z):
-        s = CUP_R**2 - (z - BALL_C) ** 2
-        r = math.sqrt(s) if s > 0 else 0.0
-        return max(r, MOUTH_R) if z > BALL_C else r
-
-    def r_out(z):
-        return (
-            R_MINOR if z <= Z_THREAD_TOP else R_MINOR + (R_TIP - R_MINOR) * (z - Z_THREAD_TOP) / (Z_TIP - Z_THREAD_TOP)
-        )
-
-    z_load = Z_TIP - LEAD_IN - 0.7  # where the ball's widest band meets the mouth
-    zs = np.linspace(Z_SLOT, z_load, 200)
-    inertia, reach = [], []
-    for z in zs:
-        ri, ro = r_in(z), r_out(z)
-        half = math.pi / N_SLOTS - (SLOT_W / 2) / ((ri + ro) / 2)
-        rg, tg = np.meshgrid(np.linspace(ri, ro, 50), np.linspace(-half, half, 100))
-        y, da = rg * np.cos(tg), rg * ((ro - ri) / 49) * (2 * half / 99)
-        yb = (y * da).sum() / da.sum()
-        inertia.append(((y - yb) ** 2 * da).sum())
-        reach.append(abs(y - yb).max())
-    inertia, reach = np.array(inertia), np.array(reach)
-    arm = z_load - zs
-    d = BALL_D / 2 - MOUTH_R
-    eps = d * arm * reach / inertia / np.trapezoid(arm**2 / inertia, zs) * 100
-    k = int(np.argmax(eps))
-    assert eps[k] <= LEAF_STRAIN_MAX, (
-        f"leaf strain {eps[k]:.2f} % at z {zs[k]:.1f} snapping the ball in, "
-        f"over {LEAF_STRAIN_MAX} % (PLA across layers)"
+    ball radius - MOUTH_R), by gates_of_heck's model (checks/cad_strain.py; this file carried its own numpy copy
+    until v21.2.1). The spec is written from this file's constants to STLs/Part_A_socket.strain.json, which the
+    push gate judges again (CAD/layout.json "strain"), so the two cannot drift. It explains the first print's
+    break (3.07 % with 6 leaves and a 0.7 mm snap) and gates the class."""
+    spec = {
+        "_what": "ZSUS Part A socket leaves, written by CAD/build_part_a_v21.py; judged by goh checks/cad_strain.py",
+        "ball_d": BALL_D, "cup_r": CUP_R, "ball_c": BALL_C, "mouth_r": MOUTH_R, "lead_in": LEAD_IN,
+        "n_slots": N_SLOTS, "slot_w": SLOT_W, "z_slot": Z_SLOT, "r_core": R_MINOR, "z_core_top": Z_THREAD_TOP,
+        "z_tip": Z_TIP, "r_tip": R_TIP, "load_below_tip": 0.7, "strain_max": LEAF_STRAIN_MAX,
+    }  # fmt: skip
+    with open(os.path.join(ROOT, "STLs", "Part_A_socket.strain.json"), "w") as fh:
+        json.dump(spec, fh, indent=1)
+        fh.write("\n")
+    eps, z, d = leaf_strain(spec)
+    assert eps <= LEAF_STRAIN_MAX, (
+        f"leaf strain {eps:.2f} % at z {z:.1f} snapping the ball in, over {LEAF_STRAIN_MAX} % (PLA across layers)"
     )
-    print(
-        f"{'':14s} leaves OK: {N_SLOTS} leaves, {d:.2f} mm snap per leaf, "
-        f"peak strain {eps[k]:.2f} % at z {zs[k]:.1f} "
-        f"(<= {LEAF_STRAIN_MAX} %)"
-    )
+    print(f"{'':14s} leaves OK: {N_SLOTS} leaves, {d:.2f} mm snap per leaf, peak strain {eps:.2f} % at z {z:.1f} "
+          f"(<= {LEAF_STRAIN_MAX} %)")  # fmt: skip
 
 
 def check(name, man):

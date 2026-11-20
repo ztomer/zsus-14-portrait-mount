@@ -6,9 +6,9 @@ vertices distinct where pieces of a solid touch along an edge, and keeps slivers
 in-memory mesh is a clean manifold while the merged file has pinched edges (shared by 4 or more faces). So write_stl
 simplifies the solid to SIMPLIFY_TOL (surfaces move less than that: 1 um, far below a 0.4 mm nozzle), rounds and
 welds it to float32 (as_float32) and writes exactly those arrays, then reads the file back
-as a slicer does and refuses it if it is not a closed 2-manifold of the expected body count. CAD/check_stl_files.py
-judges every shipped STL with the same judge_file.
-(The Blender bezel parts are written by CAD/partb_mesh.py and judged by the same check.)
+as a slicer does and refuses it if it is not a closed 2-manifold of the expected body count. Every shipped STL,
+the Blender bezel parts (CAD/partb_mesh.py) included, is judged again by gates_of_heck's CAD layer
+(checks/cad_mesh.py, the push gate and CAD/build_all.sh).
 """
 
 from collections import Counter

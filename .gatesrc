@@ -2,6 +2,7 @@
 # Full key reference: docs/config.md in the gates_of_heck checkout
 # (or .gatesrc.example there for a commented starter with every key).
 GOH_ROADMAP=ROADMAP.md              # the one plan file
+GOH_CAD_LAYOUT=CAD/layout.json      # the CAD layer's input: plates, parts, support regions, snaps (gates/cad_gate.sh)
 GOH_MAX_LINES=500                 # file-length cap; unset disables the check
 GOH_EXCLUDE='^v20_archive/'       # the v20 release as received: kept byte-identical, not ours to re-style
 # GOH_ALLOW='<glyph>'                          # extra permitted characters (keep minimal)
@@ -31,7 +32,7 @@ GOH_PLURAL_HEDGE_MIN_FILES=18
 GOH_BARE_PYTHON_MIN_FILES=5
 GOH_TAP_WRITES_MIN_FILES=20
 GOH_UNREAPED_SPAWN_MIN_FILES=1
-GOH_SUBPROCESS_STDIN_MIN_CALLS=1
+GOH_SUBPROCESS_STDIN_MIN_CALLS=0  # v21.2.2: the slicer and travel calls moved to goh's CAD layer
 GOH_BUSY_LOOP_MIN_FILES=7
 GOH_INSTALLED_VERSION_MIN_FILES=5
 GOH_MD_LINKS_MIN_LINKS=13

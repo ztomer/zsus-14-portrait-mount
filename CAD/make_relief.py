@@ -129,7 +129,7 @@ def onlay_solid(us, vs, ht):
     # The silhouette grows by SIL_GROW: marching squares puts every contour vertex ON a grid edge, where the
     # height field's own triangle edges run, so walls cut exactly there met the slab at coincident edges, and
     # contours touching at a saddle point made a prism edge shared by four faces; the STL pinched at both
-    # (CAD/check_stl_files.py). Grown by a fraction of GRID that is no simple ratio of it, the walls sit between
+    # (goh checks/cad_mesh.py). Grown by a fraction of GRID that is no simple ratio of it, the walls sit between
     # grid lines and touching contours merge.
     sil = m3.CrossSection(polys, m3.FillRule.EvenOdd).offset(SIL_GROW, m3.JoinType.Round)
     slab = heightfield(us, vs, -ht, 0.0)

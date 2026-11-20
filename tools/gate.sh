@@ -34,6 +34,9 @@ case "${1:-}" in
     # No pytest suite (the CAD generators gate their own output), so the push half is ruff over every
     # tracked .py (gates/py_staged.sh --all).
     "$GOH/gates/py_staged.sh" --all .
+    # The CAD layer: every STL as a slicer reads it, the socket's leaf strain, the project sliced and gated
+    # (GOH_CAD_LAYOUT in .gatesrc).
+    "$GOH/gates/cad_gate.sh" .
     #   "$GOH/gates/swift_gate.sh" .
     # Layer 3 (genuinely local checks): create ./tools/repo_gates.sh and
     # uncomment:
