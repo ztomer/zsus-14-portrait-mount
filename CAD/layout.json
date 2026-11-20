@@ -215,7 +215,7 @@
   }
  ],
  "air_travel": {
-  "max_spans": 330,
+  "max_spans": 400,
   "objects": [
    "Part_B_Lower",
    "Part_B_Upper"

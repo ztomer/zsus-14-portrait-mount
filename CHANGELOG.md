@@ -1,5 +1,13 @@
 # Changelog
 
+## v21.7.1 (2026-11-20)
+
+- **The open-air hop cap was flaky; it is 400, not 330.** Slicing the same v21.7.0 project repeatedly, plate 4 (the
+  Upper) reads 271 hops in three slices of four and 378 in the fourth: the same 138,831 extrusions and 89 support
+  features, with Bambu Studio visiting the thick-side boss's tree supports in another order, about one more hop a
+  layer over layers 30 to 80. Plate 3 reads 308 to 315. v21.7.0 passed its push gate on a 271 slice; the next push
+  sliced 378 and was refused. No part changed.
+
 ## v21.7.0 (2026-11-20)
 
 - **The thick side's back boss moves in off the outer edge** (owner: flush with the edge it was the first thing seen
