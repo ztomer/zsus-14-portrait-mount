@@ -13,7 +13,8 @@ Open work only. What shipped is in git history.
 - **FIT.SEAM** Print plate 1's seam test (`Part_B_SeamTest_Upper` + `_Lower`) with an M3 nut and an M3
   socket-head bolt (10 to 16 mm): the nut stands in its pocket and does not turn, the bolt drops into its channel, a
   2.5 mm L key turns it, and it pulls the pieces shut so they do not move when pulled. Then print the v21.7 Upper and
-  Lower (plates 3 and 4) on the monitor: both seam bolts pull the halves shut. Done when: they do, or the joint
+  Lower (plates 3 and 4): the tree supports under the thick-side back boss snap off clean and leave no hairs on the
+  screen opening's edge at the seam, and on the monitor both seam bolts pull the halves shut. Done when: they do, or the joint
   (`BOLTS`, `WALL_*`, `NUT_*`, `KEY_SLOT` in `CAD/bezel_spec.py`), `MON_H` (`CAD/monitor_spec.py`, tape 311.0) or the
   shrink compensation (`filament_shrink` 99.4 %, `CAD/layout.json`, from one tape reading of the closed bezel: about
   354 of 356.1 mm) is corrected and rebuilt. The closed v21.7 bezel should measure 355.8 mm (the model's length).
