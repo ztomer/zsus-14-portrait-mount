@@ -1,5 +1,29 @@
 {
+ "Part_B_Lower": [
+  {
+   "why": "the thick side's back boss, floating over the monitor's back off the rear lip",
+   "box": [
+    -11.3,
+    -1.4,
+    150.35,
+    177.35,
+    16.9,
+    17.7
+   ]
+  }
+ ],
  "Part_B_Upper": [
+  {
+   "why": "the thick side's back boss, floating over the monitor's back off the rear lip",
+   "box": [
+    -11.3,
+    -1.4,
+    177.35,
+    192.85,
+    16.9,
+    17.7
+   ]
+  },
   {
    "why": "lip over the left lap pocket at the seam: 4.2 mm flat off the outer wall, the Lower's tongue seats under it",
    "box": [

@@ -142,14 +142,14 @@ face) and
 slide it down (-Y) into the open top of Part_B_Lower: the thick hump runs in the left channel and the thin panel in
 the right
 channel, under the rear lips, until the bottom edge passes under the bottom-right lip and stops on the chin.</p>
-<p><b>Step 6, close with the Upper.</b> First snap the small tree support out of Part_B_Upper's left lap-joint pocket
-at the seam. Keep the orange 90-deg USB-C adapter in the top-left port. Slide Part_B_Upper down over the top of the
-monitor (the adapter nose runs in its relief channel) until the left 45-deg lap joint detent and the top-right
+<p><b>Step 6, close with the Upper.</b> First snap the tree supports off both halves: the ones standing in the
+screen opening at the seam that reach under the thick-side back boss, and the small one in Part_B_Upper's left
+lap-joint pocket. Keep the orange 90-deg USB-C adapter in the top-left port. Slide Part_B_Upper down over the top of
+the monitor (the adapter nose runs in its relief channel) until the left 45-deg lap joint detent and the top-right
 detent tab click. Lay the bezel face-down on a soft cloth. On each side of the seam (the thin side inside the frame,
 the thick side in the boss on the back): drop an M3 nut on edge into the hex pocket in the Upper, lay an M3
 socket-head bolt (10 to 16 mm) in the channel with its head in the Lower's slot, and turn it with a 2.5 mm L key
-(short leg in the head, long leg up; on the thick side the key swings out over the edge) until the seam is shut and
-snug. The bolts pull the halves together.</p>
+(short leg in the head, long leg up) until the seam is shut and snug. The bolts pull the halves together.</p>
 <p><b>Step 7, hang it.</b> After the 24 h cure: collar onto the arm, ball into the Part_A_Mount socket (it snaps in),
 collar down hand-tight, as in Step 1.</p>
 <img src="joint_v21.png" width="400"/>
@@ -163,8 +163,8 @@ Snow White products were never white.</li>
 <li><b>Stringing.</b> The project keeps travel over the part (avoid crossing walls) rather than across the screen
 opening and the pocket. Strings that remain are usually wet filament: dry the PLA (about 55 C for 8 h) before
 printing the bezel, and pull any hairs out of the channels before sliding the monitor in.</li>
-<li><b>Supports.</b> Only the Upper (the left lap corner) and the Cthulhu tile take supports; snap them off before
-assembly.</li>
+<li><b>Supports.</b> Both bezel halves (under the thick-side back boss; the Upper also in the left lap corner) and
+the Cthulhu tile take supports; snap them off before assembly.</li>
 </ul>
 """
 

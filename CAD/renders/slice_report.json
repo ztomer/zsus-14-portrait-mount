@@ -42,32 +42,32 @@
   {
    "plate": 3,
    "name": "3 Part B lower bezel",
-   "hours": 3.09,
-   "grams": 98.03,
+   "hours": 3.19,
+   "grams": 99.89,
    "objects": [
     "Part_B_Lower"
    ],
    "warnings": [],
    "air_travel": {
-    "total_mm": 33626.2,
-    "longest_mm": 265.6,
-    "spans": 231,
+    "total_mm": 27847.4,
+    "longest_mm": 265.1,
+    "spans": 315,
     "layers": 126
    }
   },
   {
    "plate": 4,
    "name": "4 Part B upper bezel",
-   "hours": 2.35,
-   "grams": 71.58,
+   "hours": 2.39,
+   "grams": 72.67,
    "objects": [
     "Part_B_Upper"
    ],
    "warnings": [],
    "air_travel": {
-    "total_mm": 33927.1,
-    "longest_mm": 270.4,
-    "spans": 197,
+    "total_mm": 25790.2,
+    "longest_mm": 262.2,
+    "spans": 271,
     "layers": 126
    }
   },
@@ -89,15 +89,23 @@
   }
  ],
  "support_features": {
-  "4": 85,
+  "3": 89,
+  "4": 89,
   "5": 134
  },
  "support_regions": {
+  "Part_B_Lower": {
+   "moves_under": [
+    84
+   ],
+   "farthest_mm": 10.9
+  },
   "Part_B_Upper": {
    "moves_under": [
-    39
+    45,
+    28
    ],
-   "farthest_mm": 10.0
+   "farthest_mm": 11.0
   }
  },
  "printer_settings_id": "Bambu Lab P1S 0.4 nozzle",

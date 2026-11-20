@@ -111,7 +111,7 @@ def key(bx, bz, deg):
 
 
 bolts = {}
-for side, (bx, bz, _w, _open) in BOLTS.items():
+for side, (bx, bz, _w) in BOLTS.items():
     body, nut = bolt_parts(bx, bz)
     whole = body + nut
     bolts[side] = whole

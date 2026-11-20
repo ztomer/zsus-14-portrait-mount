@@ -48,16 +48,17 @@ What changed between releases is in `CHANGELOG.md`; open work in `ROADMAP.md`.
 | :--- | :--- | :--- | :--- | :--- |
 | 1 Fit tests (print first) | Part_A_Test, Part_B_FitGauge, Part_B_SeamTest_Upper + _Lower | A: 0.16 mm, 5 walls, 40% gyroid, brim; gauge and seam test: 0.20 mm, 3 walls, 15% | 1.1 h | 25 g |
 | 2 Part A mount + accents | Part_A_Mount, Part_B_Emblem, Part_B_LED | 0.16 mm; mount 5 walls 40% gyroid; accents 3 walls 100% | 1.3 h | 33 g |
-| 3 Part B lower bezel | Part_B_Lower | 0.20 mm, 3 walls, 15% gyroid, no brim | 3.1 h | 98 g |
-| 4 Part B upper bezel | Part_B_Upper | 0.20 mm, 3 walls, 15% gyroid, no brim; tree supports from the plate in the left lap corner only | 2.4 h | 72 g |
+| 3 Part B lower bezel | Part_B_Lower | 0.20 mm, 3 walls, 15% gyroid, no brim; tree supports from the plate under the thick-side back boss | 3.2 h | 100 g |
+| 4 Part B upper bezel | Part_B_Upper | 0.20 mm, 3 walls, 15% gyroid, no brim; tree supports from the plate under the thick-side back boss and in the left lap corner | 2.4 h | 73 g |
 | 5 Cthulhu emblem (optional) | Part_B_Emblem_Cthulhu | 0.08 mm, 3 walls, 100%, tree supports from the plate | 0.4 h | 4 g |
 
-Global: supports off; a part that needs them turns them on for itself (plate 5's tile; the Upper, as enforcer volumes
+Global: supports off; a part that needs them turns them on for itself (plate 5's tile; both bezel halves, as enforcer volumes
 named in `STLs/Part_B_supports.json`, so the GUI's global support switch does not change it), aux fan 10%, avoid
 crossing walls on (keeps travel off the screen opening), Generic PLA. Part B prints face-down (front on the plate).
 The project tints the filament warm light grey (`#D3CFC6`, near Apple "Platinum"; Snow White products were never
 bright white): load a matte warm-grey PLA for the bezel to match, and dry it first (about 55 C for 8 h): wet PLA
-strings. Snap the Upper's two supports off before assembly.
+strings. Snap the supports off both bezel halves before assembly (they stand in the screen opening at the seam and
+reach in under the thick-side back boss).
 
 **Print plate 1 first.** Part_A_Test must take the Polbecky collar smoothly, snap the 17 mm ball in, and lock it when
 the collar is hand-tight without the ball popping out, and without the collar bottoming on the coupon first. The thick
@@ -87,7 +88,7 @@ part (`CHANGELOG.md` names each):
 | Fit | `CAD/check_part_b_fit.py` | Upper / Lower / monitor overlap 0 for the measured 220 x 311 mm monitor with a 13.6 mm (measured) and 14.0 mm (spec) hump; lips over the monitor back; gauge thin slots measured as the Lower's slot + 0 / 0.4 / 0.8 mm; the seam bolts, modelled in place each side: they clear both halves, pulled apart the halves meet head and nut within 0.2 mm, the nut cannot turn, bolt and nut lift out the back, an L key turns 60 degrees in its slot; the front face is solid under the thin side's; and pulled open about the thin-side corner the thick side opens <= 0.5 mm with the lap detent left out (0.13 mm; 1.0 mm with only the monitor to stop it); styling: equal visible left / right / top borders, equal groove depth both sides, only the parting-line groove reaches the front edge, the front parting line sits in a groove (borders measured on the screen opening's own run, since the rim round's flanks also lie behind the glass plane); the reveal round the photographed image 0.8 mm on all four sides; emblem (seated by `chin_spec.EMBLEM_PLACE`, asserted a rotation, never a mirror): no overlap seated, face flush, pushed back 0.15 mm it lands on the seat, pulled forward 0.25 mm the barbs catch |
 | Emblem art | `CAD/make_relief.py`, `CAD/build_emblem.py --relief` | the Cthulhu head's top inside the tile, the onlay seated in the real Lower with no overlap and on flat chin face all round |
 | STL files | `CAD/stl_io.py` (every manifold3d writer), gates_of_heck `checks/cad_mesh.py` | every shipped STL read back as a slicer reads it (vertices joined by exact float32 equality): each edge shared by exactly two faces, consistent winding, positive volume, no zero-area triangle, no zero stored normal (Bambu Studio refuses such a file), the body count `CAD/layout.json` declares (the gauge four) |
-| Project | `CAD/build_3mf_v21.py` over `CAD/layout.json`, by gates_of_heck `checks/cad_bambu.py` | P1S 0.4 nozzle profile, every part inside its plate and clear of the exclusion corner; all 5 plates slice with exit 0 and no slicing warnings (read from the CLI's `result.json` and log, where Bambu Studio puts the warnings it shows over the plate); a plate whose part asks for supports has them in its G-code, and an enforced part has support under every region and none more than 15 mm from one; travel over open air (goh `checks/cad_travel.py`, more than 2 mm from that layer's extrusion) at most 250 hops on each bezel plate |
+| Project | `CAD/build_3mf_v21.py` over `CAD/layout.json`, by gates_of_heck `checks/cad_bambu.py` | P1S 0.4 nozzle profile, every part inside its plate and clear of the exclusion corner; all 5 plates slice with exit 0 and no slicing warnings (read from the CLI's `result.json` and log, where Bambu Studio puts the warnings it shows over the plate); a plate whose part asks for supports has them in its G-code, and an enforced part has support under every region and none more than 15 mm from one; travel over open air (goh `checks/cad_travel.py`, more than 2 mm from that layer's extrusion) at most 330 hops on each bezel plate (about 80 of them on each are the short trips out to the thick-side boss's tree supports at the seam) |
 | Guide | `CAD/render_sections.py`, `CAD/build_pdf_v21.py` | figures cut from the shipped STLs; sizes and times read from the STLs and the slice report |
 | Pictures | `CAD/render_views.py` (Blender), `CAD/pack_images.py` | the README pictures, light and dark, placed by the same rigid matrices as the fit checks |
 
@@ -159,7 +160,8 @@ recessed panel with no supports). Art under a personal-use licence goes in the g
 - The halves are held by two M3 socket-head bolts (10 to 16 mm) and two M3 nuts, no heat-set inserts: one on each
   side, lying along the monitor across the seam and dropped in from the back, head in the Lower, nut in the Upper,
   turned with a 2.5 mm L key; tightening pulls the seam shut. The thin side's lies inside the frame; the thick side's
-  4.5 mm wall has no room, so its bolt sits in a boss 6.6 mm proud of the back. The lap tongue and its detent only
+  4.5 mm wall has no room, so its bolt sits in a boss 6.6 mm proud of the back, set in off the outer edge (from 4.5 mm
+  in) over the monitor's back, so it is not seen edge-on; it prints on tree supports. The lap tongue and its detent only
   align the halves.
 - Part_A_Mount's base (VHB pad, step index, scribe ring, pedestal) has no parametric source: the v20 Fusion script held
   only the boss. The socket is grafted onto that base, read from `CAD/assets/Part_A_Mount_base_v20.stl`.

@@ -144,21 +144,6 @@ def bm_prism_yz(pts_yz, x0, x1):
     return bm
 
 
-def bm_prism_xz(pts_xz, y0, y1):
-    """Prism along Y over an XZ polygon."""
-    bm = bmesh.new()
-    va = [bm.verts.new((px, y0, pz)) for (px, pz) in pts_xz]
-    vb = [bm.verts.new((px, y1, pz)) for (px, pz) in pts_xz]
-    bm.faces.new(list(reversed(va)))
-    bm.faces.new(vb)
-    n = len(pts_xz)
-    for i in range(n):
-        j = (i + 1) % n
-        bm.faces.new((va[i], va[j], vb[j], vb[i]))
-    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
-    return bm
-
-
 def mesh_report(me):
     """(non-manifold edge count, shell count) of a mesh datablock."""
     bm = bmesh.new()

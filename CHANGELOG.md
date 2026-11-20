@@ -1,5 +1,18 @@
 # Changelog
 
+## v21.7.0 (2026-11-20)
+
+- **The thick side's back boss moves in off the outer edge** (owner: flush with the edge it was the first thing seen
+  from the side): it now starts at the outer wall's inner face, 4.5 mm in from the outer face, and stands out over the
+  monitor's back to 11 mm, floating 0.4 mm clear of it, with the bolt 5.25 mm in. Its flat underside prints on tree
+  supports in both halves (new support regions, `STLs/Part_B_supports.json`), which stand on the plate in the screen
+  opening at the seam: the slice puts support under each region and none more than 11 mm from one. With the key's
+  room now inward, the slot no longer opens out through the boss's side. The trips out to those trees add about 80
+  short open-air hops to each bezel plate (plate 3: 231 to 315, plate 4: 197 to 274, median 5 mm, all at the seam),
+  so the hop cap goes from 250 to 330. A screwdriver cannot drive the seam bolts: the bolt lies 3 mm under the back,
+  and a driver in line with it would put its handle through the bezel; the 2.5 mm L key stays. An 8-shaped peg was
+  ruled out: the 4.5 mm wall has its inner 2 mm taken by the lap tongue at the seam. Reprint both halves.
+
 ## v21.6.0 (2026-11-20)
 
 - **Two seam bolts lying across the gap replace the tab, the splice plate and the third screw** (owner's idea): on

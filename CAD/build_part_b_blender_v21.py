@@ -34,7 +34,6 @@ from partb_mesh import (
     apply_bool,
     bm_frustum_rect,
     bm_prism_xy,
-    bm_prism_xz,
     bm_prism_yz,
     bm_profiled_prism,
     bm_rounded_prism,
@@ -275,20 +274,16 @@ apply_bool(
 apply_bool(part_b, bm_rounded_prism(*LED_SLIT, -0.2, H + 0.5, r=0.0), "DIFFERENCE", "LED_Slit")
 apply_bool(part_b, bm_rounded_prism(*LED_BORE, LEDGE, H + 0.5, r=0.0), "DIFFERENCE", "LED_Rear_Counterbore")
 
-# Thick-side back boss (CAD/bezel_spec.py) for that side's bolt, on the frame before the split so the seam cuts it: X
-# -5..-0.5 fills the outer wall's back round, -0.5..1.7 stands on the rear lip (z 17.1..18.6) and clears the monitor's
-# back, and the part over the monitor beyond the lip rises at 45 degrees, so the bosses print with no support.
+
+def box(x0, x1, y0, y1, z0, z1):
+    return bm_rounded_prism(x0, x1, y0, y1, z0, z1, r=0.0)
+
+
+# Thick-side back boss (CAD/bezel_spec.py) for that side's bolt, on the frame before the split so the seam cuts it. It
+# stands on the rear lip (X -0.5..1.7, z 17.1..18.6) and floats out over the monitor's back 0.1 mm off the lip's
+# face, which the monitor clears by 0.3: its underside prints on tree supports (SUPPORTS below).
 BX0, BX1 = bs.BOSS_X
-apply_bool(
-    part_b,
-    bm_prism_xz(
-        [(BX0, H - 3.1), (XW0, H - 3.1), (XW0, Z_THICK_LIP + 0.1), (1.7, Z_THICK_LIP + 0.1), (1.7, H),
-         (BX1, H + (BX1 - 1.7)), (BX1, bs.BOSS_Z1), (BX0, bs.BOSS_Z1)],
-        *bs.BOSS_Y,
-    ),
-    "UNION",
-    "Thick_Back_Bosses",
-)  # fmt: skip
+apply_bool(part_b, box(BX0, BX1, *bs.BOSS_Y, Z_THICK_LIP + 0.1, bs.BOSS_Z1), "UNION", "Thick_Back_Bosses")
 
 # ---------------------------------------------------------------- split at the seam (half-space booleans)
 part_b_upper = duplicate(part_b, "Part_B_Upper")
@@ -349,11 +344,7 @@ apply_bool(
 # The seam bolts (CAD/bezel_spec.py): per side, an M3 bolt along Y across the seam, dropped in from the back. The
 # Lower holds the head's slot (with room behind it for an L key) and the Upper the nut's hex pocket, its flats on +-X,
 # so the nut cannot turn; the channel runs between them and on past the nut for the bolt's tip. All open to the back.
-def box(x0, x1, y0, y1, z0, z1):
-    return bm_rounded_prism(x0, x1, y0, y1, z0, z1, r=0.0)
-
-
-for side, (bx, bz, slot_w, open_out) in bs.BOLTS.items():
+for side, (bx, bz, slot_w) in bs.BOLTS.items():
     top = (H if side == "thin" else bs.BOSS_Z1) + 0.5
     hw = max(
         slot_w / 2, 1.6 + math.tan(math.radians(bs.KEY_SWING)) * (top - 0.5 - bz)
@@ -367,9 +358,11 @@ for side, (bx, bz, slot_w, open_out) in bs.BOLTS.items():
         "DIFFERENCE",
         f"Bolt_HeadSlot_{side}",
     )
-    x0 = bs.BOSS_X[0] - 1.0 if open_out else bx - hw
     apply_bool(
-        part_b_lower, box(x0, bx + hw, head_y1 - bs.KEY_SLOT, head_y1, bz, top), "DIFFERENCE", f"Bolt_KeySlot_{side}"
+        part_b_lower,
+        box(bx - hw, bx + hw, head_y1 - bs.KEY_SLOT, head_y1, bz, top),
+        "DIFFERENCE",
+        f"Bolt_KeySlot_{side}",
     )
     for part, tag in ((part_b_lower, "Lower"), (part_b_upper, "Upper")):
         apply_bool(
@@ -397,7 +390,13 @@ build_seam_test(part_b_upper, part_b_lower, H, SEAM_Y, FX1)
 # mirrored at export. Each box reaches 0.5 mm into the solid above its overhang: a face on a slice plane first
 # prints one layer up.
 SUPPORTS = {
+    "Part_B_Lower": [
+        ("the thick side's back boss, floating over the monitor's back off the rear lip",
+         (1.4, bs.BOSS_X[1] + 0.3, bs.BOSS_Y[0], SEAM_Y, Z_THICK_LIP - 0.2, Z_THICK_LIP + 0.6)),
+    ],
     "Part_B_Upper": [
+        ("the thick side's back boss, floating over the monitor's back off the rear lip",
+         (1.4, bs.BOSS_X[1] + 0.3, SEAM_Y, bs.BOSS_Y[1], Z_THICK_LIP - 0.2, Z_THICK_LIP + 0.6)),
         ("lip over the left lap pocket at the seam: 4.2 mm flat off the outer wall, the Lower's tongue seats under it",
          (-2.6, 1.8, SEAM_Y, 182.6, Z_THICK_LIP - 0.3, Z_THICK_LIP + 0.5)),
     ],
