@@ -10,7 +10,7 @@ The plates, per-object settings, support regions and what the slice must show ar
 the slice and its gates are gates_of_heck's CAD layer (checks/cad_bambu.py), the same code the push gate runs
 (gates/cad_gate.sh): any slicing warning, a support request the G-code does not honour, support missing under a region
 the generator named (STLs/Part_B_supports.json) or far from all of them, the wrong nozzle or bed, open-air travel over
-its cap. Until v21.2.1 this file carried its own copy, which missed the Upper's floating cantilever.
+its cap.
 
   plate 1  Fit tests (print first)   Part_A_Test (collar + ball), Part_B_FitGauge (monitor side channels)
   plate 2  Part A mount + accents     Part_A_Mount, Part_B_Emblem (blank snap-in tile), Part_B_LED

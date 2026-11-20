@@ -85,7 +85,8 @@ total_g = sum(p["grams"] for p in rep["plates"])
 HTML = f"""
 <h1>ZSUS 14" Portrait Mount &amp; "Snow White" Bezel</h1>
 <p class="sub">v21 screwless assembly guide | Bambu Lab P1S, 0.4 mm nozzle, Generic PLA, Textured PEI plate |
-project file <b>ZSUS_v21_Complete_P1S_PLA.3mf</b> (4 plates, sliced clean in Bambu Studio {rep["bambu_studio"]})</p>
+project file <b>ZSUS_v21_Complete_P1S_PLA.3mf</b> ({len(rep["plates"])} plates, sliced clean in Bambu Studio
+{rep["bambu_studio"]})</p>
 
 <h2>1. Printed parts</h2>
 <table><tr><th>Plate</th><th>Part</th><th>Size</th><th>Settings</th><th>Role</th></tr>{rows}</table>
@@ -148,42 +149,15 @@ collar down hand-tight, as in Step 1.</p>
 toward the screen (-X) to lift the barb out of its notch, flex the top-right detent tab, and pull the Upper straight
 up (+Y).</div>
 
-<h2>5. What changed from v20</h2>
+<h2>5. Printing notes</h2>
 <ul>
-<li><b>Ball socket.</b> v20's cup floor clipped the seat 2.8 mm high, so the ball rested with its equator level with
-the rim and nothing held it; collar pressure squeezed it out. v21: full spherical seat, eight leaves wrapping 2.6 mm
-above the equator, and a collar cone on the leaf tips. The first v21 print (six leaves, 15.6 mm mouth) snapped its
-leaves in PLA as the ball went in; eight leaves with a 0.3 mm snap and deeper slots bend about a third as far.</li>
-<li><b>Collar relief.</b> The collar's top edge (about 19.6 mm across) meets the leaf cone 9.7 mm up, and the collar
-is 9.8 mm tall, so on a flat pedestal it would bottom out before squeezing. The socket now stands in a 3 mm
-relief.</li>
-<li><b>Monitor fit.</b> Side channels 0.5 mm per side and 0.5 mm glass-to-lip (v20 0.3 mm); the thick channel also
-takes
-the ZSUS spec thickness of 14.0 mm; frame 18.6 mm (v20 18.0) to keep the thick-side lip 1.5 mm. The fit gauge
-steps the thin-side slot ({SLOT:.1f} / {SLOT + 0.4:.1f} / {SLOT + 0.8:.1f} mm). The thin panel is {MON_THIN} mm: the
-first gauge (6.2 / 6.6 / 7.0 mm) showed only the 7.0 mm slot slides on, where a hand measurement read 5.7 mm.</li>
-<li><b>Snow White styling.</b> Equal 22.3 mm borders on the left, right and top (the top was 3.5 mm short); lines on
-10 mm
-centres, 1.5 mm deep on both sides (were 6 mm, 1.0 / 1.8 mm deep), set back from the front edge and added to the top
-and
-bottom; the parting line now sits in a groove across the front; a 4 mm front round (Apple IIc monitor) and a 3 mm
-rear round. The chin takes the IIc's vertical slit light and a snap-in 18 mm emblem you can swap. Print the
-bezel
-in a matte warm light-grey PLA (Apple's Platinum), not bright white.</li>
-<li><b>Screen reveal (v21.2).</b> The opening is cut round the image as the monitor shows it, not the spec sheet:
-v21.1 left 0.8 mm of black glass on the left, 4.4 mm on the right and 1.7 mm at the bottom. Every side now leaves
-0.8 mm, and the right border and the chin move with the opening so the frame stays even.</li>
-<li><b>Stringing (v21.2).</b> The project turns on avoid crossing walls, which keeps most travel over the part instead
-of across the screen opening and the pocket. Strings that remain are usually wet filament: dry the PLA
-(about 55 C for 8 h) before printing the bezel, and pull any hairs out of the channels before sliding the monitor
-in.</li>
-<li><b>Bezel geometry repaired.</b> v20's Blender booleans failed silently: the thick-side lip and the lap tongue
-were missing,
-the thin-side lip and snap features were loose shells, and the snap arm collided with the solid Lower frame.
-v21 builds every part as one manifold solid and adds a working snap channel and an LED counterbore.</li>
-<li><b>Project file.</b> 0.4 mm nozzle profile (v20: 0.2 mm), all parts on four plates (v20 left Part_B_Lower
-off the bed), per-object layer heights, aux fan 10%, supports only where a part needs them (the Upper's snap-arm
-tip and lap corner, the onlay emblem).</li>
+<li><b>Colour.</b> Print the bezel in a matte warm light-grey PLA (Apple's Platinum, about #D3CFC6), not bright white:
+Snow White products were never white.</li>
+<li><b>Stringing.</b> The project keeps travel over the part (avoid crossing walls) rather than across the screen
+opening and the pocket. Strings that remain are usually wet filament: dry the PLA (about 55 C for 8 h) before
+printing the bezel, and pull any hairs out of the channels before sliding the monitor in.</li>
+<li><b>Supports.</b> Only the Upper (under the snap-arm tip and the left lap corner) and the Cthulhu tile take
+supports; snap them off before assembly.</li>
 </ul>
 """
 

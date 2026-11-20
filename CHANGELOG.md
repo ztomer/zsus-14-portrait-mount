@@ -41,7 +41,8 @@
 - **Thin panel 6.5 mm** (fit gauge: only the 7.0 mm slot slides on); the Lower's thin slot is 7.0 mm and the gauge
   steps 7.0 / 7.4 / 7.8. The monitor's measurements live in one module, `CAD/monitor_spec.py`.
 - **STL files a slicer reads as closed:** v21.0.0 shipped pinched edges (edges shared by 4 to 10 faces) in
-  Part_A_Mount (171), Part_A_Test (336) and the Cthulhu tile (1084); Bambu Studio sliced them without a warning.
+  Part_A_Mount (169), Part_A_Test (244) and the Cthulhu tile (1084; counted as admesh joins vertices,
+  without the degenerate self-edges an earlier count of 171 / 336 included); Bambu Studio sliced them without a warning.
   Causes removed: a redundant thread core and a lead-in that started on the mouth cylinder (Part A), a relief
   silhouette whose walls stood on the height field's grid lines and an anchor cut from the same outline (tile).
   Every manifold3d writer now goes through `CAD/stl_io.py` (float32 weld, read-back refusal), and
@@ -69,3 +70,23 @@ bezel (Part B), as one Bambu Studio project for a P1S in plain PLA.
   broke while the ball went in).
 - **Pictures:** `CAD/render_views.py` renders the README images headless in Blender from the
   shipped STLs, on a light and a dark backdrop.
+
+Changes from v20:
+
+- **Ball socket:** v20's cup floor clipped the seat 2.8 mm high, so the ball rested with its equator level with the
+  rim and collar pressure squeezed it out. v21 has a full spherical seat, leaves wrapping 2.6 mm above the equator and
+  a collar cone on the leaf tips. The first v21 print (six leaves, 15.6 mm mouth) snapped its leaves in PLA as the
+  ball went in, which gave the eight-leaf socket above.
+- **Collar relief:** the collar's top edge (about 19.6 mm) meets the leaf cone 9.7 mm up and the collar is 9.8 mm tall,
+  so on v20's flat pedestal it bottomed out before squeezing (0.40 mm of travel past the crown); the socket now
+  stands in a 3 mm relief.
+- **Monitor fit:** side channels 0.5 mm per side and 0.5 mm glass-to-lip (v20: 0.3 mm); frame 18.6 mm (v20: 18.0) to
+  keep the thick-side lip 1.5 mm.
+- **Snow White styling:** equal 22.3 mm borders left, right and top (the top was 3.5 mm short); lines on 10 mm centres,
+  1.5 mm deep on both sides (were 6 mm, 1.0 / 1.8 mm deep), set back from the front edge and added to the top and
+  bottom; the parting line in a front groove; 4 mm front and 3 mm rear rounds.
+- **Bezel geometry repaired:** v20's Blender booleans failed silently: the thick-side lip and the lap tongue were
+  missing, the thin-side lip and snap features were loose shells, and the snap arm collided with the Lower's frame.
+  Every part is now one manifold solid, with a working snap channel and an LED counterbore.
+- **Project file:** 0.4 mm nozzle profile (v20: 0.2 mm), every part on a plate (v20 left Part_B_Lower off the bed),
+  per-object layer heights, aux fan 10 %.
