@@ -57,8 +57,6 @@ from bezel_spec import BEVEL_FACE, BEVEL_IN, FX0, FX1, FY0, FY1, MICRO, OPENING,
 from monitor_spec import FIT_Z as FIT_Z_NOMINAL  # noqa: E402
 from monitor_spec import LEDGE, MON_H, MON_THICK, MON_THIN, MON_W  # noqa: E402  (one source: CAD/monitor_spec.py)
 
-CLEAR_D, HEAD_D, HEAD_K, HOLE_Z0 = bs.CLEAR_D, bs.HEAD_D, bs.HEAD_K, bs.HOLE_Z0  # the thin-side screw joint
-NUT_AF, NUT_T, SCREW, TAB_LEN, TAB_X, TAB_Z0 = bs.NUT_AF, bs.NUT_T, bs.SCREW, bs.TAB_LEN, bs.TAB_X, bs.TAB_Z0
 H = bs.FRAME_H  # frame height, 18.6 (v20: 18.0)
 FIT_X = 0.5  # per side, along the two long sliding channels
 FIT_Y = 0.3  # per end (monitor does not slide on these faces)
@@ -88,7 +86,6 @@ EXPECTED_SHELLS = {
     "Part_B_FitGauge": 4,
     "Part_B_SeamTest_Upper": 1,
     "Part_B_SeamTest_Lower": 1,
-    "Part_B_Splice": 1,
 }
 
 bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -278,17 +275,16 @@ apply_bool(
 apply_bool(part_b, bm_rounded_prism(*LED_SLIT, -0.2, H + 0.5, r=0.0), "DIFFERENCE", "LED_Slit")
 apply_bool(part_b, bm_rounded_prism(*LED_BORE, LEDGE, H + 0.5, r=0.0), "DIFFERENCE", "LED_Rear_Counterbore")
 
-# Thick-side back bosses (CAD/bezel_spec.py), on the frame before the split so the seam cuts them: X -5..-0.5 fills the
-# outer wall's back round, -0.5..1.7 stands on the rear lip (z 17.1..18.6) and clears the monitor's back, and the part
-# over the monitor beyond the lip rises at 45 degrees, so the bosses print with no support.
+# Thick-side back boss (CAD/bezel_spec.py) for that side's bolt, on the frame before the split so the seam cuts it: X
+# -5..-0.5 fills the outer wall's back round, -0.5..1.7 stands on the rear lip (z 17.1..18.6) and clears the monitor's
+# back, and the part over the monitor beyond the lip rises at 45 degrees, so the bosses print with no support.
 BX0, BX1 = bs.BOSS_X
 apply_bool(
     part_b,
     bm_prism_xz(
         [(BX0, H - 3.1), (XW0, H - 3.1), (XW0, Z_THICK_LIP + 0.1), (1.7, Z_THICK_LIP + 0.1), (1.7, H),
          (BX1, H + (BX1 - 1.7)), (BX1, bs.BOSS_Z1), (BX0, bs.BOSS_Z1)],
-        SEAM_Y - bs.BOSS_LEN,
-        SEAM_Y + bs.BOSS_LEN,
+        *bs.BOSS_Y,
     ),
     "UNION",
     "Thick_Back_Bosses",
@@ -349,43 +345,47 @@ apply_bool(
     "Left_Detent_Recess",
 )
 
-# Thin-side screw joint (CAD/bezel_spec.py): the Lower's tab laps over the Upper's recess, and an M3 screw through the
-# tab into a nut in the recess floor's hex pocket pins the seam shut. Face-down, the tab's 10 mm past the seam is in
-# mid-air: tree supports from the plate carry it (SUPPORTS below). Everything else here is a pocket open to the back.
-SX, SY = SCREW
-NUT_R = NUT_AF / math.sqrt(3)  # the hex's corner radius; a corner on +-X puts a flat across the pull (+-Y)
+
+# The seam bolts (CAD/bezel_spec.py): per side, an M3 bolt along Y across the seam, dropped in from the back. The
+# Lower holds the head's slot (with room behind it for an L key) and the Upper the nut's hex pocket, its flats on +-X,
+# so the nut cannot turn; the channel runs between them and on past the nut for the bolt's tip. All open to the back.
+def box(x0, x1, y0, y1, z0, z1):
+    return bm_rounded_prism(x0, x1, y0, y1, z0, z1, r=0.0)
 
 
-def ring(r, n=24):
-    """An n-gon round (SX, SY) whose flats clear radius r."""
-    rc = r / math.cos(math.pi / n)
-    return [(SX + rc * math.cos(2 * math.pi * k / n), SY + rc * math.sin(2 * math.pi * k / n)) for k in range(n)]
-
-
-apply_bool(
-    part_b_lower,
-    bm_rounded_prism(TAB_X[0], TAB_X[1], SEAM_Y - 0.5, SEAM_Y + TAB_LEN, TAB_Z0, H, r=0.0),
-    "UNION",
-    "Screw_Tab",
-)
-apply_bool(part_b_lower, bm_prism_xy(ring(CLEAR_D / 2), TAB_Z0 - 0.5, H + 0.5), "DIFFERENCE", "Screw_Tab_Hole")
-apply_bool(part_b_lower, bm_prism_xy(ring(HEAD_D / 2), H - HEAD_K, H + 0.5), "DIFFERENCE", "Screw_Head_Counterbore")
-apply_bool(
-    part_b_upper,
-    bm_rounded_prism(TAB_X[0] - 0.2, TAB_X[1] + 0.2, SEAM_Y - 0.5, SEAM_Y + TAB_LEN + 0.5, TAB_Z0 - 0.1, H + 0.5),
-    "DIFFERENCE",
-    "Screw_Tab_Recess",
-)
-hexagon = [(SX + NUT_R * math.cos(math.pi * k / 3), SY + NUT_R * math.sin(math.pi * k / 3)) for k in range(6)]
-apply_bool(part_b_upper, bm_prism_xy(hexagon, TAB_Z0 - 0.1 - NUT_T, TAB_Z0), "DIFFERENCE", "Screw_Nut_Pocket")
-apply_bool(part_b_upper, bm_prism_xy(ring(CLEAR_D / 2), HOLE_Z0, TAB_Z0), "DIFFERENCE", "Screw_Hole_Upper")
-
-# Thick-side nut pockets and holes, one per half, under the splice plate (Part_B_Splice, below).
-for part, (tx, ty), tag in zip((part_b_lower, part_b_upper), bs.THICK_SCREWS, ("Lower", "Upper"), strict=True):
-    hexagon_t = [(tx + NUT_R * math.cos(math.pi * k / 3), ty + NUT_R * math.sin(math.pi * k / 3)) for k in range(6)]
-    apply_bool(part, bm_prism_xy(hexagon_t, bs.BOSS_Z1 - NUT_T, bs.BOSS_Z1 + 0.5), "DIFFERENCE", f"Thick_Nut_{tag}")
-    hole = [(tx + px - SX, ty + py - SY) for px, py in ring(CLEAR_D / 2)]
-    apply_bool(part, bm_prism_xy(hole, bs.THICK_HOLE_Z0, bs.BOSS_Z1), "DIFFERENCE", f"Thick_Hole_{tag}")
+for side, (bx, bz, slot_w, open_out) in bs.BOLTS.items():
+    top = (H if side == "thin" else bs.BOSS_Z1) + 0.5
+    hw = max(
+        slot_w / 2, 1.6 + math.tan(math.radians(bs.KEY_SWING)) * (top - 0.5 - bz)
+    )  # the key's swing, above the axis
+    head_y1 = SEAM_Y - bs.WALL_L  # the head bears on the Lower's wall here
+    nut_y0 = SEAM_Y + bs.WALL_U  # the nut bears on the Upper's wall here
+    r = bs.CLEAR_D / 2
+    apply_bool(
+        part_b_lower,
+        box(bx - slot_w / 2, bx + slot_w / 2, head_y1 - bs.KEY_SLOT, head_y1, bz - bs.HEAD_D / 2, bz + 0.01),
+        "DIFFERENCE",
+        f"Bolt_HeadSlot_{side}",
+    )
+    x0 = bs.BOSS_X[0] - 1.0 if open_out else bx - hw
+    apply_bool(
+        part_b_lower, box(x0, bx + hw, head_y1 - bs.KEY_SLOT, head_y1, bz, top), "DIFFERENCE", f"Bolt_KeySlot_{side}"
+    )
+    for part, tag in ((part_b_lower, "Lower"), (part_b_upper, "Upper")):
+        apply_bool(
+            part,
+            box(bx - r, bx + r, head_y1 - 0.5, SEAM_Y + bs.TIP_END, bz - r, top),
+            "DIFFERENCE",
+            f"Bolt_Chan_{side}_{tag}",
+        )
+    apply_bool(
+        part_b_upper,
+        box(
+            bx - bs.NUT_AF / 2, bx + bs.NUT_AF / 2, nut_y0, nut_y0 + bs.NUT_T, bz - bs.NUT_AF / math.sqrt(3) - 0.1, top
+        ),
+        "DIFFERENCE",
+        f"Bolt_NutPocket_{side}",
+    )
 
 # Fit gauge: cut from the Lower before mirroring, so it mirrors with the parts (CAD/partb_accessories.py)
 build_fit_gauge(part_b_lower, H, LEDGE, Z_THIN_LIP, XW1, LIP_T, FX1)
@@ -396,17 +396,10 @@ build_seam_test(part_b_upper, part_b_lower, H, SEAM_Y, FX1)
 # else). Every other downward face is 45 deg, a short ledge or a bridge. Pre-mirror (x0, x1, y0, y1, z0, z1);
 # mirrored at export. Each box reaches 0.5 mm into the solid above its overhang: a face on a slice plane first
 # prints one layer up.
-TAB_SUPPORT = (TAB_X[0] - 0.3, TAB_X[1] + 0.3, SEAM_Y, SEAM_Y + TAB_LEN + 0.3, 0.0, TAB_Z0 + 0.5)
 SUPPORTS = {
     "Part_B_Upper": [
         ("lip over the left lap pocket at the seam: 4.2 mm flat off the outer wall, the Lower's tongue seats under it",
          (-2.6, 1.8, SEAM_Y, 182.6, Z_THICK_LIP - 0.3, Z_THICK_LIP + 0.5)),
-    ],
-    "Part_B_Lower": [
-        ("screw tab past the seam: 10 mm at 12.6 mm over open air down to the plate", TAB_SUPPORT),
-    ],
-    "Part_B_SeamTest_Lower": [
-        ("screw tab past the seam, as on the Lower", TAB_SUPPORT),
     ],
 }  # fmt: skip
 
@@ -423,15 +416,6 @@ for name in ["Part_B_Upper", "Part_B_Lower", "Part_B_FitGauge", "Part_B_SeamTest
     bm.free()
 
 # Chin inserts (CAD/partb_accessories.py)
-# Splice plate for the thick-side joint: flat, printed on its own; its holes sit over the bosses' nuts.
-SPL_W, SPL_L = BX1 - BX0, 2 * bs.BOSS_LEN - 1.0
-splice_bm = bm_rounded_prism(0.0, SPL_W, 0.0, SPL_L, 0.0, bs.SPLICE_T, r=1.0, segs=4)
-part_b_splice = make_obj_from_bm("Part_B_Splice", splice_bm)
-pitch = bs.THICK_SCREWS[1][1] - bs.THICK_SCREWS[0][1]
-for k, py in enumerate((SPL_L / 2 - pitch / 2, SPL_L / 2 + pitch / 2)):
-    cx = bs.THICK_SCREWS[0][0] - BX0  # the screws' X across the boss, as on the bezel
-    hole = [(cx + px - SX, py + qy - SY) for px, qy in ring(CLEAR_D / 2)]
-    apply_bool(part_b_splice, bm_prism_xy(hole, -0.5, bs.SPLICE_T + 0.5), "DIFFERENCE", f"Splice_Hole_{k}")
 build_chin_inserts()
 
 

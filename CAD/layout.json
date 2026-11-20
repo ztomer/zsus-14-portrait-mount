@@ -137,8 +137,7 @@
    "settings": {
     "brim_type": "no_brim"
    },
-   "shells": 1,
-   "support_regions_json": "STLs/Part_B_supports.json"
+   "shells": 1
   },
   {
    "name": "Part_A_Mount",
@@ -174,18 +173,6 @@
    "shells": 1
   },
   {
-   "name": "Part_B_Splice",
-   "stl": "STLs/Part_B_Splice.stl",
-   "plate": 2,
-   "centre": [
-    200.0,
-    80.0
-   ],
-   "preset": "ACCENT",
-   "settings": {},
-   "shells": 1
-  },
-  {
    "name": "Part_B_Lower",
    "stl": "STLs/Part_B_Lower.stl",
    "plate": 3,
@@ -197,8 +184,7 @@
    "settings": {
     "brim_type": "no_brim"
    },
-   "shells": 1,
-   "support_regions_json": "STLs/Part_B_supports.json"
+   "shells": 1
   },
   {
    "name": "Part_B_Upper",

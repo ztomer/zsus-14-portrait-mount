@@ -1,5 +1,20 @@
 # Changelog
 
+## v21.6.0 (2026-11-20)
+
+- **Two seam bolts lying across the gap replace the tab, the splice plate and the third screw** (owner's idea): on
+  each side an M3 socket-head bolt (10 to 16 mm) lies along the monitor across the seam, dropped in from the back,
+  its head bearing on a wall in the Lower and its nut in a hex pocket in the Upper, and a 2.5 mm L key in the slot
+  behind the head turns it: tightening pulls the seam shut, where v21.4-5's vertical screws only pinned it with
+  0.2-0.25 mm of play. The thin side's lies inside the 16.7 mm frame, no tab and no supports (plate 3 has none
+  now); the thick side's sits in a back boss 6.6 mm proud (v21.5: 8 mm plus a 3 mm plate and the screw heads), whose
+  key slot opens out through the boss's outer side above the bolt so the key can swing 60 degrees.
+  `CAD/check_part_b_fit.py` models each bolt in place: it clears both halves, pulled apart the halves meet head and
+  nut within 0.1 mm, the nut cannot turn, bolt and nut lift straight out the back, an L key turns 30 degrees each
+  way without touching the Lower (the thick side's first, narrower slot allowed about 22: red), and hinged open about
+  the thin-side corner the thick side opens 0.13 mm. v21.5.0's parts are red on all of them. Hardware: two M3
+  socket-head bolts, two M3 nuts, a 2.5 mm L key; `Part_B_Splice` is gone.
+
 ## v21.5.0 (2026-11-20)
 
 - **The thick side is screwed too:** v21.4.0 pinned only the thin side, and the thick side had nothing but the lap

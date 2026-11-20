@@ -35,31 +35,32 @@ FY1 = OPENING[3] + BORDER
 BEZEL_CX = (FX0 + FX1) / 2
 CHIN_CY = (FY0 + OPENING[2]) / 2  # the visible chin's centre line
 
-# The halves part along Y at SEAM_Y (front view). On the thin side they are held by ONE M3 screw used as a pin
-# (CAD/build_part_b_blender_v21.py builds it, CAD/check_part_b_fit.py gates it): a tab on the Lower's back laps over a
-# recess in the Upper's, and the screw drops through the tab into an M3 nut held in a hex pocket in the recess floor, so
-# pulling the halves apart is shear on the screw, not a bend. (v21.3's snap arm, a 1.8 mm cantilever, bent and let go.)
-# Face-down, the tab past the seam takes tree supports, and their travel strings: on the Upper its 49 open-air hops put
-# plate 4 over its 250 (256), so the tab is the Lower's, whose plate had the room (183 before).
+# The halves part along Y at SEAM_Y (front view) and are clamped shut by two M3 bolts lying along Y across the seam,
+# one per side (CAD/build_part_b_blender_v21.py builds the joints, CAD/check_part_b_fit.py gates them). Each drops in
+# from the back into an open channel: its socket head bears on a wall in the Lower, its nut sits in a hex pocket in
+# the Upper (it cannot turn), and an L hex key in the slot behind the head turns it, so tightening pulls the seam
+# shut. Every face is a pocket open to the back: nothing needs support. On the thin side the joint lies inside the
+# 16.7 mm wall; the thick side's 4.5 mm wall has no room, so there it stands in a boss on the back, 6.6 mm proud.
+# (v21.3: a snap arm that bent and let go; v21.4-5: vertical screws through a supported tab and a splice plate.)
 SEAM_Y = 177.35
-TAB_X = (224.0, 233.0)  # front-view X: the pocket wall is at 220.5, the outer face's back round starts at 234.2
-TAB_LEN = 10.0  # how far the tab reaches past the seam over the Upper
-TAB_Z0 = 12.6  # the tab's underside: 6.0 mm of tab under the 18.6 mm back face
-SCREW = ((TAB_X[0] + TAB_X[1]) / 2, SEAM_Y + TAB_LEN / 2)  # the screw's axis, front view (X, Y)
-CLEAR_D = 3.4  # M3 clearance, through the tab and below the nut
-HEAD_D, HEAD_K = 6.5, 3.2  # counterbore in the tab's back: an M3 socket, button or pan head sits below the face
-NUT_AF, NUT_T = 5.8, 2.7  # hex pocket for an M3 nut (5.5 across flats, 2.4 thick), a flat facing the pull
-HOLE_Z0 = 3.0  # the hole's bottom, 3 mm behind the front face: an M3 x 6 to x 12 screw fits
-
-# The thick side's 4.5 mm wall has no room for a nut, so its joint stands on the back: a boss on each half's back at
-# the seam, an M3 nut in a hex pocket in each, and a flat splice plate (Part_B_Splice, printed on its own) laid across
-# both with an M3 screw into each nut. Every face prints without supports: the bosses grow up from the back, their
-# inner edge over the monitor is a 45-degree chamfer. With both sides pinned the halves cannot part; the lap tongue
-# and its detent only align them. (v21.4.0: the thick side had the detent alone, and opened 1.0 mm when pulled.)
 FRAME_H = 18.6  # the bezel's back face, z
-BOSS_X = (-5.0, 4.0)  # front-view X: flush with the outer face; over the monitor from the lip's edge at 1.7
-BOSS_LEN = 11.5  # along Y on each side of the seam
-BOSS_Z1 = FRAME_H + 8.0  # the bosses' top, where the splice plate lies
-SPLICE_T = 3.0
-THICK_SCREWS = [(-0.5, SEAM_Y - 6.0), (-0.5, SEAM_Y + 6.0)]  # front view (X, Y): the Lower's, the Upper's
-THICK_HOLE_Z0 = 17.6  # the holes' bottom, 0.5 mm into the rear lip over the monitor: M3 x 6 to x 10
+NUT_AF, NUT_T = 5.8, 2.7  # hex pocket for an M3 nut (5.5 across flats, 2.4 thick), its flats on +-X
+CLEAR_D = 3.4  # the bolt's channel
+HEAD_D, HEAD_L = 6.0, 3.2  # room for an M3 socket head (5.5 x 3.0)
+WALL_L, WALL_U = (
+    3.0,
+    3.0,
+)  # the Lower's wall under the head and the Upper's in front of the nut, either side of the seam
+KEY_SLOT = 22.0  # the slot behind the head: the head and an L key's 18 mm short leg (2.5 mm hex)
+TIP_END = 14.0  # the channel runs on this far past the seam for the bolt's tip: M3 x 10 to x 16
+# (front-view X, axis Z, head-slot width, open outward above the axis) per side. The head's slot is as wide as the
+# key's long leg needs to swing 60 degrees with the bolt's axis that far under the top; the thick side's stays over
+# the wall and the rear lip (X <= 1.7).
+BOLTS = {"thin": (228.5, 14.8, 8.0, False), "thick": (-1.15, 21.5, 5.7, True)}
+# The key's 2.6 mm leg, 30 degrees off vertical from the axis up to the top, needs this half-width above the axis. The
+# thick side's slot cannot have it inward (the monitor) or outward (0.5 mm of wall), so above its axis it opens through
+# the boss's outer face (the last flag): the key swings out there.
+KEY_SWING = 30.0
+BOSS_X = (-5.0, 4.0)  # the thick side's back boss, front-view X: flush with the outer face, over the monitor to 4.0
+BOSS_Z1 = FRAME_H + 6.6  # its top
+BOSS_Y = (SEAM_Y - WALL_L - KEY_SLOT - 2.0, SEAM_Y + TIP_END + 1.5)

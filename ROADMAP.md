@@ -10,13 +10,13 @@ Open work only. What shipped is in git history.
   break cleanly off the onlay's back, and the onlay sits flat on the chin face.
   Done when: it does, or `CAD/build_emblem.py`'s barb (`BARB`, `CATCH_DEG`) or clearances are adjusted and rebuilt.
 
-- **FIT.SEAM** Print plate 1's seam test (`Part_B_SeamTest_Upper` + `_Lower`) with an M3 nut and screw: the nut
-  drops into its hex pocket and does not turn, the tab seats over it, the screw reaches the nut, and pulled apart the
-  pieces move no more than a fraction of a millimetre. Then print the v21.5 Upper and Lower (plates 3 and 4) and the splice
-  (plate 2) on the monitor: the halves meet at the seam on both sides, screwed on both. Done when: they do, or the joint (`TAB_*`, `NUT_*`, `CLEAR_D`
-  in `CAD/bezel_spec.py`), `MON_H` (`CAD/monitor_spec.py`, tape 311.0) or the shrink compensation (`filament_shrink`
-  99.4 %, `CAD/layout.json`, from one tape reading of the closed bezel: about 354 of 356.1 mm) is corrected and
-  rebuilt. The closed v21.5 bezel should measure 355.8 mm (the model's length).
+- **FIT.SEAM** Print plate 1's seam test (`Part_B_SeamTest_Upper` + `_Lower`) with an M3 nut and an M3
+  socket-head bolt (10 to 16 mm): the nut stands in its pocket and does not turn, the bolt drops into its channel, a
+  2.5 mm L key turns it, and it pulls the pieces shut so they do not move when pulled. Then print the v21.6 Upper and
+  Lower (plates 3 and 4) on the monitor: both seam bolts pull the halves shut. Done when: they do, or the joint
+  (`BOLTS`, `WALL_*`, `NUT_*`, `KEY_SLOT` in `CAD/bezel_spec.py`), `MON_H` (`CAD/monitor_spec.py`, tape 311.0) or the
+  shrink compensation (`filament_shrink` 99.4 %, `CAD/layout.json`, from one tape reading of the closed bezel: about
+  354 of 356.1 mm) is corrected and rebuilt. The closed v21.6 bezel should measure 355.8 mm (the model's length).
 
 - **FIT.REVEAL** With the v21.3 bezel on, check the black gap between the image and the bezel's edge: 0.8 mm on every
   side (`REVEAL`). The top edge is now the image's bottom plus its active height (304.1), not a photographed edge,

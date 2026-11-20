@@ -159,29 +159,28 @@ def joint():
     import sys
 
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-    from bezel_spec import HEAD_K, NUT_T, SCREW, TAB_Z0  # the figure is drawn from the spec, so it cannot go stale
+    from bezel_spec import BOLTS, SEAM_Y, TIP_END, WALL_L, WALL_U  # drawn from the spec, so it cannot go stale
 
-    sx, sy = SCREW
+    bx, bz = BOLTS["thin"][:2]
     up, lo = stl("Part_B_Upper"), stl("Part_B_Lower")
-    fig, ax = plt.subplots(figsize=(4.6, 3.0), dpi=150)
+    fig, ax = plt.subplots(figsize=(5.2, 2.8), dpi=150)
     for m, col, lab in ((lo, LO, "Part_B_Lower"), (up, UP, "Part_B_Upper")):
-        draw_section(ax, m, [-sx, 0, 0], [1, 0, 0], 1, 2, color=col, label=lab)
-    nut_z = TAB_Z0 - 0.1 - NUT_T
-    ax.add_patch(plt.Rectangle((sy - 1.5, 3.4), 3.0, 18.6 - HEAD_K - 3.4, color="0.55", lw=0))
-    ax.add_patch(plt.Rectangle((sy - 2.75, 18.6 - HEAD_K), 5.5, HEAD_K - 0.2, color="0.35", lw=0))
-    ax.add_patch(plt.Rectangle((sy - 2.75, nut_z), 5.5, 2.4, color="0.35", lw=0))
+        draw_section(ax, m, [-bx, 0, 0], [1, 0, 0], 1, 2, color=col, label=lab)
+    hy = SEAM_Y - WALL_L
+    ax.add_patch(plt.Rectangle((hy - 3.0, bz - 2.75), 3.0, 5.5, color="0.35", lw=0))
+    ax.add_patch(plt.Rectangle((hy, bz - 1.5), SEAM_Y + TIP_END - 1.0 - hy, 3.0, color="0.55", lw=0))
+    ax.add_patch(plt.Rectangle((SEAM_Y + WALL_U, bz - 3.17), 2.4, 6.35, color="0.35", lw=0))
     arrow = {"arrowstyle": "->", "lw": 0.7}
-    ax.annotate("M3 screw", xy=(sy, 17.0), xytext=(sy + 7, 22.5), fontsize=7, arrowprops=arrow)
-    ax.annotate("M3 nut in its\nhex pocket", xy=(sy + 2.7, nut_z + 1.2), xytext=(sy + 9, 5.0), fontsize=7,
+    ax.annotate("M3 bolt head", xy=(hy - 1.5, bz + 2.0), xytext=(hy - 22, 23), fontsize=7, arrowprops=arrow)
+    ax.annotate("M3 nut in its\nhex pocket", xy=(SEAM_Y + WALL_U + 1.2, bz + 3.0), xytext=(SEAM_Y + 9, 23), fontsize=7,
                 arrowprops=arrow)  # fmt: skip
-    ax.annotate("Lower's tab", xy=(sy - 3.5, 15.5), xytext=(sy - 14, 22.5), fontsize=7,
-                arrowprops=arrow)  # fmt: skip
-    ax.set_xlim(sy - 18, sy + 22)
-    ax.set_ylim(-1, 25)
+    ax.annotate("slot for the\nL key", xy=(hy - 14, 17.0), xytext=(hy - 26, 5.0), fontsize=7, arrowprops=arrow)
+    ax.set_xlim(SEAM_Y - 32, SEAM_Y + 20)
+    ax.set_ylim(-1, 27)
     ax.set_aspect("equal")
     ax.grid(True, lw=0.3)
-    ax.set_title(f"thin-side seam joint, section through the screw (X = {sx:g}, assembled)", fontsize=8)
-    ax.set_xlabel("Y (mm): the Lower left, the Upper right")
+    ax.set_title(f"thin-side seam bolt, section through it (X = {bx:g}, assembled)", fontsize=8)
+    ax.set_xlabel("Y (mm): the Lower left, the Upper right; seam at the step")
     ax.set_ylabel("Z (mm): face 0, back 18.6")
     ax.legend(loc="lower right", fontsize=6)
     fig.savefig(os.path.join(OUT, "joint_v21.png"), bbox_inches="tight")

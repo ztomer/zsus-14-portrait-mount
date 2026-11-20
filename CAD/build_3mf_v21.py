@@ -14,7 +14,7 @@ its cap.
 
   plate 1  Fit tests (print first)   Part_A_Test (collar + ball), Part_B_FitGauge (monitor side channels)
   plate 2  Part A mount + accents     Part_A_Mount, Part_B_Emblem (blank snap-in tile), Part_B_LED
-  plate 3  Part B lower bezel         tree supports under the screw tab
+  plate 3  Part B lower bezel
   plate 4  Part B upper bezel         tree supports in the left lap corner
   plate 5  Cthulhu emblem (optional)  Part_B_Emblem_Cthulhu: snap-in tile with the CC BY Cthulhu head as an onlay
 """

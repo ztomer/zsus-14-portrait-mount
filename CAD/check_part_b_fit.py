@@ -11,21 +11,7 @@ import trimesh
 
 ROOT = sys.argv[1] if len(sys.argv) > 1 else os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from bezel_spec import (  # noqa: E402  # noqa: E402
-    BOSS_X,
-    BOSS_Z1,
-    CLEAR_D,
-    FX1,
-    HEAD_K,
-    HOLE_Z0,
-    NUT_T,
-    SCREW,
-    SEAM_Y,
-    SPLICE_T,
-    TAB_Z0,
-    THICK_HOLE_Z0,
-    THICK_SCREWS,
-)
+from bezel_spec import BOLTS, FX1, SEAM_Y, TIP_END, WALL_L, WALL_U  # noqa: E402
 from monitor_spec import HUMP_X1, LEDGE, MON_H, MON_THICK, MON_THIN, MON_W, STEP_X1  # noqa: E402
 
 ZSUS_SPEC_THICK = 14.0  # the hump at the ZSUS spec's maximum thickness must still slide in
@@ -88,117 +74,90 @@ for x_mon, z_back, side in (
             fails.append(f"{nm} {side}")
 
 
-# thin-side screw joint: an M3 screw through the Lower's tab into a nut in the Upper's hex pocket, modelled in place
-# (print frame x = -X): a 3.0 mm shank from the head's seat to the hole's bottom, a 5.5 mm nut on the pocket's floor and
-# a 5.5 mm socket head in the counterbore. Shut, it clears both halves; pulled apart along y, the Lower's tab meets
-# the shank and the Upper meets the nut within 0.4 mm each, so the seam opens <= 0.8 mm and then the screw bears
-# (v21.3's snap arm had no such stop); turned 30 degrees, the nut cannot sit in its pocket; and the hole leaves the
-# front face whole.
-SX, SY = -SCREW[0], SCREW[1]
-H_FRAME = 18.6
-NUT_Z0 = TAB_Z0 - 0.1 - NUT_T
-
-
-def at_axis(m):
-    return m.translate((SX, SY, 0.0))
-
-
-shank = at_axis(m3.Manifold.cylinder(H_FRAME - HEAD_K - HOLE_Z0, 1.5, 1.5, 32).translate((0, 0, HOLE_Z0 + 0.05)))
-head = at_axis(m3.Manifold.cylinder(HEAD_K - 0.2, 2.75, 2.75, 32).translate((0, 0, H_FRAME - HEAD_K)))
-floor = at_axis(m3.Manifold.cylinder(HOLE_Z0 - 0.6, CLEAR_D / 2, CLEAR_D / 2, 32).translate((0, 0, 0.5)))
-
-
+# seam bolts: per side an M3 bolt along y across the seam, modelled in place (print frame x = -X), tightened: its
+# 5.5 x 3.0 socket head 0.05 mm off the Lower's wall, its 2.4 mm nut 0.05 mm off the Upper's, flats on +-x. Shut, it
+# clears both halves; pulled apart, the Lower meets the head and the Upper the nut within 0.2 mm (the bolt clamps the
+# seam); turned 30 degrees, the nut cannot sit in its pocket; lifted straight out the back, bolt and nut meet nothing
+# (it drops in); and an L key (2.5 mm hex, 18 mm short leg) in the head turns 30 degrees each way without touching
+# the Lower, a full 60-degree step of the hex.
 def first_hit(a, b, step=0.05, upto=3.0):
     """How far `a` moves along +y before it meets `b`."""
     steps = (float(t) for t in np.arange(step, upto, step))
     return next((round(t, 2) for t in steps if (a.translate((0.0, t, 0.0)) ^ b).volume() > 1e-3), None)
 
 
-def nut_at(deg):
+def along_y(m, x, y0, z):
+    """A manifold built along +z from 0, laid along +y from y0 with its axis at (x, z)."""
+    return m.rotate((-90.0, 0.0, 0.0)).translate((x, y0, z))
+
+
+def bolt_parts(bx, bz, turn=0.0):
+    x = -bx
+    head_y0 = SEAM_Y - WALL_L - 0.05 - 3.0
+    nut_y0 = SEAM_Y + WALL_U + 0.05
     r = 5.5 / np.sqrt(3)
-    return at_axis(m3.Manifold.cylinder(2.4, r, r, 6).rotate((0, 0, deg)).translate((0, 0, NUT_Z0)))
+    head = along_y(m3.Manifold.cylinder(3.0, 2.75, 2.75, 32), x, head_y0, bz)
+    shank = along_y(m3.Manifold.cylinder(SEAM_Y + TIP_END - 1.0 - head_y0, 1.5, 1.5, 32), x, head_y0, bz)
+    nut = along_y(m3.Manifold.cylinder(2.4, r, r, 6).rotate((0.0, 0.0, 30.0 + turn)), x, nut_y0, bz)
+    return head + shank, nut
 
 
-nut, turned = nut_at(0), nut_at(30)
-screw = shank + nut + head
-lo_stop, up_stop = first_hit(shank, lo), first_hit(up, nut)  # the Lower pulled -y, the Upper +y
-solid = (up ^ floor).volume()
-clear_up, clear_lo = (up ^ screw).volume() <= 0.01, (lo ^ screw).volume() <= 0.01  # a stop means nothing without these
-for what, ok, got in (
-    ("screw clears the Upper, shut", clear_up, f"{(up ^ screw).volume():.3f} mm3"),
-    ("screw and nut clear the Lower, shut", clear_lo, f"{(lo ^ screw).volume():.3f} mm3"),
-    ("pulled apart, the Lower's tab meets the screw within 0.4 mm", clear_lo and (lo_stop or 9) <= 0.4, f"{lo_stop}"),
-    ("pulled apart, the Upper meets the nut within 0.4 mm", clear_up and (up_stop or 9) <= 0.4, f"{up_stop} mm"),
-    ("the nut cannot turn in its pocket", (up ^ turned).volume() > 0.5, f"{(up ^ turned).volume():.2f} mm3 in the way"),
-    ("front face solid under the screw hole", solid >= 0.99 * floor.volume(), f"{solid:.1f}/{floor.volume():.1f} mm3"),
-):
-    print(f"{'OK  ' if ok else 'FAIL'} {what}: {got}")
-    if not ok:
-        fails.append(what)
+def key(bx, bz, deg):
+    """An L key: its short leg in the head's socket along -y, its long leg up out of the slot, turned deg."""
+    x, y_sock = -bx, SEAM_Y - WALL_L - 3.0 + 2.5  # 2.5 mm into the socket
+    short = along_y(m3.Manifold.cylinder(18.0, 1.3, 1.3, 16), 0.0, -18.0, 0.0)
+    long_leg = m3.Manifold.cylinder(30.0, 1.3, 1.3, 16).translate((0.0, -18.0, 0.0))
+    return (short + long_leg).rotate((0.0, deg, 0.0)).translate((x, y_sock, bz))
 
 
-# thick side: a splice plate across the two halves' back bosses, an M3 screw from it into a nut in each boss, modelled
-# in place and taken with the Lower (print frame x = -X; the nuts pulled up against the plate). Shut it clears both
-# halves; pulled apart, the Upper meets its nut within 0.4 mm (the model leaves out the plate's holes, 0.2 mm each);
-# no nut can turn. Then the hinge: with the thin side pinned the Upper could swing open about the seam's thin-side
-# outer corner (the screw is 8.7 mm from it, so its 0.2 mm play is a degree of swing), and the thick side, 240 mm
-# away, must not open more than TWIST_MAX. The lap tongue's 0.35 mm detent is a click, not a stop, so it is left out.
-# Measured 2026-11-20 with the detent out: 1.0 mm with only the monitor in its 0.5 mm side channels to stop it
-# (v21.4.0), 5.1 mm without the monitor.
+bolts = {}
+for side, (bx, bz, _w, _open) in BOLTS.items():
+    body, nut = bolt_parts(bx, bz)
+    whole = body + nut
+    bolts[side] = whole
+    lo_stop, up_stop = first_hit(whole, lo), first_hit(up, whole)  # the Lower pulled -y, the Upper +y
+    clear_up, clear_lo = (up ^ whole).volume() <= 0.01, (lo ^ whole).volume() <= 0.01
+    lift = [(whole.translate((0.0, 0.0, dz)) ^ (up + lo)).volume() for dz in (2.0, 5.0, 10.0)]
+    keys = [(key(bx, bz, d) ^ lo).volume() for d in (-30.0, 0.0, 30.0)]
+    turned = bolt_parts(bx, bz, turn=30.0)[1]
+    for what, ok, got in (
+        (f"{side}-side bolt clears the Upper, shut", clear_up, f"{(up ^ whole).volume():.3f} mm3"),
+        (f"{side}-side bolt clears the Lower, shut", clear_lo, f"{(lo ^ whole).volume():.3f} mm3"),
+        (
+            f"{side} side pulled apart: the Lower meets the head within 0.2 mm",
+            clear_lo and (lo_stop or 9) <= 0.2,
+            lo_stop,
+        ),
+        (
+            f"{side} side pulled apart: the Upper meets the nut within 0.2 mm",
+            clear_up and (up_stop or 9) <= 0.2,
+            up_stop,
+        ),
+        (
+            f"{side}-side nut cannot turn in its pocket",
+            (up ^ turned).volume() > 0.5,
+            f"{(up ^ turned).volume():.2f} mm3",
+        ),
+        (f"{side}-side bolt and nut lift out the back", max(lift) <= 0.01, [round(v, 3) for v in lift]),
+        (f"{side}-side L key turns 60 degrees in its slot", max(keys) <= 0.01, [round(v, 3) for v in keys]),
+    ):
+        print(f"{'OK  ' if ok else 'FAIL'} {what}: {got}")
+        if not ok:
+            fails.append(what)
+
+front = m3.Manifold.cube((8.0, 30.0, 1.0)).translate((-BOLTS["thin"][0] - 4.0, SEAM_Y - 26.0, 0.5))
+solid = (lo ^ front).volume() + (up ^ front).volume()
+ok = solid >= 0.99 * front.volume()
+print(f"{'OK  ' if ok else 'FAIL'} thin side: the front face under the bolt is solid: {solid:.1f}/{front.volume():.1f}")
+if not ok:
+    fails.append("thin side front face")
+
+# thick side, hinged: the lap tongue's 0.35 mm detent is a click, not a stop, so it is left out. Pulled open about the
+# seam's thin-side outer corner, the thick side, 240 mm away, must not open more than TWIST_MAX. Measured 2026-11-20
+# with the detent out: 1.0 mm with only the monitor in its 0.5 mm side channels to stop it (v21.4.0), 5.1 mm without
+# it.
 TWIST_MAX = 0.5
 
-
-def splice_screw(tx, ty):
-    x, y = -tx, ty
-    shank_t = m3.Manifold.cylinder(BOSS_Z1 + SPLICE_T - THICK_HOLE_Z0 - 0.05, 1.5, 1.5, 32)
-    r = 5.5 / np.sqrt(3)
-    parts = [
-        shank_t.translate((x, y, THICK_HOLE_Z0 + 0.05)),
-        m3.Manifold.cylinder(2.4, r, r, 6).translate((x, y, BOSS_Z1 - 2.4)),
-        m3.Manifold.cylinder(3.0, 2.75, 2.75, 32).translate((x, y, BOSS_Z1 + SPLICE_T)),
-    ]
-    return parts[0] + parts[1] + parts[2]
-
-
-spl = load("Part_B_Splice")
-sb = spl.bounding_box()
-mid_y = (THICK_SCREWS[0][1] + THICK_SCREWS[1][1]) / 2
-splice = spl.translate((-BOSS_X[1] - sb[0], mid_y - (sb[1] + sb[4]) / 2, BOSS_Z1 - sb[2]))  # centred over the bosses
-splice_set = splice + splice_screw(*THICK_SCREWS[0]) + splice_screw(*THICK_SCREWS[1])
-up_nut_t = splice_screw(*THICK_SCREWS[1])
-thick_stop = first_hit(up, up_nut_t)
-turned_t = [
-    m3.Manifold.cylinder(2.4, 5.5 / np.sqrt(3), 5.5 / np.sqrt(3), 6)
-    .rotate((0, 0, 30))
-    .translate((-tx, ty, BOSS_Z1 - 2.4))
-    for tx, ty in THICK_SCREWS
-]
-for what, ok, got in (
-    (
-        "splice plate and screws clear the Upper, shut",
-        (up ^ splice_set).volume() <= 0.01,
-        f"{(up ^ splice_set).volume():.3f}",
-    ),
-    (
-        "splice plate and screws clear the Lower, shut",
-        (lo ^ splice_set).volume() <= 0.01,
-        f"{(lo ^ splice_set).volume():.3f}",
-    ),
-    ("thick side pulled apart: the Upper meets its nut within 0.4 mm", (thick_stop or 9) <= 0.4, f"{thick_stop} mm"),
-    (
-        "the Lower's thick-side nut cannot turn",
-        (lo ^ turned_t[0]).volume() > 0.5,
-        f"{(lo ^ turned_t[0]).volume():.2f} mm3",
-    ),
-    (
-        "the Upper's thick-side nut cannot turn",
-        (up ^ turned_t[1]).volume() > 0.5,
-        f"{(up ^ turned_t[1]).volume():.2f} mm3",
-    ),
-):
-    print(f"{'OK  ' if ok else 'FAIL'} {what}: {got}")
-    if not ok:
-        fails.append(what)
 
 mon_in = monitor(MON_THICK)
 no_detent = lo - m3.Manifold.cube((1.1, 2.4, 7.6)).translate((1.9, 179.3, 8.7))  # the bump, print frame x +2.15..2.65
@@ -216,7 +175,7 @@ def twist_stop(blockers):
     return None
 
 
-stop = twist_stop((screw, splice_set, mon_in, no_detent))
+stop = twist_stop((bolts["thin"], bolts["thick"], mon_in, no_detent))
 opening = None if stop is None else float(np.radians(stop) * lever)
 what = f"thick side pulled open, hinged at the thin-side corner: <= {TWIST_MAX} mm"
 ok = opening is not None and opening <= TWIST_MAX

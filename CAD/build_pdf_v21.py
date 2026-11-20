@@ -52,10 +52,9 @@ ROWS = [
         "Thick-side channel + 3 stepped thin-side channels",
     ),
     (1, "Part_B_SeamTest_Upper", "0.20 mm, 3 walls, 15% gyroid", "Seam test: the Upper's nut-pocket corner"),
-    (1, "Part_B_SeamTest_Lower", "0.20 mm, 3 walls, 15% gyroid", "Seam test: the Lower's screw-tab corner"),
+    (1, "Part_B_SeamTest_Lower", "0.20 mm, 3 walls, 15% gyroid", "Seam test: the Lower's bolt-head corner"),
     (2, "Part_A_Mount", "0.16 mm, 5 walls, 40% gyroid", "VHB glue-on ball socket"),
     (2, "Part_B_Emblem", "0.16 mm, 3 walls, 100%", "Lower-left snap-in chin emblem (removable)"),
-    (2, "Part_B_Splice", "0.16 mm, 3 walls, 100%", "Thick-side splice plate (two M3 screws)"),
     (
         2,
         "Part_B_LED",
@@ -66,13 +65,13 @@ ROWS = [
         3,
         "Part_B_Lower",
         "0.20 mm, 3 walls, 15% gyroid, no brim",
-        "Lower bezel, chin, side channels, screw tab",
+        "Lower bezel, chin, side channels, bolt-head slots",
     ),
     (
         4,
         "Part_B_Upper",
         "0.20 mm, 3 walls, 15% gyroid, no brim",
-        "Upper bezel, USB-C bay, M3 nut pocket",
+        "Upper bezel, USB-C bay, M3 nut pockets",
     ),
 ]
 rows = "".join(
@@ -116,12 +115,13 @@ The three narrow pieces are the thin edge's channel with stepped slots, counted 
 and no rocking. 1 notch: print the bezel
 as is. 2 or 3: raise <code>MON_THIN</code> in <code>CAD/monitor_spec.py</code> by 0.4 or 0.8 mm and run
 <code>CAD/build_all.sh</code> before printing plates 3 and 4.</p>
-<p><b>Step 3, seam joint (Part_B_SeamTest_Upper + Part_B_SeamTest_Lower, one M3 nut, one M3 screw 6 to 12 mm
-long).</b> The two small pieces are the bezel's thin-side corner round the parting line, cut from both halves. Snap
-the tree support off from under the Lower's tab. Drop the nut into the hex pocket on the Upper piece's back, slide
-the pieces together along the seam so the tab covers it, and drive the screw through the tab into the nut. Pulled
-apart, the pieces must not move more than a fraction of a millimetre. If the nut turns in its pocket, the tab does
-not seat, or the screw does not reach the nut, stop and report before printing plates 3 and 4.</p>
+<p><b>Step 3, seam bolt (Part_B_SeamTest_Upper + Part_B_SeamTest_Lower, one M3 nut, one M3 socket-head bolt 10 to
+16 mm long, a 2.5 mm L hex key).</b> The two small pieces are the bezel's thin-side corner round the parting line,
+cut from both halves. Lay them back-up and push them together along the seam. Drop the nut into the hex pocket on the
+Upper piece's back (it stands on edge), lay the bolt in the channel with its head in the Lower piece's slot, and turn
+it with the key's short leg in the head until it pulls the pieces shut. Pulled apart, they must not move. If the nut
+turns, the key cannot turn the bolt, or the bolt does not reach the nut, stop and report before printing plates 3
+and 4.</p>
 <img src="socket_v21.png" width="300"/>
 <img src="channels_v21.png" width="470"/>
 
@@ -131,33 +131,30 @@ VHB inside the 0.40 mm scribe ring. Butt the mount against the 3 mm step bevel (
 (Y = {MON_H / 2:.1f} mm); the socket then sits on the centre of gravity (X = 104 mm). Press firmly for 30 to 60 s.
 <b>Cure 24 hours unloaded before hanging.</b></p>
 
-<h2>4. Part B: the bezel (three M3 screws and nuts)</h2>
+<h2>4. Part B: the bezel (two M3 bolts and nuts)</h2>
 <p><b>Step 4, chin accents.</b> Lay Part_B_Lower face-down. Press Part_B_LED into the slit window lower-right from
 the back until its 0.8 mm flange sits flat; it finishes flush with the chin face. Push Part_B_Emblem into the 18 mm
 window lower-left from the front, face out, until both barbs click behind the plate. To change the emblem later,
 reach into the control bay from behind and press the tile's back bridge forward: it pops out the front.</p>
 <img src="emblem_v21.png" width="300"/>
-<p><b>Step 5, monitor into the Lower.</b> Snap the tree support off from under the Lower's right screw
-tab (it sticks out past the seam face). Hold the monitor in portrait (bezel on the left, glass toward the bezel
+<p><b>Step 5, monitor into the Lower.</b> Hold the monitor in portrait (bezel on the left, glass toward the bezel
 face) and
 slide it down (-Y) into the open top of Part_B_Lower: the thick hump runs in the left channel and the thin panel in
 the right
 channel, under the rear lips, until the bottom edge passes under the bottom-right lip and stops on the chin.</p>
 <p><b>Step 6, close with the Upper.</b> First snap the small tree support out of Part_B_Upper's left lap-joint pocket
-at the seam. Drop an M3 nut into the hex pocket in the Upper's back at the right seam (keep the Upper back-up until
-it is on). Keep the orange 90-deg USB-C adapter in the top-left port. Slide Part_B_Upper down over the top of the
-monitor (the adapter nose runs in its relief channel) until the left 45-deg lap joint detent and the top-right detent
-tab click and the Lower's right tab lies over the nut. From the
-back, drive an M3 screw (6 to 12 mm, socket, button or pan head) through the tab into the nut, snug, not hard: the
-screw is a pin across the seam, not a clamp. Then the thick side: drop an M3 nut into each of the two hex pockets
-on the bosses at the left seam, lay Part_B_Splice across them, and drive an M3 screw (6 to 10 mm) through each of
-its holes into its nut, snug.</p>
+at the seam. Keep the orange 90-deg USB-C adapter in the top-left port. Slide Part_B_Upper down over the top of the
+monitor (the adapter nose runs in its relief channel) until the left 45-deg lap joint detent and the top-right
+detent tab click. Lay the bezel face-down on a soft cloth. On each side of the seam (the thin side inside the frame,
+the thick side in the boss on the back): drop an M3 nut on edge into the hex pocket in the Upper, lay an M3
+socket-head bolt (10 to 16 mm) in the channel with its head in the Lower's slot, and turn it with a 2.5 mm L key
+(short leg in the head, long leg up; on the thick side the key swings out over the edge) until the seam is shut and
+snug. The bolts pull the halves together.</p>
 <p><b>Step 7, hang it.</b> After the 24 h cure: collar onto the arm, ball into the Part_A_Mount socket (it snaps in),
 collar down hand-tight, as in Step 1.</p>
 <img src="joint_v21.png" width="400"/>
-<div class="tip"><b>Taking it apart:</b> take out the two screws in the splice plate and the screw at the right
-seam, flex the top-right detent tab, and
-pull the Upper straight up (+Y). The nut sits loose in the Upper's pocket: tip it out before it falls.</div>
+<div class="tip"><b>Taking it apart:</b> face-down, unscrew both seam bolts and lift them and their nuts out of the
+back, flex the top-right detent tab, and pull the Upper straight up (+Y).</div>
 
 <h2>5. Printing notes</h2>
 <ul>
@@ -166,8 +163,8 @@ Snow White products were never white.</li>
 <li><b>Stringing.</b> The project keeps travel over the part (avoid crossing walls) rather than across the screen
 opening and the pocket. Strings that remain are usually wet filament: dry the PLA (about 55 C for 8 h) before
 printing the bezel, and pull any hairs out of the channels before sliding the monitor in.</li>
-<li><b>Supports.</b> Only the Lower (under the right screw tab), the Upper (the left lap corner) and the Cthulhu
-tile take supports; snap them off before assembly.</li>
+<li><b>Supports.</b> Only the Upper (the left lap corner) and the Cthulhu tile take supports; snap them off before
+assembly.</li>
 </ul>
 """
 

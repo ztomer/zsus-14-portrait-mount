@@ -11,31 +11,5 @@
     17.6
    ]
   }
- ],
- "Part_B_Lower": [
-  {
-   "why": "screw tab past the seam: 10 mm at 12.6 mm over open air down to the plate",
-   "box": [
-    -233.3,
-    -223.7,
-    177.35,
-    187.65,
-    0.0,
-    13.1
-   ]
-  }
- ],
- "Part_B_SeamTest_Lower": [
-  {
-   "why": "screw tab past the seam, as on the Lower",
-   "box": [
-    -233.3,
-    -223.7,
-    177.35,
-    187.65,
-    0.0,
-    13.1
-   ]
-  }
  ]
 }
