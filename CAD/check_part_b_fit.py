@@ -11,7 +11,21 @@ import trimesh
 
 ROOT = sys.argv[1] if len(sys.argv) > 1 else os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from bezel_spec import CLEAR_D, HEAD_K, HOLE_Z0, NUT_T, SCREW, TAB_Z0  # noqa: E402
+from bezel_spec import (  # noqa: E402  # noqa: E402
+    BOSS_X,
+    BOSS_Z1,
+    CLEAR_D,
+    FX1,
+    HEAD_K,
+    HOLE_Z0,
+    NUT_T,
+    SCREW,
+    SEAM_Y,
+    SPLICE_T,
+    TAB_Z0,
+    THICK_HOLE_Z0,
+    THICK_SCREWS,
+)
 from monitor_spec import HUMP_X1, LEDGE, MON_H, MON_THICK, MON_THIN, MON_W, STEP_X1  # noqa: E402
 
 ZSUS_SPEC_THICK = 14.0  # the hump at the ZSUS spec's maximum thickness must still slide in
@@ -121,6 +135,95 @@ for what, ok, got in (
     print(f"{'OK  ' if ok else 'FAIL'} {what}: {got}")
     if not ok:
         fails.append(what)
+
+
+# thick side: a splice plate across the two halves' back bosses, an M3 screw from it into a nut in each boss, modelled
+# in place and taken with the Lower (print frame x = -X; the nuts pulled up against the plate). Shut it clears both
+# halves; pulled apart, the Upper meets its nut within 0.4 mm (the model leaves out the plate's holes, 0.2 mm each);
+# no nut can turn. Then the hinge: with the thin side pinned the Upper could swing open about the seam's thin-side
+# outer corner (the screw is 8.7 mm from it, so its 0.2 mm play is a degree of swing), and the thick side, 240 mm
+# away, must not open more than TWIST_MAX. The lap tongue's 0.35 mm detent is a click, not a stop, so it is left out.
+# Measured 2026-11-20 with the detent out: 1.0 mm with only the monitor in its 0.5 mm side channels to stop it
+# (v21.4.0), 5.1 mm without the monitor.
+TWIST_MAX = 0.5
+
+
+def splice_screw(tx, ty):
+    x, y = -tx, ty
+    shank_t = m3.Manifold.cylinder(BOSS_Z1 + SPLICE_T - THICK_HOLE_Z0 - 0.05, 1.5, 1.5, 32)
+    r = 5.5 / np.sqrt(3)
+    parts = [
+        shank_t.translate((x, y, THICK_HOLE_Z0 + 0.05)),
+        m3.Manifold.cylinder(2.4, r, r, 6).translate((x, y, BOSS_Z1 - 2.4)),
+        m3.Manifold.cylinder(3.0, 2.75, 2.75, 32).translate((x, y, BOSS_Z1 + SPLICE_T)),
+    ]
+    return parts[0] + parts[1] + parts[2]
+
+
+spl = load("Part_B_Splice")
+sb = spl.bounding_box()
+mid_y = (THICK_SCREWS[0][1] + THICK_SCREWS[1][1]) / 2
+splice = spl.translate((-BOSS_X[1] - sb[0], mid_y - (sb[1] + sb[4]) / 2, BOSS_Z1 - sb[2]))  # centred over the bosses
+splice_set = splice + splice_screw(*THICK_SCREWS[0]) + splice_screw(*THICK_SCREWS[1])
+up_nut_t = splice_screw(*THICK_SCREWS[1])
+thick_stop = first_hit(up, up_nut_t)
+turned_t = [
+    m3.Manifold.cylinder(2.4, 5.5 / np.sqrt(3), 5.5 / np.sqrt(3), 6)
+    .rotate((0, 0, 30))
+    .translate((-tx, ty, BOSS_Z1 - 2.4))
+    for tx, ty in THICK_SCREWS
+]
+for what, ok, got in (
+    (
+        "splice plate and screws clear the Upper, shut",
+        (up ^ splice_set).volume() <= 0.01,
+        f"{(up ^ splice_set).volume():.3f}",
+    ),
+    (
+        "splice plate and screws clear the Lower, shut",
+        (lo ^ splice_set).volume() <= 0.01,
+        f"{(lo ^ splice_set).volume():.3f}",
+    ),
+    ("thick side pulled apart: the Upper meets its nut within 0.4 mm", (thick_stop or 9) <= 0.4, f"{thick_stop} mm"),
+    (
+        "the Lower's thick-side nut cannot turn",
+        (lo ^ turned_t[0]).volume() > 0.5,
+        f"{(lo ^ turned_t[0]).volume():.2f} mm3",
+    ),
+    (
+        "the Upper's thick-side nut cannot turn",
+        (up ^ turned_t[1]).volume() > 0.5,
+        f"{(up ^ turned_t[1]).volume():.2f} mm3",
+    ),
+):
+    print(f"{'OK  ' if ok else 'FAIL'} {what}: {got}")
+    if not ok:
+        fails.append(what)
+
+mon_in = monitor(MON_THICK)
+no_detent = lo - m3.Manifold.cube((1.1, 2.4, 7.6)).translate((1.9, 179.3, 8.7))  # the bump, print frame x +2.15..2.65
+assert 5.0 < lo.volume() - no_detent.volume() < 15.0, "the detent cut no longer finds the bump"
+PX, PY = -FX1, SEAM_Y  # the seam's thin-side outer corner, print frame
+lever = 2.5 - PX  # to the thick side's outer wall
+
+
+def twist_stop(blockers):
+    """The first in-plane turn (degrees, up to 3) about the corner at which the Upper meets one of `blockers`."""
+    for d in (k * 0.01 for k in range(1, 301)):
+        turned_up = up.translate((-PX, -PY, 0.0)).rotate((0.0, 0.0, d)).translate((PX, PY, 0.0))
+        if any((turned_up ^ m).volume() > 0.5 for m in blockers):
+            return d
+    return None
+
+
+stop = twist_stop((screw, splice_set, mon_in, no_detent))
+opening = None if stop is None else float(np.radians(stop) * lever)
+what = f"thick side pulled open, hinged at the thin-side corner: <= {TWIST_MAX} mm"
+ok = opening is not None and opening <= TWIST_MAX
+got = "over 3 degrees" if stop is None else f"{opening:.2f} mm ({stop:.2f} deg)"
+print(f"{'OK  ' if ok else 'FAIL'} {what}: {got}")
+if not ok:
+    fails.append(what)
 
 
 # fit gauge: its first thin-side slot must BE the Lower's slot, the other two 0.4 / 0.8 mm taller (measured

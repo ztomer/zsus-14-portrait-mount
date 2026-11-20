@@ -34,6 +34,7 @@ from partb_mesh import (
     apply_bool,
     bm_frustum_rect,
     bm_prism_xy,
+    bm_prism_xz,
     bm_prism_yz,
     bm_profiled_prism,
     bm_rounded_prism,
@@ -58,7 +59,7 @@ from monitor_spec import LEDGE, MON_H, MON_THICK, MON_THIN, MON_W  # noqa: E402 
 
 CLEAR_D, HEAD_D, HEAD_K, HOLE_Z0 = bs.CLEAR_D, bs.HEAD_D, bs.HEAD_K, bs.HOLE_Z0  # the thin-side screw joint
 NUT_AF, NUT_T, SCREW, TAB_LEN, TAB_X, TAB_Z0 = bs.NUT_AF, bs.NUT_T, bs.SCREW, bs.TAB_LEN, bs.TAB_X, bs.TAB_Z0
-H = 18.6  # frame height (v20: 18.0)
+H = bs.FRAME_H  # frame height, 18.6 (v20: 18.0)
 FIT_X = 0.5  # per side, along the two long sliding channels
 FIT_Y = 0.3  # per end (monitor does not slide on these faces)
 FIT_Z = float(os.environ.get("PARTB_FIT_Z", FIT_Z_NOMINAL))  # glass-to-lip channel play
@@ -87,6 +88,7 @@ EXPECTED_SHELLS = {
     "Part_B_FitGauge": 4,
     "Part_B_SeamTest_Upper": 1,
     "Part_B_SeamTest_Lower": 1,
+    "Part_B_Splice": 1,
 }
 
 bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -276,19 +278,35 @@ apply_bool(
 apply_bool(part_b, bm_rounded_prism(*LED_SLIT, -0.2, H + 0.5, r=0.0), "DIFFERENCE", "LED_Slit")
 apply_bool(part_b, bm_rounded_prism(*LED_BORE, LEDGE, H + 0.5, r=0.0), "DIFFERENCE", "LED_Rear_Counterbore")
 
+# Thick-side back bosses (CAD/bezel_spec.py), on the frame before the split so the seam cuts them: X -5..-0.5 fills the
+# outer wall's back round, -0.5..1.7 stands on the rear lip (z 17.1..18.6) and clears the monitor's back, and the part
+# over the monitor beyond the lip rises at 45 degrees, so the bosses print with no support.
+BX0, BX1 = bs.BOSS_X
+apply_bool(
+    part_b,
+    bm_prism_xz(
+        [(BX0, H - 3.1), (XW0, H - 3.1), (XW0, Z_THICK_LIP + 0.1), (1.7, Z_THICK_LIP + 0.1), (1.7, H),
+         (BX1, H + (BX1 - 1.7)), (BX1, bs.BOSS_Z1), (BX0, bs.BOSS_Z1)],
+        SEAM_Y - bs.BOSS_LEN,
+        SEAM_Y + bs.BOSS_LEN,
+    ),
+    "UNION",
+    "Thick_Back_Bosses",
+)  # fmt: skip
+
 # ---------------------------------------------------------------- split at the seam (half-space booleans)
 part_b_upper = duplicate(part_b, "Part_B_Upper")
 part_b_lower = duplicate(part_b, "Part_B_Lower")
 bpy.data.objects.remove(part_b, do_unlink=True)
 apply_bool(
     part_b_upper,
-    bm_rounded_prism(-20.0, 260.0, SEAM_Y, 340.0, -5.0, H + 5.0),
+    bm_rounded_prism(-20.0, 260.0, SEAM_Y, 340.0, -5.0, bs.BOSS_Z1 + 5.0),
     "INTERSECT",
     "Split_Upper",
 )
 apply_bool(
     part_b_lower,
-    bm_rounded_prism(-20.0, 260.0, -40.0, SEAM_Y, -5.0, H + 5.0),
+    bm_rounded_prism(-20.0, 260.0, -40.0, SEAM_Y, -5.0, bs.BOSS_Z1 + 5.0),
     "INTERSECT",
     "Split_Lower",
 )
@@ -362,6 +380,13 @@ hexagon = [(SX + NUT_R * math.cos(math.pi * k / 3), SY + NUT_R * math.sin(math.p
 apply_bool(part_b_upper, bm_prism_xy(hexagon, TAB_Z0 - 0.1 - NUT_T, TAB_Z0), "DIFFERENCE", "Screw_Nut_Pocket")
 apply_bool(part_b_upper, bm_prism_xy(ring(CLEAR_D / 2), HOLE_Z0, TAB_Z0), "DIFFERENCE", "Screw_Hole_Upper")
 
+# Thick-side nut pockets and holes, one per half, under the splice plate (Part_B_Splice, below).
+for part, (tx, ty), tag in zip((part_b_lower, part_b_upper), bs.THICK_SCREWS, ("Lower", "Upper"), strict=True):
+    hexagon_t = [(tx + NUT_R * math.cos(math.pi * k / 3), ty + NUT_R * math.sin(math.pi * k / 3)) for k in range(6)]
+    apply_bool(part, bm_prism_xy(hexagon_t, bs.BOSS_Z1 - NUT_T, bs.BOSS_Z1 + 0.5), "DIFFERENCE", f"Thick_Nut_{tag}")
+    hole = [(tx + px - SX, ty + py - SY) for px, py in ring(CLEAR_D / 2)]
+    apply_bool(part, bm_prism_xy(hole, bs.THICK_HOLE_Z0, bs.BOSS_Z1), "DIFFERENCE", f"Thick_Hole_{tag}")
+
 # Fit gauge: cut from the Lower before mirroring, so it mirrors with the parts (CAD/partb_accessories.py)
 build_fit_gauge(part_b_lower, H, LEDGE, Z_THIN_LIP, XW1, LIP_T, FX1)
 build_seam_test(part_b_upper, part_b_lower, H, SEAM_Y, FX1)
@@ -398,6 +423,15 @@ for name in ["Part_B_Upper", "Part_B_Lower", "Part_B_FitGauge", "Part_B_SeamTest
     bm.free()
 
 # Chin inserts (CAD/partb_accessories.py)
+# Splice plate for the thick-side joint: flat, printed on its own; its holes sit over the bosses' nuts.
+SPL_W, SPL_L = BX1 - BX0, 2 * bs.BOSS_LEN - 1.0
+splice_bm = bm_rounded_prism(0.0, SPL_W, 0.0, SPL_L, 0.0, bs.SPLICE_T, r=1.0, segs=4)
+part_b_splice = make_obj_from_bm("Part_B_Splice", splice_bm)
+pitch = bs.THICK_SCREWS[1][1] - bs.THICK_SCREWS[0][1]
+for k, py in enumerate((SPL_L / 2 - pitch / 2, SPL_L / 2 + pitch / 2)):
+    cx = bs.THICK_SCREWS[0][0] - BX0  # the screws' X across the boss, as on the bezel
+    hole = [(cx + px - SX, py + qy - SY) for px, qy in ring(CLEAR_D / 2)]
+    apply_bool(part_b_splice, bm_prism_xy(hole, -0.5, bs.SPLICE_T + 0.5), "DIFFERENCE", f"Splice_Hole_{k}")
 build_chin_inserts()
 
 

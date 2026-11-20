@@ -24,51 +24,52 @@
   {
    "plate": 2,
    "name": "2 Part A mount + accents",
-   "hours": 1.26,
-   "grams": 32.86,
+   "hours": 1.3,
+   "grams": 33.49,
    "objects": [
     "Part_A_Mount",
     "Part_B_Emblem",
-    "Part_B_LED"
+    "Part_B_LED",
+    "Part_B_Splice"
    ],
    "warnings": [],
    "air_travel": {
-    "total_mm": 12861.6,
+    "total_mm": 13488.4,
     "longest_mm": 109.6,
-    "spans": 280,
+    "spans": 298,
     "layers": 132
    }
   },
   {
    "plate": 3,
    "name": "3 Part B lower bezel",
-   "hours": 3.05,
-   "grams": 97.74,
+   "hours": 3.14,
+   "grams": 98.5,
    "objects": [
     "Part_B_Lower"
    ],
    "warnings": [],
    "air_travel": {
-    "total_mm": 41912.4,
-    "longest_mm": 279.5,
-    "spans": 224,
-    "layers": 93
+    "total_mm": 38594.8,
+    "longest_mm": 290.1,
+    "spans": 231,
+    "layers": 133
    }
   },
   {
    "plate": 4,
    "name": "4 Part B upper bezel",
-   "hours": 2.28,
-   "grams": 70.97,
+   "hours": 2.39,
+   "grams": 71.76,
    "objects": [
     "Part_B_Upper"
    ],
    "warnings": [],
    "air_travel": {
-    "total_mm": 28856.5,
+    "total_mm": 36596.6,
     "longest_mm": 250.1,
-    "spans": 195,
-    "layers": 93
+    "spans": 199,
+    "layers": 133
    }
   },
   {
@@ -109,7 +110,7 @@
   },
   "Part_B_Upper": {
    "moves_under": [
-    39
+    38
    ],
    "farthest_mm": 10.0
   }

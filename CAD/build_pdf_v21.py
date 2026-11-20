@@ -55,6 +55,7 @@ ROWS = [
     (1, "Part_B_SeamTest_Lower", "0.20 mm, 3 walls, 15% gyroid", "Seam test: the Lower's screw-tab corner"),
     (2, "Part_A_Mount", "0.16 mm, 5 walls, 40% gyroid", "VHB glue-on ball socket"),
     (2, "Part_B_Emblem", "0.16 mm, 3 walls, 100%", "Lower-left snap-in chin emblem (removable)"),
+    (2, "Part_B_Splice", "0.16 mm, 3 walls, 100%", "Thick-side splice plate (two M3 screws)"),
     (
         2,
         "Part_B_LED",
@@ -130,7 +131,7 @@ VHB inside the 0.40 mm scribe ring. Butt the mount against the 3 mm step bevel (
 (Y = {MON_H / 2:.1f} mm); the socket then sits on the centre of gravity (X = 104 mm). Press firmly for 30 to 60 s.
 <b>Cure 24 hours unloaded before hanging.</b></p>
 
-<h2>4. Part B: the bezel (one M3 screw and nut)</h2>
+<h2>4. Part B: the bezel (three M3 screws and nuts)</h2>
 <p><b>Step 4, chin accents.</b> Lay Part_B_Lower face-down. Press Part_B_LED into the slit window lower-right from
 the back until its 0.8 mm flange sits flat; it finishes flush with the chin face. Push Part_B_Emblem into the 18 mm
 window lower-left from the front, face out, until both barbs click behind the plate. To change the emblem later,
@@ -148,11 +149,14 @@ it is on). Keep the orange 90-deg USB-C adapter in the top-left port. Slide Part
 monitor (the adapter nose runs in its relief channel) until the left 45-deg lap joint detent and the top-right detent
 tab click and the Lower's right tab lies over the nut. From the
 back, drive an M3 screw (6 to 12 mm, socket, button or pan head) through the tab into the nut, snug, not hard: the
-screw is a pin across the seam, not a clamp.</p>
+screw is a pin across the seam, not a clamp. Then the thick side: drop an M3 nut into each of the two hex pockets
+on the bosses at the left seam, lay Part_B_Splice across them, and drive an M3 screw (6 to 10 mm) through each of
+its holes into its nut, snug.</p>
 <p><b>Step 7, hang it.</b> After the 24 h cure: collar onto the arm, ball into the Part_A_Mount socket (it snaps in),
 collar down hand-tight, as in Step 1.</p>
 <img src="joint_v21.png" width="400"/>
-<div class="tip"><b>Taking it apart:</b> take out the screw at the right seam, flex the top-right detent tab, and
+<div class="tip"><b>Taking it apart:</b> take out the two screws in the splice plate and the screw at the right
+seam, flex the top-right detent tab, and
 pull the Upper straight up (+Y). The nut sits loose in the Upper's pocket: tip it out before it falls.</div>
 
 <h2>5. Printing notes</h2>

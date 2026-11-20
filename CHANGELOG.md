@@ -1,5 +1,18 @@
 # Changelog
 
+## v21.5.0 (2026-11-20)
+
+- **The thick side is screwed too:** v21.4.0 pinned only the thin side, and the thick side had nothing but the lap
+  tongue's 0.35 mm detent, a click and not a stop: pulled, the Upper hinged about the seam's thin-side corner and the
+  thick side opened 1.0 mm (5.1 mm without the monitor), stopped only by the monitor in its side channels. Its 4.5 mm
+  wall has no room for a nut, so each half now carries an 8 mm boss on its back at the seam with an M3 nut in a hex
+  pocket, and a flat 9 x 22 x 3 mm splice plate (`Part_B_Splice`, plate 2) lies across both with an M3 screw (6 to
+  10 mm) into each nut. The bosses' edge over the monitor rises at 45 degrees, so nothing needs support.
+  `CAD/check_part_b_fit.py` models the plate, screws and nuts: they clear both halves, pulled apart the Upper meets its
+  nut after 0.2 mm, no nut can turn, and hinged open about the thin-side corner the thick side opens 0.25 mm (gate
+  0.5; 1.00 mm and red with the splice left out). Reprint both halves and print the splice; hardware is three M3
+  screws and three M3 nuts.
+
 ## v21.4.0 (2026-11-20)
 
 - **The thin side is held by an M3 screw and nut, not a snap latch:** v21.3's square-hook latch let go when pulled

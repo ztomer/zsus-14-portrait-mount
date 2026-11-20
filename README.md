@@ -1,6 +1,6 @@
 # ZSUS 14" Portrait Mount & Apple "Snow White" Open-Back Bezel (v21)
 
-A 3D-printed bezel, held by one M3 screw and nut, that turns the ZSUS 14" 2K portable monitor into a portrait display in the spirit of
+A 3D-printed bezel, held by three M3 screws and nuts, that turns the ZSUS 14" 2K portable monitor into a portrait display in the spirit of
 Apple's 1980s "Snow White" design language and the Apple IIc monitor, plus a glue-on ball socket that hangs it on an
 articulated arm. Every part is generated from source and gated (fits, strains, styling), then sliced to verify.
 
@@ -32,12 +32,13 @@ What changed between releases is in `CHANGELOG.md`; open work in `ROADMAP.md`.
 | `STLs/Part_A_Test.stl` | 26.0 x 26.0 x 18.4 mm socket coupon: the mount's exact socket and collar relief, for the collar + ball test |
 | `STLs/Part_A_Mount.stl` | 85.0 x 100.0 x 21.3 mm VHB glue-on ball socket |
 | `STLs/Part_B_FitGauge.stl` | 52.2 x 55.0 x 18.6 mm: 15 mm of the thick-side channel plus three thin-side channels with 7.0 / 7.4 / 7.8 mm slots (1 / 2 / 3 notches) |
-| `STLs/Part_B_SeamTest_Upper.stl`, `STLs/Part_B_SeamTest_Lower.stl` | 22.3 x 21.4 / 16.2 x 18.6 mm: the thin-side corner of each half round the parting line, cut from the real parts: the Lower's screw tab, the Upper's recess and nut pocket |
-| `STLs/Part_B_Lower.stl` | 242.2 x 211.0 x 18.6 mm lower bezel: chin, emblem window + slit light, side channels, lap tongue, thin-side screw tab |
-| `STLs/Part_B_Upper.stl` | 242.2 x 156.2 x 18.6 mm upper bezel: USB-C bay, thin-side recess with an M3 nut pocket, top-right detent tab |
+| `STLs/Part_B_SeamTest_Upper.stl`, `STLs/Part_B_SeamTest_Lower.stl` | 22.3 x 15.0 / 25.0 x 18.6 mm: the thin-side corner of each half round the parting line, cut from the real parts: the Lower's screw tab, the Upper's recess and nut pocket |
+| `STLs/Part_B_Lower.stl` | 242.2 x 216.0 x 26.6 mm lower bezel: chin, emblem window + slit light, side channels, lap tongue, thin-side screw tab, thick-side back boss with an M3 nut pocket |
+| `STLs/Part_B_Upper.stl` | 242.2 x 149.9 x 26.6 mm upper bezel: USB-C bay, thin-side recess with an M3 nut pocket, thick-side back boss with another, top-right detent tab |
 | `STLs/Part_B_Emblem.stl` | 18.0 x 18.0 x 11.1 mm snap-in chin emblem tile (blank face), removable from behind |
 | `STLs/Part_B_Emblem_Cthulhu.stl` | 18.0 x 22.4 x 12.3 mm emblem tile with the Cthulhu head as an onlay (CC BY, see below) |
 | `STLs/Part_B_LED.stl` | 4.0 x 9.4 x 3.8 mm press-fit plug for the vertical slit power light |
+| `STLs/Part_B_Splice.stl` | 9.0 x 22.0 x 3.0 mm splice plate: lies across the two halves' thick-side back bosses, an M3 screw into each |
 | `CAD/` | Generators and checks (below); `CAD/layout.json` is the project (plates, settings, support regions, limits); `CAD/renders/` holds the guide figures and the last slice report |
 | `CAD/assets/cthulhu/` | The Cthulhu statue mesh by ChurchOfShrike (CC BY) and its `ATTRIBUTION.md` |
 | `docs/images/` | The pictures above, rendered from `STLs/` by `CAD/render_views.py` |
@@ -47,9 +48,9 @@ What changed between releases is in `CHANGELOG.md`; open work in `ROADMAP.md`.
 | Plate | Contents | Settings | Time | PLA |
 | :--- | :--- | :--- | :--- | :--- |
 | 1 Fit tests (print first) | Part_A_Test, Part_B_FitGauge, Part_B_SeamTest_Upper + _Lower | A: 0.16 mm, 5 walls, 40% gyroid, brim; gauge and seam test: 0.20 mm, 3 walls, 15%; tree supports under the seam test's screw tab | 1.1 h | 23 g |
-| 2 Part A mount + accents | Part_A_Mount, Part_B_Emblem, Part_B_LED | 0.16 mm; mount 5 walls 40% gyroid; accents 3 walls 100% | 1.3 h | 33 g |
-| 3 Part B lower bezel | Part_B_Lower | 0.20 mm, 3 walls, 15% gyroid, no brim; tree supports from the plate under the screw tab | 3.1 h | 98 g |
-| 4 Part B upper bezel | Part_B_Upper | 0.20 mm, 3 walls, 15% gyroid, no brim; tree supports from the plate in the left lap corner only | 2.3 h | 71 g |
+| 2 Part A mount + accents | Part_A_Mount, Part_B_Emblem, Part_B_LED, Part_B_Splice | 0.16 mm; mount 5 walls 40% gyroid; accents 3 walls 100% | 1.3 h | 34 g |
+| 3 Part B lower bezel | Part_B_Lower | 0.20 mm, 3 walls, 15% gyroid, no brim; tree supports from the plate under the screw tab | 3.1 h | 99 g |
+| 4 Part B upper bezel | Part_B_Upper | 0.20 mm, 3 walls, 15% gyroid, no brim; tree supports from the plate in the left lap corner only | 2.4 h | 72 g |
 | 5 Cthulhu emblem (optional) | Part_B_Emblem_Cthulhu | 0.08 mm, 3 walls, 100%, tree supports from the plate | 0.4 h | 4 g |
 
 Global: supports off; a part that needs them turns them on for itself (plate 5's tile; the Upper, as enforcer volumes
@@ -84,7 +85,7 @@ part (`CHANGELOG.md` names each):
 | Relief | `CAD/make_relief.py --self-test` | handedness end to end: a feature on the source's right seats on the viewer's right |
 | Emblem | `CAD/build_emblem.py` (manifold3d) | arm strain <= 2 % at the deflection that passes the hole; barb grip >= 0.3 mm; arm tips >= 0.3 mm clear of the shoulder as printed and clear of body and spine when deflected |
 | Part B | `CAD/build_part_b_blender_v21.py` (Blender, headless) | every boolean result manifold; each part one shell (gauge two), outward-facing; nothing written unless all pass |
-| Fit | `CAD/check_part_b_fit.py` | Upper / Lower / monitor overlap 0 for the measured 220 x 311 mm monitor with a 13.6 mm (measured) and 14.0 mm (spec) hump; lips over the monitor back; gauge thin slots measured as the Lower's slot + 0 / 0.4 / 0.8 mm; the thin-side screw joint: an M3 screw and nut modelled in place clear both halves, pulled apart the Upper meets the screw and the nut meets the Lower within 0.4 mm each, the nut cannot turn in its pocket, and the front face stays solid under the hole; styling: equal visible left / right / top borders, equal groove depth both sides, only the parting-line groove reaches the front edge, the front parting line sits in a groove (borders measured on the screen opening's own run, since the rim round's flanks also lie behind the glass plane); the reveal round the photographed image 0.8 mm on all four sides; emblem (seated by `chin_spec.EMBLEM_PLACE`, asserted a rotation, never a mirror): no overlap seated, face flush, pushed back 0.15 mm it lands on the seat, pulled forward 0.25 mm the barbs catch |
+| Fit | `CAD/check_part_b_fit.py` | Upper / Lower / monitor overlap 0 for the measured 220 x 311 mm monitor with a 13.6 mm (measured) and 14.0 mm (spec) hump; lips over the monitor back; gauge thin slots measured as the Lower's slot + 0 / 0.4 / 0.8 mm; the thin-side screw joint: an M3 screw and nut modelled in place clear both halves, pulled apart the Upper meets the screw and the nut meets the Lower within 0.4 mm each, the nut cannot turn in its pocket, and the front face stays solid under the hole; the thick side's splice plate, screws and nuts likewise, and pulled open about the thin-side corner the thick side opens <= 0.5 mm with the lap detent left out (0.25 mm; 1.0 mm without the splice); styling: equal visible left / right / top borders, equal groove depth both sides, only the parting-line groove reaches the front edge, the front parting line sits in a groove (borders measured on the screen opening's own run, since the rim round's flanks also lie behind the glass plane); the reveal round the photographed image 0.8 mm on all four sides; emblem (seated by `chin_spec.EMBLEM_PLACE`, asserted a rotation, never a mirror): no overlap seated, face flush, pushed back 0.15 mm it lands on the seat, pulled forward 0.25 mm the barbs catch |
 | Emblem art | `CAD/make_relief.py`, `CAD/build_emblem.py --relief` | the Cthulhu head's top inside the tile, the onlay seated in the real Lower with no overlap and on flat chin face all round |
 | STL files | `CAD/stl_io.py` (every manifold3d writer), gates_of_heck `checks/cad_mesh.py` | every shipped STL read back as a slicer reads it (vertices joined by exact float32 equality): each edge shared by exactly two faces, consistent winding, positive volume, no zero-area triangle, no zero stored normal (Bambu Studio refuses such a file), the body count `CAD/layout.json` declares (the gauge four) |
 | Project | `CAD/build_3mf_v21.py` over `CAD/layout.json`, by gates_of_heck `checks/cad_bambu.py` | P1S 0.4 nozzle profile, every part inside its plate and clear of the exclusion corner; all 5 plates slice with exit 0 and no slicing warnings (read from the CLI's `result.json` and log, where Bambu Studio puts the warnings it shows over the plate); a plate whose part asks for supports has them in its G-code, and an enforced part has support under every region and none more than 15 mm from one; travel over open air (goh `checks/cad_travel.py`, more than 2 mm from that layer's extrusion) at most 250 hops on each bezel plate |
@@ -156,8 +157,10 @@ recessed panel with no supports). Art under a personal-use licence goes in the g
   1 / 0.994 to compensate (`filament_shrink` 99.4 %, `CAD/layout.json`). Another filament may shrink differently:
   measure the closed bezel (the model is 355.8 mm) and set it from that.
 - The monitor is 311.0 mm long by tape (310.5..311); the pocket is 311.6 mm.
-- The thin side is held by one M3 screw (6 to 12 mm, socket, button or pan head) and an M3 nut: no heat-set insert.
-  The thick side keeps its lap tongue and detent; its 4.5 mm wall has no room for a nut.
+- The halves are held by three M3 screws and three M3 nuts, no heat-set inserts. On the thin side one screw (6 to
+  12 mm) goes through the Lower's tab into a nut in the Upper. On the thick side, whose 4.5 mm wall has no room for a
+  nut, two screws (6 to 10 mm) go through Part_B_Splice into a nut in each half's back boss; the bosses stand 8 mm
+  proud of the back. The lap tongue and its detent only align the halves.
 - Part_A_Mount's base (VHB pad, step index, scribe ring, pedestal) has no parametric source: the v20 Fusion script held
   only the boss. The socket is grafted onto that base, read from `CAD/assets/Part_A_Mount_base_v20.stl`.
 - The 16.4 mm leaf mouth limits ball tilt at the socket to about +/-25 degrees; the articulated arm supplies the rest.
